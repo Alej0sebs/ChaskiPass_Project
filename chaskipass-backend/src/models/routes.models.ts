@@ -13,5 +13,9 @@ export const Routes= connectionDb.define('route',{
     arrival_station_id:{
         type: DataTypes.STRING(10),
         allowNull: false
-    }, 
+    },
+    cooperative_id:{
+        type: DataTypes.STRING(10),
+        allowNull: false
+    },
 });

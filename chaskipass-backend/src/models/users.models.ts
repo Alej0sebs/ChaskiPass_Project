@@ -10,7 +10,11 @@ export const Users= connectionDb.define('users',{
         type: DataTypes.STRING(20),
         allowNull: false
     },
-    lastname:{
+    last_name:{
+        type: DataTypes.STRING(20),
+        allowNull: false
+    },
+    user_name:{
         type: DataTypes.STRING(20),
         allowNull: false
     },

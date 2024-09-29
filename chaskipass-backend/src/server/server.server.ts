@@ -56,8 +56,9 @@ export default class Server {
     async dbConnect() {
         try {
             await Promise.all([
+                // { alter: true } is used to update the database schema
                 Roles.sync(),
-                Users.sync(),
+                Users.sync({ alter: true }),
                 Cooperatives.sync(),
                 Buses.sync(),
                 TypeSeats.sync(),
@@ -73,7 +74,7 @@ export default class Server {
                 PaymentMethods.sync(),
                 Payments.sync(),
                 NotificationMails.sync(),
-                ClientCooperatives.sync()
+                ClientCooperatives.sync(),
             ]);
             console.log("Database connected successfully");
         } catch (error) {

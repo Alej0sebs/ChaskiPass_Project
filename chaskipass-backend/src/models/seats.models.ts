@@ -1,21 +1,37 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Seats= connectionDb.define('seats',{
-    id:{
+export class Seats extends Model<
+    InferAttributes<Seats>,
+    InferCreationAttributes<Seats>
+> {
+    public id!: string;
+    public bus_id!: string;
+    public number_seat!: number;
+    public type_seat_id!: string;
+}
+
+Seats.init({
+    id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    bus_id:{
+    bus_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    number_seat:{
+    number_seat: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
-    type_seat_id:{
+    type_seat_id: {
         type: DataTypes.STRING(5),
-        allowNull: false
-    }, 
+        allowNull: false,
+    }
+}, {
+    sequelize: connectionDb,
+    tableName: 'seats',
+    timestamps: false
 });
+
+export default Seats;

@@ -1,29 +1,47 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const NotificationMails= connectionDb.define('notification_mails',{
-    id:{
+export class NotificationMails extends Model<
+    InferAttributes<NotificationMails>,
+    InferCreationAttributes<NotificationMails>
+> {
+    public id!: string;
+    public user_id!: string;
+    public subject!: string;
+    public message!: string;
+    public status!: 'pending' | 'sent' | 'error';
+    public sent_date?: Date;
+}
+
+NotificationMails.init({
+    id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    user_id:{
+    user_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    subject:{
+    subject: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
-    message:{
+    message: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: false,
     },
-    status:{
-        type: DataTypes.ENUM('pending','sent','error'),
-        allowNull: false
+    status: {
+        type: DataTypes.ENUM('pending', 'sent', 'error'),
+        allowNull: false,
     },
-    sent_date:{
+    sent_date: {
         type: DataTypes.DATE,
-        allowNull: true
+        allowNull: true,
     }
+}, {
+    sequelize: connectionDb,
+    tableName: 'notification_mails',
+    timestamps: false
 });
+
+export default NotificationMails;

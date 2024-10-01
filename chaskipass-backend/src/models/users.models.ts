@@ -1,45 +1,66 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Users= connectionDb.define('users',{
-    dni:{
+// Definición del modelo usando `init()`
+export class Users extends Model<
+    InferAttributes<Users>,
+    InferCreationAttributes<Users>
+> {
+    public dni!: string;
+    public name!: string;
+    public last_name!: string;
+    public user_name!: string;
+    public email!: string;
+    public phone!: string;
+    public password!: string;
+    public address?: string;
+    public role_id!: string;
+    public cooperative_id!: string;
+}
+
+// Inicializar el modelo usando `init()`
+Users.init({
+    dni: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    name:{
+    name: {
         type: DataTypes.STRING(20),
-        allowNull: false
+        allowNull: false,
     },
-    last_name:{
+    last_name: {
         type: DataTypes.STRING(20),
-        allowNull: false
+        allowNull: false,
     },
-    user_name:{
+    user_name: {
         type: DataTypes.STRING(20),
-        allowNull: false
+        allowNull: false,
     },
-    email:{
+    email: {
         type: DataTypes.STRING(50),
-        allowNull: false
+        allowNull: false,
     },
-    phone:{
+    phone: {
         type: DataTypes.STRING(14),
-        allowNull: false
+        allowNull: false,
     },
-    password:{
+    password: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: false,
     },
-    address:{
+    address: {
         type: DataTypes.STRING(80),
-        allowNull:true
+        allowNull: true,
     },
-    role_id:{
+    role_id: {
         type: DataTypes.CHAR(5),
-        allowNull: false
+        allowNull: false,
     },
-    cooperative_id:{
+    cooperative_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     }
+}, {
+    sequelize: connectionDb,  // Conexión a la base de datos
+    tableName: 'users',       // Nombre de la tabla en la base de datos
 });

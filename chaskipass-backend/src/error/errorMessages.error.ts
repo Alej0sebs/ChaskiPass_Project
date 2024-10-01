@@ -8,4 +8,4 @@ export enum ErrorMessages{
     COMPARE_PASSWORD = 'Passwords do not match',
     SUCCESSFULLY_LOGGED_OUT = 'User logged out successfully',
     USER_NOT_FOUND= 'User not found'
-};
+}

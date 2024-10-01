@@ -1,13 +1,27 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const PaymentMethods= connectionDb.define('payment_methods',{
-    id:{
+export class PaymentMethods extends Model<
+    InferAttributes<PaymentMethods>,
+    InferCreationAttributes<PaymentMethods>
+> {
+    public id!: string;
+    public name!: string;
+}
+
+PaymentMethods.init({
+    id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    name:{
+    name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     }
+}, {
+    sequelize: connectionDb,
+    tableName: 'payment_methods',
+    timestamps: false
 });
+
+export default PaymentMethods;

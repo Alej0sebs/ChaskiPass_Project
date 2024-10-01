@@ -1,46 +1,68 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Buses= connectionDb.define('buses',{
-    id:{
+export class Buses extends Model<
+    InferAttributes<Buses>,
+    InferCreationAttributes<Buses>
+> {
+    public id!: string;
+    public cooperative_id!: string;
+    public bus_number!: string;
+    public license_plate!: string;
+    public chassis_vin!: string;
+    public bus_manufacturer!: string;
+    public model!: string;
+    public year!: number;
+    public capacity!: number;
+    public picture?: string;  // Campo opcional
+}
+
+// Inicializar el modelo usando `init()`
+Buses.init({
+    id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    cooperative_id:{
+    cooperative_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    bus_number:{
+    bus_number: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    license_plate:{
+    license_plate: {
         type: DataTypes.STRING(8),
-        allowNull: false
+        allowNull: false,
     },
-    chassis_vin:{
+    chassis_vin: {
         type: DataTypes.STRING(17),
-        allowNull: false
+        allowNull: false,
     },
-    bus_manufacturer:{
+    bus_manufacturer: {
         type: DataTypes.STRING(50),
-        allowNull: false
+        allowNull: false,
     },
-    model:{
+    model: {
         type: DataTypes.STRING(20),
-        allowNull: false
+        allowNull: false,
     },
-    year:{
+    year: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
-    capacity:{
+    capacity: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
-    picture:{
+    picture: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
     }
-    
+}, {
+    sequelize: connectionDb,  // Conexión a la base de datos
+    tableName: 'buses',       // Nombre de la tabla en la base de datos
+    timestamps: false         // Deshabilitar timestamps si no son necesarios
 });
+
+export default Buses;

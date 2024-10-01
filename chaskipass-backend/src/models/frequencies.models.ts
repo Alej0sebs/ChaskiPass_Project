@@ -1,41 +1,62 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Frequencies= connectionDb.define('frequencies',{
-    id:{
+export class Frequencies extends Model<
+    InferAttributes<Frequencies>,
+    InferCreationAttributes<Frequencies>
+> {
+    public id!: string;
+    public cooperative_id!: string;
+    public bus_id!: string;
+    public route_id!: string;
+    public date!: Date;
+    public departure_time!: string;
+    public arrival_time!: string;
+    public state!: boolean;
+    public trip_type!: boolean;
+}
+
+Frequencies.init({
+    id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    cooperative_id:{
+    cooperative_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    bus_id:{
+    bus_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    route_id:{
+    route_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    date:{
+    date: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
     },
-    departure_time:{
+    departure_time: {
         type: DataTypes.TIME,
-        allowNull: false
+        allowNull: false,
     },
-    arrival_time:{
+    arrival_time: {
         type: DataTypes.TIME,
-        allowNull: false
+        allowNull: false,
     },
-    state:{
+    state: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: false,
     },
-    trip_type:{
-        type: DataTypes.BOOLEAN, // 0: direct, 1: with stops 
-        allowNull: false
+    trip_type: {
+        type: DataTypes.BOOLEAN,  // 0: direct, 1: with stops
+        allowNull: false,
     }
+}, {
+    sequelize: connectionDb,
+    tableName: 'frequencies',
+    timestamps: false
 });
+
+export default Frequencies;

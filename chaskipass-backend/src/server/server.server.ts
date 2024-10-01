@@ -58,7 +58,7 @@ export default class Server {
             await Promise.all([
                 // { alter: true } is used to update the database schema
                 Roles.sync(),
-                Users.sync({ alter: true }),
+                Users.sync(),
                 Cooperatives.sync(),
                 Buses.sync(),
                 TypeSeats.sync(),

@@ -1,45 +1,66 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Tickets= connectionDb.define('tickets',{
-    id:{
+export class Tickets extends Model<
+    InferAttributes<Tickets>,
+    InferCreationAttributes<Tickets>
+> {
+    public id!: string;
+    public seat_id!: string;
+    public client_dni!: string;
+    public frequency_id!: string;
+    public departure_station!: string;
+    public arrival_station!: string;
+    public date!: Date;
+    public ticket_code!: string;
+    public status!: string;
+    public price!: number;
+}
+
+Tickets.init({
+    id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    seat_id:{
+    seat_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    client_dni:{
+    client_dni: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    frequency_id:{
+    frequency_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    departure_station:{
+    departure_station: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    arrival_station:{
+    arrival_station: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    date:{
+    date: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
     },
-    ticket_code:{
+    ticket_code: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: false,
     },
-    status:{
+    status: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    price:{
-        type: DataTypes.DECIMAL(10,2),
-        allowNull: false
+    price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
     }
+}, {
+    sequelize: connectionDb,
+    tableName: 'tickets',
 });
+
+export default Tickets;

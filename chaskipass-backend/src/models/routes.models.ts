@@ -1,21 +1,37 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize"; 
 
-export const Routes= connectionDb.define('route',{
-    id:{
+export class Routes extends Model<
+    InferAttributes<Routes>,
+    InferCreationAttributes<Routes>
+> {
+    public id!: string;
+    public departure_station_id!: string;
+    public arrival_station_id!: string;
+    public cooperative_id!: string;
+}
+
+Routes.init({
+    id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    departure_station_id:{
+    departure_station_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    arrival_station_id:{
+    arrival_station_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    cooperative_id:{
+    cooperative_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
-    },
+        allowNull: false,
+    }
+}, {
+    sequelize: connectionDb,
+    tableName: 'route',
+    timestamps: false
 });
+
+export default Routes;

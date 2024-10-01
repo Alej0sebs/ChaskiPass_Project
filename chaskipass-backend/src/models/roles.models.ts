@@ -1,17 +1,32 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Roles= connectionDb.define('roles',{
-    id:{
+export class Roles extends Model<
+    InferAttributes<Roles>,
+    InferCreationAttributes<Roles>
+> {
+    public id!: string;
+    public name!: string;
+    public description?: string;
+}
+
+Roles.init({
+    id: {
         type: DataTypes.CHAR(5),
         primaryKey: true,
     },
-    name:{
+    name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
-    description:{
+    description: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
     }
+}, {
+    sequelize: connectionDb,
+    tableName: 'roles',
+    timestamps: false
 });
+
+export default Roles;

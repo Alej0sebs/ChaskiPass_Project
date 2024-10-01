@@ -5,9 +5,9 @@ export class Cities extends Model<
     InferAttributes<Cities>,
     InferCreationAttributes<Cities>
 > {
-    public id!: string;
-    public province_id!: string;
-    public name!: string;
+    declare id: string;
+    declare province_id: string;
+    declare name: string;
 }
 
 Cities.init({

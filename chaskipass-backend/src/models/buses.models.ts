@@ -5,16 +5,16 @@ export class Buses extends Model<
     InferAttributes<Buses>,
     InferCreationAttributes<Buses>
 > {
-    public id!: string;
-    public cooperative_id!: string;
-    public bus_number!: string;
-    public license_plate!: string;
-    public chassis_vin!: string;
-    public bus_manufacturer!: string;
-    public model!: string;
-    public year!: number;
-    public capacity!: number;
-    public picture?: string;  // Campo opcional
+    declare id: string;
+    declare cooperative_id: string;
+    declare bus_number: string;
+    declare license_plate: string;
+    declare chassis_vin: string;
+    declare bus_manufacturer: string;
+    declare model: string;
+    declare year: number;
+    declare capacity: number;
+    declare picture: string;  // Campo opcional
 }
 
 // Inicializar el modelo usando `init()`

@@ -5,13 +5,13 @@ export class BusStations extends Model<
     InferAttributes<BusStations>,
     InferCreationAttributes<BusStations>
 > {
-    public id!: string;
-    public city_id!: string;
-    public name!: string;
-    public address!: string;
-    public phone?: string;
-    public open_time!: string;
-    public close_time!: string;
+    declare id: string;
+    declare city_id: string;
+    declare name: string;
+    declare address: string;
+    declare phone: string;
+    declare open_time: string;
+    declare close_time: string;
 }
 
 BusStations.init({

@@ -5,9 +5,9 @@ export class ClientCooperatives extends Model<
     InferAttributes<ClientCooperatives>,
     InferCreationAttributes<ClientCooperatives>
 > {
-    public id!: string;
-    public cooperative_id!: string;
-    public client_dni!: string;
+    declare id: string;
+    declare cooperative_id: string;
+    declare client_dni: string;
 }
 
 ClientCooperatives.init({

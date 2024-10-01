@@ -5,10 +5,10 @@ export class Seats extends Model<
     InferAttributes<Seats>,
     InferCreationAttributes<Seats>
 > {
-    public id!: string;
-    public bus_id!: string;
-    public number_seat!: number;
-    public type_seat_id!: string;
+    declare id: string;
+    declare bus_id: string;
+    declare number_seat: number;
+    declare type_seat_id: string;
 }
 
 Seats.init({

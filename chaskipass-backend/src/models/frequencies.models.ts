@@ -5,15 +5,15 @@ export class Frequencies extends Model<
     InferAttributes<Frequencies>,
     InferCreationAttributes<Frequencies>
 > {
-    public id!: string;
-    public cooperative_id!: string;
-    public bus_id!: string;
-    public route_id!: string;
-    public date!: Date;
-    public departure_time!: string;
-    public arrival_time!: string;
-    public state!: boolean;
-    public trip_type!: boolean;
+    declare id: string;
+    declare cooperative_id: string;
+    declare bus_id: string;
+    declare route_id: string;
+    declare date: Date;
+    declare departure_time: string;
+    declare arrival_time: string;
+    declare state: boolean;
+    declare trip_type: boolean;
 }
 
 Frequencies.init({

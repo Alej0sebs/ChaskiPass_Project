@@ -5,8 +5,8 @@ export class PaymentMethods extends Model<
     InferAttributes<PaymentMethods>,
     InferCreationAttributes<PaymentMethods>
 > {
-    public id!: string;
-    public name!: string;
+    declare id: string;
+    declare name: string;
 }
 
 PaymentMethods.init({

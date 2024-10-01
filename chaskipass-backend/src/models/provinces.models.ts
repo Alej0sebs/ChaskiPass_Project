@@ -5,8 +5,8 @@ export class Provinces extends Model<
     InferAttributes<Provinces>,
     InferCreationAttributes<Provinces>
 > {
-    public id!: string;
-    public name!: string;
+    declare id: string;
+    declare name: string;
 }
 
 Provinces.init({

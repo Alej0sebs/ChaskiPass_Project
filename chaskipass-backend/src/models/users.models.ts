@@ -6,16 +6,16 @@ export class Users extends Model<
     InferAttributes<Users>,
     InferCreationAttributes<Users>
 > {
-    public dni!: string;
-    public name!: string;
-    public last_name!: string;
-    public user_name!: string;
-    public email!: string;
-    public phone!: string;
-    public password!: string;
-    public address?: string;
-    public role_id!: string;
-    public cooperative_id!: string;
+    declare dni: string;
+    declare name: string;
+    declare last_name: string;
+    declare user_name: string;
+    declare email: string;
+    declare phone: string;
+    declare password: string;
+    declare address: string;
+    declare role_id: string;
+    declare cooperative_id: string;
 }
 
 // Inicializar el modelo usando `init()`

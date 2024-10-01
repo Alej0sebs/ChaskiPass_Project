@@ -5,10 +5,10 @@ export class Routes extends Model<
     InferAttributes<Routes>,
     InferCreationAttributes<Routes>
 > {
-    public id!: string;
-    public departure_station_id!: string;
-    public arrival_station_id!: string;
-    public cooperative_id!: string;
+    declare id: string;
+    declare departure_station_id: string;
+    declare arrival_station_id: string;
+    declare cooperative_id: string;
 }
 
 Routes.init({

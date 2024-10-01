@@ -13,5 +13,5 @@
     "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
     "sourceMap": true,                                   /* Generates corresponding '.map' file. */
   },
-  "include": ["src/**/*", "src/types/**/*.d.types.ts"],                             /* Specify the root files and the compiler options in the project. */
+  "include": ["src/**/*", "src/types/**/*.d.types.ts", "index.ts"],                             /* Specify the root files and the compiler options in the project. */
 }

@@ -5,12 +5,12 @@ export class Payments extends Model<
     InferAttributes<Payments>,
     InferCreationAttributes<Payments>
 > {
-    public id!: string;
-    public ticket_id!: string;
-    public payment_method!: string;
-    public payment_date!: Date;
-    public voucher!: string;
-    public status!: 'pending' | 'canceled' | 'completed';
+    declare id: string;
+    declare ticket_id: string;
+    declare payment_method: string;
+    declare payment_date: Date;
+    declare voucher: string;
+    declare status: 'pending' | 'canceled' | 'completed';
 }
 
 Payments.init({

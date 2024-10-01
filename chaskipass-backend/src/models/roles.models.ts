@@ -5,9 +5,9 @@ export class Roles extends Model<
     InferAttributes<Roles>,
     InferCreationAttributes<Roles>
 > {
-    public id!: string;
-    public name!: string;
-    public description?: string;
+    declare id: string;
+    declare name: string;
+    declare description: string;
 }
 
 Roles.init({

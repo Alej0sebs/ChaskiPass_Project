@@ -5,16 +5,16 @@ export class Tickets extends Model<
     InferAttributes<Tickets>,
     InferCreationAttributes<Tickets>
 > {
-    public id!: string;
-    public seat_id!: string;
-    public client_dni!: string;
-    public frequency_id!: string;
-    public departure_station!: string;
-    public arrival_station!: string;
-    public date!: Date;
-    public ticket_code!: string;
-    public status!: string;
-    public price!: number;
+    declare id: string;
+    declare seat_id: string;
+    declare client_dni: string;
+    declare frequency_id: string;
+    declare departure_station: string;
+    declare arrival_station: string;
+    declare date: Date;
+    declare ticket_code: string;
+    declare status: string;
+    declare price: number;
 }
 
 Tickets.init({

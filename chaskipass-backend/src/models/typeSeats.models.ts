@@ -5,10 +5,10 @@ export class TypeSeats extends Model<
     InferAttributes<TypeSeats>,
     InferCreationAttributes<TypeSeats>
 > {
-    public id!: string;
-    public cooperative_id!: string;
-    public name!: string;
-    public description?: string;
+    declare id: string;
+    declare cooperative_id: string;
+    declare name: string;
+    declare description: string;
 }
 
 TypeSeats.init({

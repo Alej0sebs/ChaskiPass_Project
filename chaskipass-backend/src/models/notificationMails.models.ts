@@ -5,12 +5,12 @@ export class NotificationMails extends Model<
     InferAttributes<NotificationMails>,
     InferCreationAttributes<NotificationMails>
 > {
-    public id!: string;
-    public user_id!: string;
-    public subject!: string;
-    public message!: string;
-    public status!: 'pending' | 'sent' | 'error';
-    public sent_date?: Date;
+    declare id: string;
+    declare user_id: string;
+    declare subject: string;
+    declare message: string;
+    declare status: 'pending' | 'sent' | 'error';
+    declare sent_date: Date;
 }
 
 NotificationMails.init({

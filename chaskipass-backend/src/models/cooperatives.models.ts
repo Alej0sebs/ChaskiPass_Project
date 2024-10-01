@@ -5,12 +5,12 @@ export class Cooperatives extends Model<
     InferAttributes<Cooperatives>,
     InferCreationAttributes<Cooperatives>
 > {
-    public id!: string;
-    public name!: string;
-    public address!: string;
-    public phone!: string;
-    public email!: string;
-    public description?: string;
+    declare id: string;
+    declare name: string;
+    declare address: string;
+    declare phone: string;
+    declare email: string;
+    declare description: string;
 }
 
 Cooperatives.init({

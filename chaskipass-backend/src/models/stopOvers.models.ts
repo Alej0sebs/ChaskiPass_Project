@@ -5,10 +5,10 @@ export class StopOvers extends Model<
     InferAttributes<StopOvers>,
     InferCreationAttributes<StopOvers>
 > {
-    public id!: string;
-    public route_id!: string;
-    public station_id!: string;
-    public order!: number;
+    declare id: string;
+    declare route_id: string;
+    declare station_id: string;
+    declare order: number;
 }
 
 StopOvers.init({

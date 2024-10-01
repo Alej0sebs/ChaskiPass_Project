@@ -5,12 +5,12 @@ export class Clients extends Model<
     InferAttributes<Clients>,
     InferCreationAttributes<Clients>
 > {
-    public dni!: string;
-    public name!: string;
-    public last_name!: string;
-    public address!: string;
-    public phone!: string;
-    public email!: string;
+    declare dni: string;
+    declare name: string;
+    declare last_name: string;
+    declare address: string;
+    declare phone: string;
+    declare email: string;
 }
 
 Clients.init({

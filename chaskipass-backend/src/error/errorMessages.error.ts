@@ -7,5 +7,6 @@ export enum ErrorMessages{
     INVALID_USER_DATA = 'Invalid user data',
     COMPARE_PASSWORD = 'Passwords do not match',
     SUCCESSFULLY_LOGGED_OUT = 'User logged out successfully',
-    USER_NOT_FOUND= 'User not found'
+    USER_NOT_FOUND= 'User not found',
+    USER_CREATED_SUCCESSFULLY= 'User created successfully',
 }

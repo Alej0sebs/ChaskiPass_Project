@@ -35,6 +35,7 @@ Users.init({
     user_name: {
         type: DataTypes.STRING(20),
         allowNull: false,
+        unique: true,
     },
     email: {
         type: DataTypes.STRING(50),

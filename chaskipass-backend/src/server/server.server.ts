@@ -1,6 +1,8 @@
 import express from 'express';
 import usersRoute from "../routes/users.routes";
 import cors from 'cors';
+import authRoutes from '../routes/auth.routes';
+
 import {
     Roles,
     Users,
@@ -43,7 +45,9 @@ export default class Server {
 
     routes() {
         const prefixUrl = '/chaski/api'
+        this.app.use(`${prefixUrl}/auth`, authRoutes);
         this.app.use(`${prefixUrl}/users`, usersRoute);
+        
     }
 
     middlewares() {

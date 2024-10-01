@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+
 import { ErrorMessages } from '../error/errorMessages.error';
 import { Users } from '../models/users.models';
 import { UserT } from '../types/index.types';
@@ -26,13 +27,14 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction) => 
             const userInformation: UserT = await Users.findByPk(decoded.dni, {
                 attributes: { exclude: ['password'] }
             }) as UserT;
+
             if (!userInformation) {
                 return res.status(404).json({
                     error: ErrorMessages.USER_NOT_FOUND
                 });
             }
             //add user to req object
-            req.userREq = userInformation;
+            // req.userReq = userInformation;
             next();
         } else {
             res.status(500).json({

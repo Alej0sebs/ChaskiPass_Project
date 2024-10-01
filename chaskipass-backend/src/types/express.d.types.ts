@@ -7,6 +7,6 @@ interface UserRequest{
 
 declare module 'express-serve-static-core'{
     interface Request{
-        userREq?:UserRequest;
+        userReq?:UserRequest;
     }
 }

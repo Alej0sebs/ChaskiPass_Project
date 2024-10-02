@@ -3,10 +3,10 @@ import bcrypt from 'bcrypt';
 import { Users } from '../models/users.models';
 import { ErrorMessages } from '../error/errorMessages.error';
 import { Op } from 'sequelize';
+import Buses from '../models/buses.models';
 
 export const getUsers = async (req: Request, res: Response) => {
     try {
-        // const cooperative_id = req.userReq?.cooperative_id;
         const { cooperative_id, dni } = req.userReq ?? {};
         const usersList = await Users.findAll({
             where: {
@@ -27,7 +27,7 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUserCooperative = async (req: Request, res: Response) => {
     try {
         const { dni, name, last_name, user_name, email, phone, password, confirmPassword, address, role_id, cooperative_id } = req.body;
         if (password !== confirmPassword) {
@@ -71,3 +71,52 @@ export const createUser = async (req: Request, res: Response) => {
     }
 };
 
+
+export const busRegister = async (req: Request, res: Response) => {
+    const { cooperative_id:coop_id, dni } = req.userReq ?? {};
+    if(coop_id === undefined || dni === undefined){
+        return res.status(401).json({
+            error: ErrorMessages.UNAUTHORIZED
+        });
+    }
+
+    try{
+        const {id, cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture} = req.body;
+        const busExists:Buses = await Buses.findOne({
+            where: {
+                [Op.or]: [
+                    { id },
+                    { license_plate }
+                ]
+            }
+        }) as Buses;
+
+        if(busExists){
+            res.status(400).json({
+                error: ErrorMessages.EXISTING_BUS
+            });
+        }
+
+        await Buses.create({
+            id,
+            cooperative_id: coop_id || "",
+            bus_number,
+            license_plate,
+            chassis_vin,
+            bus_manufacturer,
+            model,
+            year,
+            capacity,
+            picture
+        });
+
+        res.status(201).json({
+            msg: ErrorMessages.BUS_CREATED_SUCCESSFULLY
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            msg: ErrorMessages.INTERNAL_SERVER_ERROR
+        });
+    }
+};

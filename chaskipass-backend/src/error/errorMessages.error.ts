@@ -9,4 +9,7 @@ export enum ErrorMessages{
     SUCCESSFULLY_LOGGED_OUT = 'User logged out successfully',
     USER_NOT_FOUND= 'User not found',
     USER_CREATED_SUCCESSFULLY= 'User created successfully',
+    COOPERATIVE_CREATED_SUCCESSFULLY= 'Cooperative created successfully',
+    EXISTING_BUS= 'Bus already exists',
+    BUS_CREATED_SUCCESSFULLY= 'Bus created successfully',
 }

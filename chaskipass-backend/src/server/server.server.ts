@@ -3,6 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import usersRoute from "../routes/users.routes";
 import authRoutes from '../routes/auth.routes';
+import administrators from '../routes/administrators.routes';
 
 import {
     Roles,
@@ -22,7 +23,8 @@ import {
     PaymentMethods,
     Payments,
     NotificationMails,
-    ClientCooperatives
+    ClientCooperatives,
+    Admin
 } from '../models/tableAssociations.models';
 
 export default class Server {
@@ -48,6 +50,7 @@ export default class Server {
         const prefixUrl = '/chaski/api'
         this.app.use(`${prefixUrl}/auth`, authRoutes);
         this.app.use(`${prefixUrl}/users`, usersRoute);
+        this.app.use(`${prefixUrl}/admins`, administrators);
         
     }
 
@@ -98,6 +101,7 @@ export default class Server {
                 Payments.sync(),
                 NotificationMails.sync(),
                 ClientCooperatives.sync(),
+                Admin.sync()
             ]);
             console.log("Database connected successfully");
         } catch (error) {

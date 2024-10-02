@@ -40,7 +40,7 @@ Payments.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'payment',
+    tableName: 'payments',
     timestamps: false
 });
 

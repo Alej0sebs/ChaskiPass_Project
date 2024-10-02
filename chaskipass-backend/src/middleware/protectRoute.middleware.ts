@@ -1,26 +1,26 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-
 import { ErrorMessages } from '../error/errorMessages.error';
 import { Users } from '../models/users.models';
 import { UserT } from '../types/index.types';
 
 
-const protectRoute = async (req: Request, res: Response, next: NextFunction) => {
+const protectRoute = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        //get token from headers
         const token = req.cookies.jwt;
         if (!token) {
-            return res.status(401).json({
+            res.status(401).json({
                 error: ErrorMessages.UNAUTHORIZED
             });
-        };
+            return;
+        }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
         if (!decoded) {
-            return res.status(401).json({
+            res.status(401).json({
                 error: ErrorMessages.INVALID_TOKEN
             });
+            return;
         }
 
         if (typeof decoded === 'object' && 'dni' in decoded) {
@@ -29,12 +29,15 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction) => 
             }) as UserT;
 
             if (!userInformation) {
-                return res.status(404).json({
+                res.status(404).json({
                     error: ErrorMessages.USER_NOT_FOUND
                 });
+                return;
             }
-            //add user to req object
-            // req.userReq = userInformation;
+            req.userReq = {
+                dni: userInformation.dni,
+                cooperative_id: userInformation.cooperative_id
+            };
             next();
         } else {
             res.status(500).json({
@@ -43,12 +46,11 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction) => 
         }
 
     } catch (error) {
-        console.log("error in protectRoute middleware: ", error);
+        console.log("Error en el middleware protectRoute: ", error);
         res.status(500).json({
             error: ErrorMessages.INTERNAL_SERVER_ERROR
         });
     }
-
 };
 
 export default protectRoute;

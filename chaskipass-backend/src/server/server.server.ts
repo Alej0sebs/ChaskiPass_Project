@@ -1,6 +1,7 @@
-import express from 'express';
-import usersRoute from "../routes/users.routes";
+import express, {Application, Request, Response, NextFunction} from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import usersRoute from "../routes/users.routes";
 import authRoutes from '../routes/auth.routes';
 
 import {
@@ -34,11 +35,11 @@ export default class Server {
         this.listen();
         this.middlewares();
         this.routes();
-        this.dbConnect();
     }
-
+    
     listen() {
         this.app.listen(parseInt(this.port), '0.0.0.0', () => {
+            this.dbConnect();
             console.log('Server running on port ' + this.port);
         })
     }
@@ -51,8 +52,26 @@ export default class Server {
     }
 
     middlewares() {
-        this.app.use(express.json());
-        this.app.use(cors());
+        this.app.use(express.json());//send data in json format, and the middleware parse it to a js object to use in req.body
+        this.app.use(cookieParser());//analize the cookies in the request and parse them to a js object (req.cookies)
+        this.app.use(cors({
+            credentials: true,
+            origin: true,
+            allowedHeaders: ["Content-Type"],
+        }));
+        this.app.disable('x-powered-by');
+        this.app.use(this.securityHeaders);
+    }
+
+    securityHeaders(req: Request, res: Response, next: NextFunction) {
+        res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.example.com; frame-src 'none'; object-src 'none'");
+        res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+        res.setHeader("X-Content-Type-Options", "nosniff");
+        res.setHeader("X-Frame-Options", "DENY");
+        res.setHeader("X-XSS-Protection", "1; mode=block");
+        res.setHeader("Referrer-Policy", "no-referrer");
+        res.setHeader("Permissions-Policy", "geolocation=(self), microphone=()");
+        next();
     }
 
     /*@dbConnect: Asynchronous function that creates the database based on

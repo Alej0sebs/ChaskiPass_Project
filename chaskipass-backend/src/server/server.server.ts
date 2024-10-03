@@ -1,3 +1,4 @@
+// import { UserLoginT } from './../types/index.types';
 import express, {Application, Request, Response, NextFunction} from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -5,6 +6,7 @@ import usersRoute from "../routes/users.routes";
 import authRoutes from '../routes/auth.routes';
 import administratorsRoutes from '../routes/administrators.routes';
 import busesRoutes from '../routes/buses.routes';
+import clientsRoutes from '../routes/clients.routes';
 
 import {
     Roles,
@@ -53,6 +55,7 @@ export default class Server {
         this.app.use(`${prefixUrl}/users`, usersRoute);
         this.app.use(`${prefixUrl}/admins`, administratorsRoutes);
         this.app.use(`${prefixUrl}/buses`, busesRoutes);
+        this.app.use(`${prefixUrl}/clients`, clientsRoutes);
     }
 
     middlewares() {

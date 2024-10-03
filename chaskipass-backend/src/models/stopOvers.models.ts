@@ -17,7 +17,7 @@ StopOvers.init({
         primaryKey: true,
     },
     route_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(20),
         allowNull: false,
     },
     station_id: {

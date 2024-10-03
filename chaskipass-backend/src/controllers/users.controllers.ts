@@ -42,6 +42,7 @@ export const createUserCooperative = async (req: Request, res: Response) => {
             res.status(400).json({
                 error: HandleMessages.EXISTING_USERNAME
             });
+            return;
         }
 
         //hash password

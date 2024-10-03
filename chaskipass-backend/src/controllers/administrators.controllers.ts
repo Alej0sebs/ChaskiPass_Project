@@ -4,6 +4,7 @@ import { Users } from '../models/users.models';
 import { HandleMessages } from '../error/handleMessages.error';
 import Cooperatives from '../models/cooperatives.models';
 import { Admin } from '../models/administrators.models';
+import Roles from '../models/roles.models';
 
 export const createSaasAdministrator = async (req: Request, res: Response) => {
     try {
@@ -98,6 +99,24 @@ export const createCooperative = async (req: Request, res: Response) => {
             msg: HandleMessages.COOPERATIVE_CREATED_SUCCESSFULLY
         });
     } catch (error) {
+        res.status(500).json({
+            msg: HandleMessages.INTERNAL_SERVER_ERROR
+        });
+    }
+};
+
+export const createRoles = async (req: Request, res: Response) => {
+    try{
+        const { id, name, description } = req.body;
+        await Roles.create({
+            id,
+            name,
+            description
+        });
+        res.status(201).json({
+            msg: HandleMessages.ROLE_CREATED_SUCCESSFULLY
+        });
+    }catch(error){
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });

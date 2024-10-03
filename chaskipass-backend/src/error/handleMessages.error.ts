@@ -18,4 +18,5 @@ export enum HandleMessages{
     UNAUTHORIZED_ROLE = 'Unauthorized Role',
     EXISTING_ROUTE= 'Route already exists',
     ROUTE_CREATED_SUCCESSFULLY= 'Route created successfully',
+    ROLE_CREATED_SUCCESSFULLY= 'Role created successfully',
 }

@@ -49,7 +49,7 @@ const verifyRoute = async ({dni, cooperative_id, departure_station_id, arrival_s
         if (!userRole || (userRole.role_id !== RoleEnum.administrator && userRole.role_id !== RoleEnum.clerk)) {
             throw new Error(HandleMessages.UNAUTHORIZED);
         };
-        //pk --date hour
+        //pk --date hour looooooook for a better way
         const id = `${cooperative_id?.substring(0, 3)} ${new Date().getFullYear()} ${departure_station_id.substring(0, 3)}`;
         
         const routeExists: Routes = await Routes.findOne({

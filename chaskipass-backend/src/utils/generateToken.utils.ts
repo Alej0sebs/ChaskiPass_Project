@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { Response } from 'express';
-import { UserT } from '../types/index.types';
 
 const generateTokenAndSetCookie =(dni:string, res:Response)=>{
     const token = jwt.sign({dni}, process.env.JWT_SECRET as string, {expiresIn: '5d'});

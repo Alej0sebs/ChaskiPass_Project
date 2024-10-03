@@ -4,6 +4,7 @@ import { Users } from '../models/users.models';
 import { HandleMessages } from '../error/handleMessages.error';
 import Cooperatives from '../models/cooperatives.models';
 import { Admin } from '../models/administrators.models';
+import Roles from '../models/roles.models';
 
 export const createSaasAdministrator = async (req: Request, res: Response) => {
     try {
@@ -16,6 +17,7 @@ export const createSaasAdministrator = async (req: Request, res: Response) => {
             res.status(400).json({
                 error: HandleMessages.EXISTING_USERNAME
             });
+            return;
         }
 
         //hash password
@@ -31,11 +33,13 @@ export const createSaasAdministrator = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: HandleMessages.USER_CREATED_SUCCESSFULLY
         });
+        return;
 
     } catch (error) {
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };
 
@@ -46,6 +50,7 @@ export const createNewTenant = async (req: Request, res: Response) => {
             res.status(400).json({
                 error: HandleMessages.COMPARE_PASSWORD
             });
+            return;
         }
         const userExists: Users = await Users.findOne({
             where: { user_name },
@@ -55,6 +60,7 @@ export const createNewTenant = async (req: Request, res: Response) => {
             res.status(400).json({
                 error: HandleMessages.EXISTING_USERNAME
             });
+            return;
         }
 
         //hash password
@@ -75,11 +81,13 @@ export const createNewTenant = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: HandleMessages.USER_CREATED_SUCCESSFULLY
         });
+        return;
 
     } catch (error) {
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return; 
     }
 };
 
@@ -97,9 +105,31 @@ export const createCooperative = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: HandleMessages.COOPERATIVE_CREATED_SUCCESSFULLY
         });
+        return;
     } catch (error) {
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
+    }
+};
+
+export const createRoles = async (req: Request, res: Response) => {
+    try{
+        const { id, name, description } = req.body;
+        await Roles.create({
+            id,
+            name,
+            description
+        });
+        res.status(201).json({
+            msg: HandleMessages.ROLE_CREATED_SUCCESSFULLY
+        });
+        return;
+    }catch(error){
+        res.status(500).json({
+            msg: HandleMessages.INTERNAL_SERVER_ERROR
+        });
+        return;
     }
 };

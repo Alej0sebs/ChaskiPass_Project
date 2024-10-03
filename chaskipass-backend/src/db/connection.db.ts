@@ -7,7 +7,6 @@ class ConnectionDB{
 
     public static getInstance(){
         if(!ConnectionDB.instance){
-            console.log(process.env.DB_USER);
             ConnectionDB.instance = new Sequelize(
                 process.env.DB_NAME || '',
                 process.env.DB_USER || '',

@@ -13,7 +13,7 @@ export class Routes extends Model<
 
 Routes.init({
     id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(20),
         primaryKey: true,
     },
     departure_station_id: {

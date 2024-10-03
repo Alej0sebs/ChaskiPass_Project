@@ -22,7 +22,7 @@ Roles.hasMany(Users, {foreignKey: 'role_id', sourceKey: 'id'});
 Cooperatives.hasMany(Users, {foreignKey: 'cooperative_id', sourceKey: 'id'});
 Cooperatives.hasMany(Buses, {foreignKey: 'cooperative_id', sourceKey: 'id'}); 
 Cooperatives.hasMany(TypeSeats,{foreignKey: 'cooperative_id', sourceKey: 'id'});
-TypeSeats.hasMany(Seats, {foreignKey: 'type_id', sourceKey: 'id'});
+TypeSeats.hasMany(Seats, {foreignKey: 'type_seat_id', sourceKey: 'id'});
 Buses.hasMany(Seats, {foreignKey: 'bus_id', sourceKey: 'id'});
 Buses.hasMany(Frequencies, {foreignKey: 'bus_id', sourceKey: 'id'});
 Frequencies.hasMany(Tickets,{foreignKey: 'frequency_id', sourceKey: 'id'});

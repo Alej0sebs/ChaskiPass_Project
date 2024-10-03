@@ -27,6 +27,7 @@ export const busRegister = async (req: Request, res: Response) => {
             res.status(400).json({
                 error: HandleMessages.EXISTING_BUS
             });
+            return;
         }
 
         await Buses.create({
@@ -45,11 +46,13 @@ export const busRegister = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: HandleMessages.BUS_CREATED_SUCCESSFULLY
         });
+        return;
     } catch (error) {
         console.log(error);
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };
 
@@ -82,6 +85,7 @@ export const editBusById = async (req: Request, res: Response) => {
             res.status(400).json({
                 error: HandleMessages.BUS_NOT_FOUND
             });
+            return;
         }
         await Buses.update({
             bus_number,
@@ -100,10 +104,12 @@ export const editBusById = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: HandleMessages.BUS_UPDATED_SUCCESSFULLY
         });
+        return;
     } catch (error) {
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };
 
@@ -121,6 +127,7 @@ export const deleteBusById = async (req: Request, res: Response) => {
             res.status(400).json({
                 error: HandleMessages.BUS_NOT_FOUND
             });
+            return;
         };
         await Buses.destroy({
             where: {
@@ -130,9 +137,11 @@ export const deleteBusById = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: HandleMessages.BUS_DELETED_SUCCESSFULLY
         });
+        return;
     } catch (error) {
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };

@@ -29,11 +29,13 @@ export const createRoute = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: HandleMessages.ROUTE_CREATED_SUCCESSFULLY
         });
+        return;
     } catch (error) {
         console.log(error);
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };
 

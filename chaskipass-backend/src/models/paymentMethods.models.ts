@@ -11,7 +11,7 @@ export class PaymentMethods extends Model<
 
 PaymentMethods.init({
     id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.CHAR(3),
         primaryKey: true,
     },
     name: {

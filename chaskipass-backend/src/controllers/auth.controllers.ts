@@ -8,20 +8,21 @@ import generateTokenAndSetCookie from "../utils/generateToken.utils";
 
 export const loginUser = async (req: Request, res: Response) => {
     try {
-        const { username, email, password } = req.body;
+        const { user_name, email, password } = req.body;
         const user: Users = await Users.findOne({
             where: {
                 [Op.or]: [
-                    { user_name: username },
-                    { email: email }
+                    { user_name },
+                    { email }
                 ]
             }
         }) as Users;
-        const isPasswordValid = await bcrypt.compare(password, user?.password);
+        const isPasswordValid = await bcrypt.compare(password, user?.password || "");
         if (!user || !isPasswordValid) {
             res.status(404).json({
                 error: HandleMessages.INVALID_CREDENTIALS
             });
+            return;
         };
         //generate token and set cookie
         generateTokenAndSetCookie(user.dni, res);
@@ -30,6 +31,7 @@ export const loginUser = async (req: Request, res: Response) => {
             cooperative: user.cooperative_id,
         });
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             error: HandleMessages.INTERNAL_SERVER_ERROR
         });

@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { HandleMessages } from '../error/handleMessages.error';
 import { Users } from '../models/users.models';
-import { UserT } from '../types/index.types';
 
 
 const protectRoute = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -24,9 +23,9 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction): Pr
         }
 
         if (typeof decoded === 'object' && 'dni' in decoded) {
-            const userInformation: UserT = await Users.findByPk(decoded.dni, {
+            const userInformation: Users = await Users.findByPk(decoded.dni, {
                 attributes: { exclude: ['password'] }
-            }) as UserT;
+            }) as Users;
 
             if (!userInformation) {
                 res.status(404).json({

@@ -3,21 +3,20 @@ import bcrypt from "bcrypt";
 import { HandleMessages } from "../error/handleMessages.error";
 import { Users } from "../models/users.models";
 import { Op } from "sequelize";
-import { UserLoginT } from "../types/index.types";
 import generateTokenAndSetCookie from "../utils/generateToken.utils";
 
 
 export const loginUser = async (req: Request, res: Response) => {
     try {
         const { username, email, password } = req.body;
-        const user: UserLoginT = await Users.findOne({
+        const user: Users = await Users.findOne({
             where: {
                 [Op.or]: [
                     { user_name: username },
                     { email: email }
                 ]
             }
-        }) as UserLoginT;
+        }) as Users;
         const isPasswordValid = await bcrypt.compare(password, user?.password);
         if (!user || !isPasswordValid) {
             res.status(404).json({

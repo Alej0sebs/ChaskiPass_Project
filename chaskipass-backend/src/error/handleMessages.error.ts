@@ -1,4 +1,4 @@
-export enum ErrorMessages{
+export enum HandleMessages{
     UNAUTHORIZED = 'Unauthorized - No token provided',
     INVALID_TOKEN= 'Unauthorized - Invalid token',
     INTERNAL_SERVER_ERROR = 'Internal server error',
@@ -12,4 +12,7 @@ export enum ErrorMessages{
     COOPERATIVE_CREATED_SUCCESSFULLY= 'Cooperative created successfully',
     EXISTING_BUS= 'Bus already exists',
     BUS_CREATED_SUCCESSFULLY= 'Bus created successfully',
+    BUS_NOT_FOUND= 'Bus not found',
+    BUS_UPDATED_SUCCESSFULLY= 'Bus updated successfully',
+    BUS_DELETED_SUCCESSFULLY= 'Bus deleted successfully',
 }

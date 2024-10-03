@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import { ErrorMessages } from '../error/errorMessages.error';
+import { HandleMessages } from '../error/handleMessages.error';
 import { Users } from '../models/users.models';
 import { UserT } from '../types/index.types';
 
@@ -10,7 +10,7 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction): Pr
         const token = req.cookies.jwt;
         if (!token) {
             res.status(401).json({
-                error: ErrorMessages.UNAUTHORIZED
+                error: HandleMessages.UNAUTHORIZED
             });
             return;
         }
@@ -18,7 +18,7 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction): Pr
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
         if (!decoded) {
             res.status(401).json({
-                error: ErrorMessages.INVALID_TOKEN
+                error: HandleMessages.INVALID_TOKEN
             });
             return;
         }
@@ -30,7 +30,7 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction): Pr
 
             if (!userInformation) {
                 res.status(404).json({
-                    error: ErrorMessages.USER_NOT_FOUND
+                    error: HandleMessages.USER_NOT_FOUND
                 });
                 return;
             }
@@ -41,14 +41,14 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction): Pr
             next();
         } else {
             res.status(500).json({
-                error: ErrorMessages.INTERNAL_SERVER_ERROR
+                error: HandleMessages.INTERNAL_SERVER_ERROR
             });
         }
 
     } catch (error) {
         console.log("Error en el middleware protectRoute: ", error);
         res.status(500).json({
-            error: ErrorMessages.INTERNAL_SERVER_ERROR
+            error: HandleMessages.INTERNAL_SERVER_ERROR
         });
     }
 };

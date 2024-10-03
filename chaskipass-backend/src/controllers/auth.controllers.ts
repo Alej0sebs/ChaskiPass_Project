@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { ErrorMessages } from "../error/errorMessages.error";
+import { HandleMessages } from "../error/handleMessages.error";
 import { Users } from "../models/users.models";
 import { Op } from "sequelize";
 import { UserLoginT } from "../types/index.types";
@@ -21,7 +21,7 @@ export const loginUser = async (req: Request, res: Response) => {
         const isPasswordValid = await bcrypt.compare(password, user?.password);
         if (!user || !isPasswordValid) {
             res.status(404).json({
-                error: ErrorMessages.INVALID_CREDENTIALS
+                error: HandleMessages.INVALID_CREDENTIALS
             });
         };
         //generate token and set cookie
@@ -32,7 +32,7 @@ export const loginUser = async (req: Request, res: Response) => {
         });
     } catch (error) {
         res.status(500).json({
-            error: ErrorMessages.INTERNAL_SERVER_ERROR
+            error: HandleMessages.INTERNAL_SERVER_ERROR
         });
     }
 }
@@ -42,11 +42,11 @@ export const logoutUser = async (req: Request, res: Response) => {
     try {
         res.cookie('jwt', '', { maxAge: 0 });
         res.status(200).json({
-            message: ErrorMessages.SUCCESSFULLY_LOGGED_OUT
+            message: HandleMessages.SUCCESSFULLY_LOGGED_OUT
         });
     } catch (error) {
         res.status(500).json({
-            error: ErrorMessages.INTERNAL_SERVER_ERROR
+            error: HandleMessages.INTERNAL_SERVER_ERROR
         });
     }
 };

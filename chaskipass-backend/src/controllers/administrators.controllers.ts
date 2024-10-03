@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { Users } from '../models/users.models';
-import { ErrorMessages } from '../error/errorMessages.error';
+import { HandleMessages } from '../error/handleMessages.error';
 import Cooperatives from '../models/cooperatives.models';
 import { Admin } from '../models/administrators.models';
 
@@ -14,7 +14,7 @@ export const createSaasAdministrator = async (req: Request, res: Response) => {
         }) as Users;
         if (userExists) {
             res.status(400).json({
-                error: ErrorMessages.EXISTING_USERNAME
+                error: HandleMessages.EXISTING_USERNAME
             });
         }
 
@@ -29,12 +29,12 @@ export const createSaasAdministrator = async (req: Request, res: Response) => {
         });
 
         res.status(201).json({
-            msg: ErrorMessages.USER_CREATED_SUCCESSFULLY
+            msg: HandleMessages.USER_CREATED_SUCCESSFULLY
         });
 
     } catch (error) {
         res.status(500).json({
-            msg: ErrorMessages.INTERNAL_SERVER_ERROR
+            msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
     }
 };
@@ -44,7 +44,7 @@ export const createNewTenant = async (req: Request, res: Response) => {
         const { dni, name, last_name, user_name, email, phone, password, confirmPassword, address, role_id, cooperative_id } = req.body;
         if (password !== confirmPassword) {
             res.status(400).json({
-                error: ErrorMessages.COMPARE_PASSWORD
+                error: HandleMessages.COMPARE_PASSWORD
             });
         }
         const userExists: Users = await Users.findOne({
@@ -53,7 +53,7 @@ export const createNewTenant = async (req: Request, res: Response) => {
         }) as Users;
         if (userExists) {
             res.status(400).json({
-                error: ErrorMessages.EXISTING_USERNAME
+                error: HandleMessages.EXISTING_USERNAME
             });
         }
 
@@ -73,12 +73,12 @@ export const createNewTenant = async (req: Request, res: Response) => {
         });
 
         res.status(201).json({
-            msg: ErrorMessages.USER_CREATED_SUCCESSFULLY
+            msg: HandleMessages.USER_CREATED_SUCCESSFULLY
         });
 
     } catch (error) {
         res.status(500).json({
-            msg: ErrorMessages.INTERNAL_SERVER_ERROR
+            msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
     }
 };
@@ -95,11 +95,11 @@ export const createCooperative = async (req: Request, res: Response) => {
             description
         });
         res.status(201).json({
-            msg: ErrorMessages.COOPERATIVE_CREATED_SUCCESSFULLY
+            msg: HandleMessages.COOPERATIVE_CREATED_SUCCESSFULLY
         });
     } catch (error) {
         res.status(500).json({
-            msg: ErrorMessages.INTERNAL_SERVER_ERROR
+            msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
     }
 };

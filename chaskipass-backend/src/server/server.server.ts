@@ -3,7 +3,8 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import usersRoute from "../routes/users.routes";
 import authRoutes from '../routes/auth.routes';
-import administrators from '../routes/administrators.routes';
+import administratorsRoutes from '../routes/administrators.routes';
+import busesRoutes from '../routes/buses.routes';
 
 import {
     Roles,
@@ -50,8 +51,8 @@ export default class Server {
         const prefixUrl = '/chaski/api'
         this.app.use(`${prefixUrl}/auth`, authRoutes);
         this.app.use(`${prefixUrl}/users`, usersRoute);
-        this.app.use(`${prefixUrl}/admins`, administrators);
-        
+        this.app.use(`${prefixUrl}/admins`, administratorsRoutes);
+        this.app.use(`${prefixUrl}/buses`, busesRoutes);
     }
 
     middlewares() {

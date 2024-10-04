@@ -17,6 +17,7 @@ export enum HandleMessages{
     BUS_DELETED_SUCCESSFULLY= 'Bus deleted successfully',
     UNAUTHORIZED_ROLE = 'Unauthorized Role',
     EXISTING_ROUTE= 'Route already exists',
+    ROLE_CREATED_SUCCESSFULLY= 'Role created successfully',
     ROUTE_CREATED_SUCCESSFULLY= 'Route created successfully',
     ROLE_CREATED_SUCCESSFULLY= 'Role created successfully',
     CLIENT_CRTEATED_SUCESSFULLY='Client created sucessfully',
@@ -30,4 +31,5 @@ export enum HandleMessages{
     SEAT_DELETED_SUCCESSFULLY='Seat deleted sucessfully',
 
 
+    ROUTE_NOT_FOUND= 'Route not found',
 }

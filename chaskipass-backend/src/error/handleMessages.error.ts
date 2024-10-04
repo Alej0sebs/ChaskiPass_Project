@@ -23,7 +23,11 @@ export enum HandleMessages{
     CLIENT_UPDATE_SUCESSFULLY='Client update sucessfully',
     CLIENT_NOT_FOUND= 'Client not found',
     CLIENT_DELTETE_SUCESSFULLY='Client delete sucessfully',
-    CLIENT_EXIST_DNI='Client with this DNI already exists'
+    CLIENT_EXIST_DNI='Client with this DNI already exists',
+    SEAT_CREATED_SUCCESSFULLY='Seat Created sucessfully',
+    SEAT_NOT_FOUND='Seat not found',
+    SEAT_UPDATED_SUCCESSFULLY='Seat update successfully',
+    SEAT_DELETED_SUCCESSFULLY='Seat deleted sucessfully',
 
 
 }

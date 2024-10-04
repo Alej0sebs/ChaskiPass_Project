@@ -56,7 +56,7 @@ export const createClient = async (req: Request, res: Response) => {
         });
 
         if (clientExists) {
-            return res.status(400).json({
+             res.status(400).json({
                 error: HandleMessages.CLIENT_EXIST_DNI,
             });
             return;
@@ -74,7 +74,7 @@ export const createClient = async (req: Request, res: Response) => {
             await newClient.set(cooperative_id); 
         }
 
-        return res.status(201).json({
+         res.status(201).json({
             message: HandleMessages.CLIENT_CRTEATED_SUCESSFULLY,
             client: newClient,
         });
@@ -83,7 +83,7 @@ export const createClient = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({
+         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
         return;
@@ -101,9 +101,10 @@ export const updateClient = async (req: Request, res: Response) => {
         });
 
         if (!client) {
-            return res.status(404).json({
+             res.status(404).json({
                 error: HandleMessages.CLIENT_NOT_FOUND,
             });
+            return;
         }
 
         await client.update({
@@ -118,14 +119,14 @@ export const updateClient = async (req: Request, res: Response) => {
             await client.set(cooperative_id); 
         }
 
-        return res.status(200).json({
+         res.status(200).json({
             message: HandleMessages.CLIENT_UPDATE_SUCESSFULLY,
             client,
         });
         return;
     } catch (error) {
         console.error(error);
-        return res.status(500).json({
+         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
     }
@@ -142,7 +143,7 @@ export const deleteClient = async (req: Request, res: Response) => {
         });
 
         if (!client) {
-            return res.status(404).json({
+             res.status(404).json({
                 error: HandleMessages.CLIENT_NOT_FOUND
             });
     return;
@@ -150,12 +151,12 @@ export const deleteClient = async (req: Request, res: Response) => {
         }
         await client.destroy();
 
-        return res.status(200).json({
+         res.status(200).json({
             message: HandleMessages.CLIENT_DELTETE_SUCESSFULLY
         });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({
+         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
         return;

@@ -31,7 +31,6 @@ export const getUsers = async (req: Request, res: Response) => {
         });
         return;
     } catch (error) {
-        console.log(error);
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
@@ -39,6 +38,44 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 };
 
+export const searchUserByFilter = async (req: Request, res: Response) => {
+    try {
+        const {cooperative_id, dni} = req.userReq ?? {};
+        const {page=1, limit=10, pattern} = req.query;
+        const offset = page ? (parseInt(page.toString()) - 1) * (limit ? parseInt(limit.toString()) : 10) : 0;
+        const {rows: filteredList, count:totalItems} = await Users.findAndCountAll({
+            where:{
+                cooperative_id,
+                [Op.or]:[
+                    {dni: {[Op.like]: `%${pattern}%`}},
+                    {name: {[Op.like]: `%${pattern}%`}},
+                    {last_name: {[Op.like]: `%${pattern}%`}},
+                ],
+                dni:{
+                    [Op.ne]: dni
+                }
+            },
+            attributes: { exclude: ['password']},
+            limit: parseInt(limit.toString()),
+            offset: offset,
+        });
+
+        //number of pages
+        const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
+        res.status(201).json({
+            totalItems,
+            totalPages,
+            currentPage: parseInt(page.toString()),
+            list: filteredList
+        });
+        return;
+    } catch (error) {
+        res.status(500).json({
+            msg: HandleMessages.INTERNAL_SERVER_ERROR
+        });
+        return;
+    }
+};
 
 export const createUserCooperative = async (req: Request, res: Response) => {
     try {

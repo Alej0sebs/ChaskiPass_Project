@@ -15,6 +15,7 @@ StopOvers.init({
     id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
+        autoIncrement: true,
     },
     route_id: {
         type: DataTypes.STRING(20),

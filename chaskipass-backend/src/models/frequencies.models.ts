@@ -12,7 +12,7 @@ export class Frequencies extends Model<
     declare date: Date;
     declare departure_time: string;
     declare arrival_time: string;
-    declare state: boolean;
+    declare status: boolean;
     declare trip_type: boolean;
 }
 
@@ -45,7 +45,7 @@ Frequencies.init({
         type: DataTypes.TIME,
         allowNull: false,
     },
-    state: {
+    status: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
     },

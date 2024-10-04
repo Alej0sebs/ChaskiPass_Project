@@ -19,4 +19,11 @@ export enum HandleMessages{
     EXISTING_ROUTE= 'Route already exists',
     ROUTE_CREATED_SUCCESSFULLY= 'Route created successfully',
     ROLE_CREATED_SUCCESSFULLY= 'Role created successfully',
+    CLIENT_CRTEATED_SUCESSFULLY='Client created sucessfully',
+    CLIENT_UPDATE_SUCESSFULLY='Client update sucessfully',
+    CLIENT_NOT_FOUND= 'Client not found',
+    CLIENT_DELTETE_SUCESSFULLY='Client delete sucessfully',
+    CLIENT_EXIST_DNI='Client with this DNI already exists'
+
+
 }

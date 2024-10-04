@@ -31,10 +31,10 @@ export const loginUser = async (req: Request, res: Response) => {
             cooperative: user.cooperative_id,
         });
     } catch (error) {
-        console.log(error);
         res.status(500).json({
             error: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 }
 
@@ -45,9 +45,11 @@ export const logoutUser = async (req: Request, res: Response) => {
         res.status(200).json({
             message: HandleMessages.SUCCESSFULLY_LOGGED_OUT
         });
+        return;
     } catch (error) {
         res.status(500).json({
             error: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };

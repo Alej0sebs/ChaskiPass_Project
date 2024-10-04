@@ -23,11 +23,13 @@ export const getClients = async (req: Request, res: Response) => {
             ]
         });
         res.status(200).json(clientsList);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };
 

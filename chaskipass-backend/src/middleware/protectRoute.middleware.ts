@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from 'express';
 import { HandleMessages } from '../error/handleMessages.error';
 import { Users } from '../models/users.models';
 
-
 const protectRoute = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const token = req.cookies.jwt;

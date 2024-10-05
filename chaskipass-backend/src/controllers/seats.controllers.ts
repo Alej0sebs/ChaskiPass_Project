@@ -12,8 +12,8 @@ export const getSeats = async (req: Request, res: Response) => {
         const { bus_id } = req.query;
 
         if (typeof bus_id !== 'string') {
-             res.status(400).json({ message: 'bus_id debe ser una cadena' })
-             return;
+            res.status(400).json({ message: 'bus_id debe ser una cadena' })
+            return;
         }
 
         const { page = 1, limit = 10 } = req.query;
@@ -22,7 +22,7 @@ export const getSeats = async (req: Request, res: Response) => {
         const { rows: seatsList, count: totalItems } = await Seats.findAndCountAll({
             where: {
                 bus_id: {
-                    [Op.eq]: bus_id 
+                    [Op.eq]: bus_id
                 }
             },
             include: [
@@ -65,7 +65,7 @@ export const createSeat = async (req: Request, res: Response) => {
         });
 
         if (!typeSeat) {
-             res.status(400).json({
+            res.status(400).json({
                 message: 'type_id no existe en Type_seats'
             });
             return;
@@ -96,8 +96,8 @@ export const createSeat = async (req: Request, res: Response) => {
 
 export const updateSeat = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params; 
-        const { number_seat, type_seat_id } = req.body; 
+        const { id } = req.params;
+        const { number_seat, type_seat_id } = req.body;
 
         const seat = await Seats.findOne({
             where: { id },
@@ -131,7 +131,7 @@ export const updateSeat = async (req: Request, res: Response) => {
 
 export const deleteSeat = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params; 
+        const { id } = req.params;
 
         const seat = await Seats.findOne({
             where: { id },

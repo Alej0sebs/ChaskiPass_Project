@@ -16,6 +16,7 @@ import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
+import BusRegistration from './pages/Registration/bus.registration';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -150,6 +151,17 @@ function App() {
                 </>
               }
             />
+            {/* Added by me  */}
+            <Route
+              path="/register/bus"
+              element={
+                <>
+                  <PageTitle title="Bus | ChaskiPass" />
+                  <BusRegistration/>
+                </>
+              }
+            />
+            
           </Routes>
         </DefaultLayout>
       )}

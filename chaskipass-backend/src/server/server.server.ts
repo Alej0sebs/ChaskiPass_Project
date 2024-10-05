@@ -7,6 +7,7 @@ import authRoutes from '../routes/auth.routes';
 import administratorsRoutes from '../routes/administrators.routes';
 import busesRoutes from '../routes/buses.routes';
 import clientsRoutes from '../routes/clients.routes';
+import emailRegistrationRoutes from '../routes/emailRegistration.routes';
 
 import {
     Roles,
@@ -55,6 +56,7 @@ export default class Server {
         this.app.use(`${prefixUrl}/users`, usersRoute);
         this.app.use(`${prefixUrl}/admins`, administratorsRoutes);
         this.app.use(`${prefixUrl}/buses`, busesRoutes);
+        this.app.use(`${prefixUrl}/email-registration`, emailRegistrationRoutes);
     }
 
     middlewares() {

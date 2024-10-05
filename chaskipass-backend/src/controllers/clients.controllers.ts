@@ -20,12 +20,12 @@ export const getClients = async (req: Request, res: Response) => {
             },
             include: [
                 {
-                    model: ClientCooperatives, 
-                    required: false 
+                    model: ClientCooperatives,
+                    required: false
                 }
             ],
             limit: parseInt(limit.toString()),
-            offset: offset 
+            offset: offset
         });
 
         const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
@@ -56,7 +56,7 @@ export const createClient = async (req: Request, res: Response) => {
         });
 
         if (clientExists) {
-             res.status(400).json({
+            res.status(400).json({
                 error: HandleMessages.CLIENT_EXIST_DNI,
             });
             return;
@@ -71,19 +71,19 @@ export const createClient = async (req: Request, res: Response) => {
         });
 
         if (cooperative_id && cooperative_id.length > 0) {
-            await newClient.set(cooperative_id); 
+            await newClient.set(cooperative_id);
         }
 
-         res.status(201).json({
+        res.status(201).json({
             message: HandleMessages.CLIENT_CRTEATED_SUCESSFULLY,
             client: newClient,
         });
-        
+
         return;
 
     } catch (error) {
         console.error(error);
-         res.status(500).json({
+        res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
         return;
@@ -93,15 +93,15 @@ export const createClient = async (req: Request, res: Response) => {
 
 export const updateClient = async (req: Request, res: Response) => {
     try {
-        const { dni } = req.params; 
-        const { name, last_name, email, phone, address, cooperative_id } = req.body; 
+        const { dni } = req.params;
+        const { name, last_name, email, phone, address, cooperative_id } = req.body;
 
         const client = await Clients.findOne({
             where: { dni },
         });
 
         if (!client) {
-             res.status(404).json({
+            res.status(404).json({
                 error: HandleMessages.CLIENT_NOT_FOUND,
             });
             return;
@@ -116,17 +116,17 @@ export const updateClient = async (req: Request, res: Response) => {
         });
 
         if (cooperative_id && cooperative_id.length > 0) {
-            await client.set(cooperative_id); 
+            await client.set(cooperative_id);
         }
 
-         res.status(200).json({
+        res.status(200).json({
             message: HandleMessages.CLIENT_UPDATE_SUCESSFULLY,
             client,
         });
         return;
     } catch (error) {
         console.error(error);
-         res.status(500).json({
+        res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
     }
@@ -135,7 +135,7 @@ export const updateClient = async (req: Request, res: Response) => {
 
 export const deleteClient = async (req: Request, res: Response) => {
     try {
-        const { dni } = req.params; 
+        const { dni } = req.params;
 
         // Buscar el cliente por DNI
         const client = await Clients.findOne({
@@ -143,20 +143,20 @@ export const deleteClient = async (req: Request, res: Response) => {
         });
 
         if (!client) {
-             res.status(404).json({
+            res.status(404).json({
                 error: HandleMessages.CLIENT_NOT_FOUND
             });
-    return;
+            return;
 
         }
         await client.destroy();
 
-         res.status(200).json({
+        res.status(200).json({
             message: HandleMessages.CLIENT_DELTETE_SUCESSFULLY
         });
     } catch (error) {
         console.error(error);
-         res.status(500).json({
+        res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
         return;

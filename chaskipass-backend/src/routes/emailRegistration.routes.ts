@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import { EmailRegistrationController } from '../controllers/emailRegistration.controller';
+// import { Router } from 'express';
+// import { EmailRegistrationController } from '../controllers/emailRegistration.controller';
 
-const router = Router();
-const controller = new EmailRegistrationController();
+// const router = Router();
+// const controller = new EmailRegistrationController();
 
-router.post('/send', (req, res) => controller.registerAndSendEmail(req, res));
+// router.post('/send', (req, res) => controller.registerAndSendEmail(req, res));
 
-export default router;
+// export default router;

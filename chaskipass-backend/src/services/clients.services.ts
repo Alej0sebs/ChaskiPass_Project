@@ -2,15 +2,15 @@ import { Clients } from '../models/clients.models';
 import { ClientCooperatives } from '../models/clientCooperatives';
 import { HandleMessages } from '../error/handleMessages.error';
 import { Op } from 'sequelize';
-import { ClientsT } from '../types/index.types';
+import { ClientsT, DataPaginationT } from '../types/index.types';
 
 // Servicio para obtener clientes con paginación
-export const getClientsService = async (dni: string, page: any, limit: any) => {
+export const getClientsService = async (dni: string, {page, limit}: DataPaginationT) => {
     const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
 
     const { rows: clientsList, count: totalItems } = await Clients.findAndCountAll({
         where: { dni: { [Op.ne]: dni } },
-        include: [{ model: ClientCooperatives, required: false }],
+        include: [{ model: ClientCooperatives, required: false, attributes: ['cooperative_id'] }],
         limit: parseInt(limit.toString()),
         offset: offset
     });

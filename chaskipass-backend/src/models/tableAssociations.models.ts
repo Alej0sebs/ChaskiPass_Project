@@ -39,10 +39,8 @@ Routes.hasMany(StopOvers, {foreignKey: 'route_id', sourceKey: 'id'});
 Provinces.hasMany(Cities, {foreignKey: 'province_id', sourceKey: 'id'});
 Cities.hasMany(BusStations, {foreignKey: 'city_id', sourceKey: 'id'});
 Clients.hasMany(Tickets, {foreignKey: 'client_dni', sourceKey: 'dni'});
-// Clients.hasMany(ClientCooperatives, {foreignKey: 'client_dni', sourceKey: 'dni'});
-// Cooperatives.hasMany(ClientCooperatives, {foreignKey: 'cooperative_id', sourceKey: 'id'});
-Clients.belongsToMany(Cooperatives, { through: ClientCooperatives, foreignKey: 'client_dni' });
-Cooperatives.belongsToMany(Clients, { through: ClientCooperatives, foreignKey: 'cooperative_id' });
+Clients.hasMany(ClientCooperatives, {foreignKey: 'client_dni', sourceKey: 'dni'});
+Cooperatives.hasMany(ClientCooperatives, {foreignKey: 'cooperative_id', sourceKey: 'id'});
 Tickets.hasMany(Payments, {foreignKey: 'ticket_id', sourceKey: 'id'});
 PaymentMethods.hasMany(Payments, {foreignKey: 'payment_method', sourceKey: 'id'});
 

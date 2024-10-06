@@ -4,8 +4,8 @@ import protectRoute from '../middleware/protectRoute.middleware';
 
 const router = Router();
 
-router.get('/seats', protectRoute, getSeats);  
-router.post('/seats', protectRoute, createSeat);  
+router.get('/', protectRoute, getSeats);  
+router.post('/seat', protectRoute, createSeat);  
 router.put('/seats/:id', protectRoute, updateSeat); 
 router.delete('/seats/:id', protectRoute, deleteSeat);  
 

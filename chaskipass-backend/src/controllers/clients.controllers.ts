@@ -2,14 +2,14 @@ import { Request, Response } from 'express';
 import { getClientsService, createClientService, updateClientService, deleteClientService } from '../services/clients.services';
 import { HandleMessages } from '../error/handleMessages.error';
 import Clients from '../models/clients.models';
+import { getPaginationData } from '../utils/helpers.utils';
 
 // Obtener lista de clientes con paginación
 export const getClients = async (req: Request, res: Response) => {
     try {
         const { dni } = req.userReq ?? {};
-        const { page = 1, limit = 10 } = req.query;
-
-        const result = await getClientsService(dni as string, page, limit);
+        const paginationData = getPaginationData(req.query);
+        const result = await getClientsService(dni as string, paginationData);
         res.status(201).json(result);
     } catch (error) {
         console.error(error);

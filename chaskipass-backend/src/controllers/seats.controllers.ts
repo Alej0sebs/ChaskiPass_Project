@@ -1,19 +1,20 @@
 import { Request, Response } from 'express';
 import { getSeatsService, createSeatService, updateSeatService, deleteSeatService } from '../services/seats.services';
 import { HandleMessages } from '../error/handleMessages.error';
+import { getPaginationData } from '../utils/helpers.utils';
 
 // Obtener asientos por bus_id
 export const getSeats = async (req: Request, res: Response) => {
     try {
         const { bus_id } = req.query;
-        const { page = 1, limit = 10 } = req.query;
+        const paginationData = getPaginationData(req.query);
 
         if (typeof bus_id !== 'string') {
             res.status(400).json({ message: 'bus_id debe ser una cadena' });
             return;
         }
 
-        const result = await getSeatsService(bus_id, page, limit);
+        const result = await getSeatsService(bus_id, paginationData);
         res.status(200).json(result);
     } catch (error) {
         console.error(error);

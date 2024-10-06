@@ -1,12 +1,12 @@
 import { Seats } from '../models/seats.models';
 import { Buses } from '../models/buses.models';
-import { Op } from 'sequelize';
 import TypeSeats from '../models/typeSeats.models';
 import { v4 as uuidv4 } from 'uuid';
 import { HandleMessages } from '../error/handleMessages.error';
+import { DataPaginationT } from '../types/index.types';
 
 // Servicio para obtener los asientos de un bus
-export const getSeatsService = async (bus_id: string, page: any, limit: any) => {
+export const getSeatsService = async (bus_id: string, {page, limit}:DataPaginationT) => {
     const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
 
     const { rows: seatsList, count: totalItems } = await Seats.findAndCountAll({

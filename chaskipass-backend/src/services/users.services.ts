@@ -2,10 +2,11 @@ import bcrypt from 'bcrypt';
 import { Users } from '../models/users.models';
 import { HandleMessages } from '../error/handleMessages.error';
 import { Op } from 'sequelize';
+import { DataPaginationT, UserT } from '../types/index.types';
 
 
 // Servicio para obtener usuarios con paginación
-export const getUsersService = async (cooperative_id: string, dni: string, page: any, limit: any) => {
+export const getUsersService = async (cooperative_id: string, dni: string, {page, limit}: DataPaginationT) => {
     const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
 
     const { rows: usersList, count: totalItems } = await Users.findAndCountAll({
@@ -29,7 +30,7 @@ export const getUsersService = async (cooperative_id: string, dni: string, page:
 };
 
 // Servicio para buscar usuarios con filtro
-export const searchUserByFilterService = async (cooperative_id: string, dni: string, pattern: string, page: any, limit: any) => {
+export const searchUserByFilterService = async (cooperative_id: string, dni: string, {pattern, page, limit}: DataPaginationT) => {
     const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
 
     const { rows: filteredList, count: totalItems } = await Users.findAndCountAll({
@@ -58,7 +59,7 @@ export const searchUserByFilterService = async (cooperative_id: string, dni: str
 };
 
 // Lógica para crear usuario
-export const createUserLogic = async (userData: any) => {
+export const createUserLogic = async (userData: UserT) => {
     const { dni, name, last_name, user_name, email, phone, password, address, role_id, cooperative_id } = userData;
 
     // Verificar si el usuario ya existe

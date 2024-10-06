@@ -1,62 +1,34 @@
 import { Request, Response } from 'express';
+import { getCitiesService, searchCitiesByFilterService } from '../services/ubications.services';
 import { HandleMessages } from '../error/handleMessages.error';
-import Cities from '../models/cities.models';
-import { Op } from 'sequelize';
+import { getPaginationData } from '../utils/helpers.utils';
 
 export const getCities = async (req: Request, res: Response) => {
     try {
-        //pagination
-        const {page=1, limit=10} = req.query;
-        const offset = page ? (parseInt(page.toString()) - 1) * (limit ? parseInt(limit.toString()) : 10) : 0;
-        const {rows: citiesList, count:totalItems} = await Cities.findAndCountAll({
-            limit: parseInt(limit.toString()),
-            offset: offset // Skip records by page
-        });
+        const paginationData = getPaginationData(req.query);
+        // Llamar al servicio para obtener la lista de ciudades
+        const result = await getCitiesService(paginationData);
 
-        const totalPages = Math.ceil(totalItems /  parseInt(limit.toString()));
-        res.status(201).json({
-            totalItems,
-            totalPages,
-            currentPage: parseInt(page.toString()),
-            list:citiesList
-        });
-        return;
+        res.status(201).json(result);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
-        return;
     }
 };
 
 export const searchCitiesByFilter = async (req: Request, res: Response) => {
     try {
-        //pagination
-        const {page=1, limit=10, pattern} = req.query;
-        const offset = page ? (parseInt(page.toString()) - 1) * (limit ? parseInt(limit.toString()) : 10) : 0;
-        const {rows: citiesList, count:totalItems} = await Cities.findAndCountAll({
-            where:{
-                name: {
-                    [Op.like]: `%${pattern}%`
-                }
-            },
-            limit: parseInt(limit.toString()),
-            offset: offset // Skip records by page
-        });
-        const totalPages = Math.ceil(totalItems /  parseInt(limit.toString()));
-        res.status(201).json({
-            totalItems,
-            totalPages,
-            currentPage: parseInt(page.toString()),
-            list:citiesList
-        });
-        return;
+        const paginationData = getPaginationData(req.query, req.query.pattern as string);
+        // Llamar al servicio para buscar las ciudades por filtro
+        const result = await searchCitiesByFilterService(paginationData);
+
+        res.status(201).json(result);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
-        return;
     }
 };

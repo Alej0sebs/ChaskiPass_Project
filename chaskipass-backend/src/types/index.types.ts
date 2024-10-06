@@ -1,12 +1,41 @@
 import { InferAttributes } from "sequelize";
 import { Users } from "../models/users.models";
+import Clients from "../models/clients.models";
+import Buses from "../models/buses.models";
+import Routes from "../models/routes.models";
+import { Admin } from "../models/administrators.models";
+import Cooperatives from "../models/cooperatives.models";
+import Roles from "../models/roles.models";
 
 // export type UserT=InferAttributes<Users>
 // export type UserLoginT=Pick<UserT, 'user_name' | 'email' | 'password' | 'dni' | 'cooperative_id'>
 
-export type validateRoleAndRouteId={
-    dni:string,
-    cooperative_id:string,
-    departure_station_id:string,
-    arrival_station_id:string
+export type ValidateRoleAndRouteId = {
+    dni: string,
+    cooperative_id: string,
+    departure_station_id: string,
+    arrival_station_id: string
+}
+export type SaasAdmin = InferAttributes<Admin>;
+
+export type UserLoginT = Pick<Users, 'user_name' | 'email' | 'password'>;
+
+export type UserT = InferAttributes<Users>;
+
+export type ClientsT = InferAttributes<Clients>;
+
+export type BusT = InferAttributes<Buses>;
+export type RolesT = InferAttributes<Roles>;
+
+export type CooperativesT = InferAttributes<Cooperatives>;
+
+export type RoutesT = InferAttributes<Routes> & {
+    stopOverList?: string[],
+    dni: string
+};
+
+export type DataPaginationT = {
+    page: number,
+    limit: number,
+    pattern?: string
 }

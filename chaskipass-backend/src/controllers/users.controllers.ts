@@ -1,18 +1,17 @@
 import { Request, Response } from 'express';
 import { HandleMessages } from '../error/handleMessages.error';
-import { createUserLogic, getUsersService, searchUserByFilterService} from '../services/users.services';
+import { createUserLogic, getUsersService, searchUserByFilterService } from '../services/users.services';
 import { sendEmail } from '../services/mail.services';
+import { getPaginationData } from '../utils/helpers.utils';
 
 
 // Obtener lista de usuarios con paginación
 export const getUsers = async (req: Request, res: Response) => {
     try {
         const { cooperative_id, dni } = req.userReq ?? {};
-        const { page = 1, limit = 10 } = req.query;
+        const paginationData = getPaginationData(req.query);
+        const result = await getUsersService(cooperative_id!, dni!, paginationData);
 
-        // Llamar al servicio para obtener la lista de usuarios
-        const result = await getUsersService(cooperative_id!, dni!, page, limit);
-        
         res.status(201).json(result);
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
@@ -23,11 +22,10 @@ export const getUsers = async (req: Request, res: Response) => {
 export const searchUserByFilter = async (req: Request, res: Response) => {
     try {
         const { cooperative_id, dni } = req.userReq ?? {};
-        const { page = 1, limit = 10, pattern } = req.query;
-
+        const paginationData = getPaginationData(req.query, req.query.pattern as string);
         // Llamar al servicio de búsqueda de usuarios
-        const result = await searchUserByFilterService(cooperative_id!, dni!, pattern as string, page, limit);
-        
+        const result = await searchUserByFilterService(cooperative_id!, dni!, paginationData);
+
         res.status(201).json(result);
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
@@ -53,7 +51,7 @@ export const registerAndSendEmail = async (req: Request, res: Response) => {
         }
 
         // Enviar el correo si el usuario se creó
-        await sendEmail(email, password, user_name);
+        await sendEmail(email, generateMailMessage(password, name));
 
         res.status(201).json({
             msg: "Usuario registrado y correo enviado con éxito"
@@ -68,3 +66,15 @@ export const registerAndSendEmail = async (req: Request, res: Response) => {
 const generateRandomPassword = (): string => {
     return Math.random().toString(36).slice(-8);
 };
+
+const generateMailMessage = (password: string, user_name: string) => {
+    const html: string = `
+            <h1>Bienvenido a ChaskiPass</h1>
+            <p>Hola <strong>${user_name}</strong>,</p>
+            <p>Gracias por registrarte en nuestra plataforma. Aquí tienes tu contraseña temporal:</p>
+            <p style="font-size: 18px; font-weight: bold;">${password}</p>
+            <p>Por favor, cámbiala después de iniciar sesión.</p>
+            <p>Saludos,<br/>El equipo de ChaskiPass</p>
+        `
+    return html;
+}

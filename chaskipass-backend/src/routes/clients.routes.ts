@@ -4,9 +4,9 @@ import protectRoute from '../middleware/protectRoute.middleware'; // Middleware 
 
 const router = Router();
 
-router.get('/', protectRoute, getClients);  // Para obtener clientes con paginación (con middleware de protección)
-router.post('/client', protectRoute, createClient);  // Para crear un cliente
-router.put('/clients/:dni', protectRoute, updateClient);  // Para actualizar un cliente
-router.delete('/clients/:dni', protectRoute, deleteClient);  // Para eliminar un cliente
+router.get('/', protectRoute, getClients);  
+router.post('/newclients', protectRoute, createClient);  
+router.put('/updateclients/:dni', protectRoute, updateClient);  
+router.delete('/deleteclients/:dni', protectRoute, deleteClient);  
 
 export default router;

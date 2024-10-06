@@ -17,6 +17,7 @@ import { TypeSeats } from "./typeSeats.models";
 import { Users } from "./users.models";
 import { ClientCooperatives } from "./clientCooperatives";
 import { Admin } from "./administrators.models";
+import TemporalTickets from "./temporalTickets.models";
 
 Roles.hasMany(Users, {foreignKey: 'role_id', sourceKey: 'id'});
 Cooperatives.hasMany(Users, {foreignKey: 'cooperative_id', sourceKey: 'id'});
@@ -63,5 +64,6 @@ export{
     Payments,
     NotificationMails,
     ClientCooperatives,
-    Admin
+    Admin,
+    TemporalTickets
 };

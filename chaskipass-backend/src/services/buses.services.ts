@@ -5,11 +5,10 @@ import { BusT } from '../types/index.types';
 
 // Servicio para registrar un bus
 export const busRegisterService = async ({cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture}: BusT) => {
-    const id = `${license_plate.substring(0, 4)}-${year.toString().slice(-2)}`;
 
     const busExists = await Buses.findOne({
         where: {
-            [Op.or]: [{ id }, { license_plate }]
+            [Op.or]: [{ license_plate }]
         }
     });
 
@@ -18,7 +17,7 @@ export const busRegisterService = async ({cooperative_id, bus_number, license_pl
     }
 
     await Buses.create({
-        id,
+        id: 0,
         cooperative_id,
         bus_number,
         license_plate,

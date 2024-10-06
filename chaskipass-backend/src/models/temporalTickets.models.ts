@@ -1,9 +1,9 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
 
-export class Tickets extends Model<
-    InferAttributes<Tickets>,
-    InferCreationAttributes<Tickets>
+export class TemporalTickets extends Model<
+    InferAttributes<TemporalTickets>,
+    InferCreationAttributes<TemporalTickets>
 > {
     declare id: number;
     declare seat_id: string;
@@ -12,11 +12,11 @@ export class Tickets extends Model<
     declare departure_station: string;
     declare arrival_station: string;
     declare date: Date;
-    declare ticket_code: string;
     declare price: number;
+    declare status: string;
 }
 
-Tickets.init({
+TemporalTickets.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -46,8 +46,8 @@ Tickets.init({
         type: DataTypes.DATE,
         allowNull: false,
     },
-    ticket_code: {
-        type: DataTypes.TEXT,
+    status: {
+        type: DataTypes.STRING(10),
         allowNull: false,
     },
     price: {
@@ -56,7 +56,7 @@ Tickets.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'tickets',
+    tableName: 'Temporaltickets',
 });
 
-export default Tickets;
+export default TemporalTickets;

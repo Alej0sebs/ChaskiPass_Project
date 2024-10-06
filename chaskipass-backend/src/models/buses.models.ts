@@ -5,7 +5,7 @@ export class Buses extends Model<
     InferAttributes<Buses>,
     InferCreationAttributes<Buses>
 > {
-    declare id: string;
+    declare id: number;
     declare cooperative_id: string;
     declare bus_number: string;
     declare license_plate: string;
@@ -20,7 +20,7 @@ export class Buses extends Model<
 // Inicializar el modelo usando `init()`
 Buses.init({
     id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },

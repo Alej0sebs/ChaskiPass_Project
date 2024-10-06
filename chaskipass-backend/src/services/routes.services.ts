@@ -4,7 +4,7 @@ import StopOvers from '../models/stopOvers.models';
 import Frequencies from '../models/frequencies.models';
 import { HandleMessages } from '../error/handleMessages.error';
 import { RoleEnum } from '../utils/enums.utils';
-import { RoutesT, ValidateRoleAndRouteId } from '../types/index.types';
+import { FrequencyT, RoutesT, ValidateRoleAndRouteId } from '../types/index.types';
 
 // Servicio para crear una nueva ruta
 export const createRouteService = async ({dni,arrival_station_id,departure_station_id,cooperative_id,stopOverList}:RoutesT) => {
@@ -18,7 +18,7 @@ export const createRouteService = async ({dni,arrival_station_id,departure_stati
     const id = await verifyRoute(parameters);
 
     const route: Routes = await Routes.create({
-        id: '', // El ID es autoincrementable en la base de datos
+        id,
         cooperative_id: cooperative_id || '',
         departure_station_id,
         arrival_station_id
@@ -26,9 +26,9 @@ export const createRouteService = async ({dni,arrival_station_id,departure_stati
 
     // Si hay paradas intermedias, crear las paradas
     if (stopOverList && stopOverList.length > 0) {
-        await Promise.all(stopOverList.map(async (stopOver: string, index: number) => {
+        await Promise.all(stopOverList.map(async (stopOver, index: number) => {
             await StopOvers.create({
-                id,
+                id:0,
                 route_id: route.id,
                 station_id: stopOver,
                 order: index + 1
@@ -40,7 +40,7 @@ export const createRouteService = async ({dni,arrival_station_id,departure_stati
 };
 
 // Servicio para crear una nueva frecuencia
-export const createFrequencyService = async (cooperative_id: string, dni: string, id: string, bus_id: string, route_id: string, date: Date, departure_time: string, arrival_time: string) => {
+export const createFrequencyService = async ({cooperative_id,id, bus_id, route_id, date, departure_time, arrival_time, price, status}:FrequencyT) => {
     const routeExists = await Routes.findOne({ where: { id: route_id } });
     if (!routeExists) {
         return { status: 400, json: { msg: HandleMessages.ROUTE_NOT_FOUND } };
@@ -59,8 +59,9 @@ export const createFrequencyService = async (cooperative_id: string, dni: string
         date,
         departure_time,
         arrival_time,
-        status: true, // true: activo, false: inactivo
-        trip_type: stopOverExists ? true : false // true: con paradas, false: directo
+        status, // true: activo, false: inactivo
+        trip_type: stopOverExists ? true : false, // true: con paradas, false: directo
+        price
     });
 
     return { status: 201, json: { msg: HandleMessages.FREQUENCY_CREATED_SUCCESSFULLY  } };

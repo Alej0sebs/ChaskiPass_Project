@@ -10,7 +10,7 @@ export const busRegister = async (req: Request, res: Response) => {
         const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture } = req.body;
 
         const busInformation:BusT={
-            id: '',
+            id: 0,
             bus_number,
             license_plate,
             chassis_vin,
@@ -49,7 +49,7 @@ export const editBusById = async (req: Request, res: Response) => {
         const { id } = req.params;
         const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture } = req.body;
         const busInformation:BusT={
-            id,
+            id: parseInt(id),
             bus_number,
             license_plate,
             chassis_vin,

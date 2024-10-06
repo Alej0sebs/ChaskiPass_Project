@@ -30,7 +30,8 @@ import {
     Payments,
     NotificationMails,
     ClientCooperatives,
-    Admin
+    Admin,
+    TemporalTickets
 } from '../models/tableAssociations.models';
 
 export default class Server {
@@ -110,7 +111,8 @@ export default class Server {
                 Payments.sync(),
                 NotificationMails.sync(),
                 ClientCooperatives.sync(),
-                Admin.sync()
+                Admin.sync(),
+                TemporalTickets.sync()
             ]);
             console.log("Database connected successfully");
         } catch (error) {

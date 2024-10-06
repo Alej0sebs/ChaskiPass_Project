@@ -17,6 +17,9 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import BusRegistration from './pages/Registration/bus.registration';
+import RoutesRegistration from './pages/Registration/routes.registration';
+import TerminalsRegistration from './pages/Registration/terminals.registration';
+import TypebusRegistration from './pages/Registration/typebus.registration';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -157,11 +160,37 @@ function App() {
               element={
                 <>
                   <PageTitle title="Bus | ChaskiPass" />
-                  <BusRegistration/>
+                  <BusRegistration />
                 </>
               }
             />
-            
+            <Route
+              path="/register/routes"
+              element={
+                <>
+                  <PageTitle title="Routes | ChaskiPass" />
+                  <RoutesRegistration />
+                </>
+              }
+            />
+            <Route
+              path="/register/terminals"
+              element={
+                <>
+                  <PageTitle title="Terminals| ChaskiPass" />
+                  <TerminalsRegistration />
+                </>
+              }
+            />
+            <Route
+              path="/register/typebus"
+              element={
+                <>
+                  <PageTitle title="Typebus| ChaskiPass" />
+                  <TypebusRegistration />
+                </>
+              }
+            />
           </Routes>
         </DefaultLayout>
       )}

@@ -1,269 +1,160 @@
-import { FaBus, FaRegRegistered } from "react-icons/fa";
-import { HiOutlineUpload } from "react-icons/hi";
-import { IoLogoModelS } from "react-icons/io";
-import { IoCalendarNumberSharp } from "react-icons/io5";
-import { MdOutlineReduceCapacity } from "react-icons/md";
-import { TbLicenseOff } from "react-icons/tb";
+import React, { useState, useEffect } from 'react';
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 
-
 const TypebusRegistration = () => {
+    // Estado para almacenar los elementos del bus (asientos, baños, escaleras) con posiciones relativas
+    const [elements, setElements] = useState([]);
+
+    // Función para agregar un nuevo elemento (asiento, baño, escaleras) con el SVG correspondiente
+    const addElement = (type: any) => {
+        const busContainer = document.getElementById('bus-container');
+        const busRect = busContainer!.getBoundingClientRect();
+
+        const newElement = {
+            id: elements.length + 1, // ID único para cada elemento
+            type,
+            // Posición inicial relativa en porcentaje
+            position: { x: 10 / busRect.width * 100, y: 10 / busRect.height * 100 },
+        };
+        setElements([...elements, newElement]);
+    };
+
+    // Efecto para manejar el arrastre de los elementos
+    useEffect(() => {
+        const handleDrag = (e: any, id: any) => {
+            const element = document.getElementById(`element-${id}`);
+            const busContainer = document.getElementById('bus-container');
+            const busRect = busContainer!.getBoundingClientRect();
+            const elementRect = element!.getBoundingClientRect();
+
+            let shiftX = e.clientX - elementRect.left;
+            let shiftY = e.clientY - elementRect.top;
+
+            const onMouseMove = (event) => {
+                let newLeft = (event.clientX - busRect.left - shiftX) / busRect.width * 100;
+                let newTop = (event.clientY - busRect.top - shiftY) / busRect.height * 100;
+
+                // Limitar los valores a entre 0 y 100 para mantenerse dentro del contenedor
+                if (newLeft < 0) newLeft = 0;
+                if (newTop < 0) newTop = 0;
+                if (newLeft > 100) newLeft = 100;
+                if (newTop > 100) newTop = 100;
+
+                // Actualizar la posición del elemento en porcentajes
+                const updatedElements = elements.map(el =>
+                    el.id === id
+                        ? { ...el, position: { x: newLeft, y: newTop } }
+                        : el
+                );
+                setElements(updatedElements);
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+
+            document.onmouseup = function () {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.onmouseup = null;
+            };
+        };
+
+        elements.forEach((el) => {
+            const element = document.getElementById(`element-${el.id}`);
+            if (element) {
+                element!.onmousedown = (e) => handleDrag(e, el.id);
+                element!.ondragstart = () => false; // Desactivar el arrastre por defecto
+            }
+        });
+    }, [elements]);
+
     return (
         <>
             <div className="mx-auto max-w-270">
                 <Breadcrumb pageName="Registro de buses" />
+                <div className="flex flex-col md:flex-row justify-center items-start gap-4">
 
-                <div className="grid grid-cols-5 gap-8">
-                    <div className="col-span-5 xl:col-span-3">
-                        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                            <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                                <h3 className="font-medium text-black dark:text-white">
-                                    Información del bus
-                                </h3>
-                            </div>
-                            <div className="p-7">
-                                <form action="#">
-                                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-1/2">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="bus_number"
-                                            >
-                                                Número de la unidad
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <FaBus />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="bus_number"
-                                                    id="bus_number"
-                                                    placeholder="001"
-                                                />
-                                            </div>
-                                        </div>
+                    {/* Contenedor del bus */}
+                    <div
+                        id="bus-container"
+                        className="relative h-[600px] w-[350px] md:w-[350px] border-2 border-gray-300 bg-white flex flex-col  md:flex-row justify-center items-center"
+                    >
+                        {elements.map((element) => {
+                            const busContainer = document.getElementById('bus-container');
+                            const busRect = busContainer!.getBoundingClientRect();
 
-                                        <div className="w-full sm:w-1/2">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="license_plate"
-                                            >
-                                                Número de placa
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <TbLicenseOff />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="license_plate"
-                                                    id="license_plate"
-                                                    placeholder="TAR-001"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-1/2">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="chassis_vin"                                            >
-                                                Número de chasis
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <FaBus />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="chassis_vin"
-                                                    id="chassis_vin"
-                                                    placeholder="1787459825..."
-                                                />
-                                            </div>
-                                        </div>
+                            // Calcular las posiciones absolutas a partir de las proporciones almacenadas
+                            const absoluteLeft = (element!.position.x / 100) * busRect.width;
+                            const absoluteTop = (element!.position.y / 100) * busRect.height;
 
-                                        <div className="w-full sm:w-1/2">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="bus_manufacturer"
-                                            >
-                                                Marca
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <FaRegRegistered />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="bus_manufacturer"
-                                                    id="bus_manufacturer"
-                                                    placeholder="Mercedez Benz"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-1/2">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="model"
-                                            >
-                                                Modelo
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <IoLogoModelS />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="model"
-                                                    id="model"
-                                                    placeholder="eCitaro"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="w-full sm:w-1/2">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="year"
-                                            >
-                                                Año de fabricación
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <IoCalendarNumberSharp />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="year"
-                                                    id="year"
-                                                    placeholder="2024"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-1/2">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="capacity"
-                                            >
-                                                Capacidad
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <MdOutlineReduceCapacity />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="capacity"
-                                                    id="capacity"
-                                                    placeholder="36"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div className="flex justify-end gap-4.5">
-                                        <button
-                                            className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                                            type="submit"
-                                        >
-                                            Cancelar
-                                        </button>
-                                        <button
-                                            className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                            type="submit"
-                                        >
-                                            Guardar
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                            return (
+                                <div
+                                    key={element!.id}
+                                    id={`element-${element!.id}`}
+                                    className={`absolute cursor-grab`}
+                                    style={{
+                                        left: `${absoluteLeft}px`,
+                                        top: `${absoluteTop}px`,
+                                    }}
+                                >
+                                    {element.type === 'seat' && (
+                                        <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="reserved">
+                                            <rect x="8.75" y="2.75" width="22.5" height="26.5" rx="2.25" fill="#FFF" stroke="#B8B8B8" strokeWidth="1.5"
+                                                strokeLinejoin="round"></rect>
+                                            <rect x="10.25" y="11.75" width="14.5" height="5.5" rx="2.25" transform="rotate(90 10.25 11.75)" fill="#FFF"
+                                                stroke="#B8B8B8" strokeWidth="1.5" strokeLinejoin="round"></rect>
+                                            <rect x="35.25" y="11.75" width="14.5" height="5.5" rx="2.25" transform="rotate(90 35.25 11.75)" fill="#FFF"
+                                                stroke="#B8B8B8" strokeWidth="1.5" strokeLinejoin="round"></rect>
+                                            <rect x="8.75" y="22.75" width="22.5" height="6.5" rx="2.25" fill="#FFF" stroke="#B8B8B8" strokeWidth="1.5"
+                                                strokeLinejoin="round"></rect>
+                                            <text width="20" height="20" x="20" y="18" fill="#000" fontSize="10" textAnchor="middle">V2</text>
+                                        </svg>
+                                    )}
+                                    {element.type === 'bathroom' && (
+                                        <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="10" y="2" width="20" height="28" rx="3" fill="#FFF" stroke="#000" strokeWidth="1.5" />
+                                            <circle cx="20" cy="12" r="4" fill="#000" />
+                                            <rect x="15" y="18" width="10" height="8" fill="#000" />
+                                            <text x="20" y="29" textAnchor="middle" fill="#000" fontSize="6" fontFamily="Arial"></text>
+                                        </svg>
+                                    )}
+                                    {element.type === 'stairs' && (
+                                        <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="5" y="5" width="30" height="22" fill="#FFF" stroke="#000" strokeWidth="1.5" />
+                                            <line x1="10" y1="20" x2="30" y2="20" stroke="#000" strokeWidth="1.5" />
+                                            <line x1="10" y1="15" x2="30" y2="15" stroke="#000" strokeWidth="1.5" />
+                                            <line x1="10" y1="10" x2="30" y2="10" stroke="#000" strokeWidth="1.5" />
+                                            <text x="20" y="30" textAnchor="middle" fill="#000" fontSize="6" fontFamily="Arial"></text>
+                                        </svg>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
-                    <div className="col-span-5 xl:col-span-2">
-                        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                            <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                                <h3 className="font-medium text-black dark:text-white">
-                                    Imagen del bus
-                                </h3>
-                            </div>
-                            <div className="p-7">
-                                <form action="#">
-                                    <div className="mb-4 flex items-center gap-3">
-                                        <div className="h-14 w-14 rounded-full">
-                                            
-                                        </div>
-                                        <div>
-                                            <span className="mb-1.5 text-black dark:text-white">
-                                                Edita o sube la imagen
-                                            </span>
-                                            <span className="flex gap-2.5">
-                                                <button className="text-sm hover:text-primary">
-                                                    Borrar
-                                                </button>
-                                                <button className="text-sm hover:text-primary">
-                                                    Actualizar
-                                                </button>
-                                            </span>
-                                        </div>
-                                    </div>
 
-                                    <div
-                                        id="FileUpload"
-                                        className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
-                                    >
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
-                                        />
-                                        <div className="flex flex-col items-center justify-center space-y-3">
-                                            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-stroke bg-white dark:border-strokedark dark:bg-boxdark">
-                                                <HiOutlineUpload className="text-primary"/>
-                                            </span>
-                                            <p>
-                                                <span className="text-primary">Click para agregar</span> o
-                                                arrastra y suelta
-                                            </p>
-                                            <p className="mt-1.5">SVG, PNG, JPG or GIF</p>
-                                            <p>(max, 800 X 800px)</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex justify-end gap-4.5">
-                                        <button
-                                            className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                                            type="submit"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button
-                                            className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                            type="submit"
-                                        >
-                                            Save
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                    {/* Botones para agregar los elementos */}
+                    <div className="controls mt-4 flex flex-col gap-4 ">
+                        <button
+                            onClick={() => addElement('seat')}
+                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                            Agregar Asiento
+                        </button>
+                        <button
+                            onClick={() => addElement('bathroom')}
+                            className="bg-green-500 text-white px-4 py-2 rounded"
+                        >
+                            Agregar Baño
+                        </button>
+                        <button
+                            onClick={() => addElement('stairs')}
+                            className="bg-yellow-500 text-white px-4 py-2 rounded"
+                        >
+                            Agregar Escalera
+                        </button>
                     </div>
                 </div>
             </div>
         </>
     );
-}; 
+};
+
 export default TypebusRegistration;

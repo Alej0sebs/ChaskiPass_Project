@@ -1,0 +1,95 @@
+import { Op } from 'sequelize';
+import Buses from '../models/buses.models';
+import { HandleMessages } from '../error/handleMessages.error';
+import { BusT } from '../types/index.types';
+
+// Servicio para registrar un bus
+export const busRegisterService = async ({cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture}: BusT) => {
+    const id = `${license_plate.substring(0, 4)}-${year.toString().slice(-2)}`;
+
+    const busExists = await Buses.findOne({
+        where: {
+            [Op.or]: [{ id }, { license_plate }]
+        }
+    });
+
+    if (busExists) {
+        return { status: 400, json: { error: HandleMessages.EXISTING_BUS } };
+    }
+
+    await Buses.create({
+        id,
+        cooperative_id,
+        bus_number,
+        license_plate,
+        chassis_vin,
+        bus_manufacturer,
+        model,
+        year,
+        capacity,
+        picture
+    });
+
+    return { status: 201, json: { msg: HandleMessages.BUS_CREATED_SUCCESSFULLY } };
+};
+
+// Servicio para obtener la lista de buses
+export const getBusesService = async (cooperative_id: string) => {
+    const busesList = await Buses.findAll({
+        where: { cooperative_id }
+    });
+
+    return busesList;
+};
+
+// Servicio para editar un bus por ID
+export const editBusByIdService = async ({id, cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity,picture}: BusT) => {
+    const busExists = await Buses.findOne({
+        where: {
+            id,
+            cooperative_id
+        }
+    });
+
+    if (!busExists) {
+        return { status: 400, json: { error: HandleMessages.BUS_NOT_FOUND } };
+    }
+
+    await Buses.update(
+        {
+            bus_number,
+            license_plate,
+            chassis_vin,
+            bus_manufacturer,
+            model,
+            year,
+            capacity,
+            picture
+        },
+        { where: { id } }
+    );
+
+    return { status: 201, json: { msg: HandleMessages.BUS_UPDATED_SUCCESSFULLY } };
+};
+
+// Servicio para eliminar un bus por ID
+export const deleteBusByIdService = async (id: string, cooperative_id: string) => {
+    const busExists = await Buses.findOne({
+        where: {
+            id,
+            cooperative_id
+        }
+    });
+
+    if (!busExists) {
+        return { status: 400, json: { error: HandleMessages.BUS_NOT_FOUND } };
+    }
+
+    await Buses.destroy({
+        where: {
+            id
+        }
+    });
+
+    return { status: 201, json: { msg: HandleMessages.BUS_DELETED_SUCCESSFULLY } };
+};

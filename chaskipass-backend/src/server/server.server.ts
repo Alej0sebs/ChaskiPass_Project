@@ -7,6 +7,9 @@ import authRoutes from '../routes/auth.routes';
 import administratorsRoutes from '../routes/administrators.routes';
 import busesRoutes from '../routes/buses.routes';
 import clientsRoutes from '../routes/clients.routes';
+import ubicationsRoutes from '../routes/ubications.routes';
+import seatsRoutes from '../routes/seats.routes';
+
 
 import {
     Roles,
@@ -51,10 +54,13 @@ export default class Server {
 
     routes() {
         const prefixUrl = '/chaski/api'
-        this.app.use(`${prefixUrl}/auth`, authRoutes);
-        this.app.use(`${prefixUrl}/users`, usersRoute);
         this.app.use(`${prefixUrl}/admins`, administratorsRoutes);
+        this.app.use(`${prefixUrl}/auth`, authRoutes);
         this.app.use(`${prefixUrl}/buses`, busesRoutes);
+        this.app.use(`${prefixUrl}/clients`, clientsRoutes);
+        this.app.use(`${prefixUrl}/seats`, seatsRoutes);
+        this.app.use(`${prefixUrl}/ubi`, ubicationsRoutes);
+        this.app.use(`${prefixUrl}/users`, usersRoute);
     }
 
     middlewares() {

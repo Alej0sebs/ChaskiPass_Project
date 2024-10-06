@@ -22,6 +22,7 @@ Buses.init({
     id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
+        autoIncrement: true,
     },
     cooperative_id: {
         type: DataTypes.STRING(10),

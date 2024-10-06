@@ -20,6 +20,7 @@ import BusRegistration from './pages/Registration/bus.registration';
 import RoutesRegistration from './pages/Registration/routes.registration';
 import TerminalsRegistration from './pages/Registration/terminals.registration';
 import TypebusRegistration from './pages/Registration/typebus.registration';
+import TicketsalesRegistration from './pages/Processes/ticketsales.processes';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -188,6 +189,15 @@ function App() {
                 <>
                   <PageTitle title="Typebus| ChaskiPass" />
                   <TypebusRegistration />
+                </>
+              }
+            />
+              <Route
+              path="/processes/ticketsales"
+              element={
+                <>
+                  <PageTitle title="Ticketsales| ChaskiPass" />
+                  <TicketsalesRegistration />
                 </>
               }
             />

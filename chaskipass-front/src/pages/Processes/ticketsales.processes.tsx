@@ -1,24 +1,25 @@
-import { FaBus, FaRegRegistered } from "react-icons/fa";
-import { HiOutlineUpload } from "react-icons/hi";
-import { IoLogoModelS } from "react-icons/io";
-import { IoCalendarNumberSharp } from "react-icons/io5";
-import { MdOutlineReduceCapacity } from "react-icons/md";
-import { TbLicenseOff } from "react-icons/tb";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+import userThree from "../../images/user/user-03.png";
+import { FaBus } from "react-icons/fa";
+import { TbLicense } from "react-icons/tb";
+import { IoCalendarNumberSharp } from "react-icons/io5";
+import { FaRegRegistered } from "react-icons/fa";
+import { IoLogoModelS } from "react-icons/io";
+import { MdOutlineReduceCapacity } from "react-icons/md";
+import { HiOutlineUpload } from "react-icons/hi";
 
-
-const RoutesRegistration = () => {
+const TicketsalesRegistration = () => {
     return (
         <>
             <div className="mx-auto max-w-270">
-                <Breadcrumb pageName="Registro de Rutas" />
+                <Breadcrumb pageName="Registro de buses" />
 
                 <div className="grid grid-cols-5 gap-8">
                     <div className="col-span-5 xl:col-span-3">
                         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                             <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                                 <h3 className="font-medium text-black dark:text-white">
-                                    Información de la Ruta
+                                    Información del bus
                                 </h3>
                             </div>
                             <div className="p-7">
@@ -29,7 +30,7 @@ const RoutesRegistration = () => {
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                                                 htmlFor="bus_number"
                                             >
-                                                Estación de salida
+                                                Número de la unidad
                                             </label>
                                             <div className="relative">
                                                 <span className="absolute left-4.5 top-4">
@@ -54,7 +55,7 @@ const RoutesRegistration = () => {
                                             </label>
                                             <div className="relative">
                                                 <span className="absolute left-4.5 top-4">
-                                                    <TbLicenseOff />
+                                                    <TbLicense />
                                                 </span>
                                                 <input
                                                     className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
@@ -204,7 +205,7 @@ const RoutesRegistration = () => {
                                 <form action="#">
                                     <div className="mb-4 flex items-center gap-3">
                                         <div className="h-14 w-14 rounded-full">
-                                            
+                                            <img src={userThree} alt="User" />
                                         </div>
                                         <div>
                                             <span className="mb-1.5 text-black dark:text-white">
@@ -267,4 +268,4 @@ const RoutesRegistration = () => {
     );
 };
 
-export default RoutesRegistration;
+export default TicketsalesRegistration;

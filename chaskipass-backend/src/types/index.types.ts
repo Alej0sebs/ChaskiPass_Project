@@ -8,6 +8,7 @@ import Cooperatives from "../models/cooperatives.models";
 import Roles from "../models/roles.models";
 import Tickets from "../models/tickets.models";
 import Frequencies from "../models/frequencies.models";
+import BusStructure from "../models/busStructure.models";
 
 // export type UserT=InferAttributes<Users>
 // export type UserLoginT=Pick<UserT, 'user_name' | 'email' | 'password' | 'dni' | 'cooperative_id'>
@@ -45,5 +46,6 @@ export type DataPaginationT = {
 }
 
 export type TicketInformationT=InferAttributes<Tickets> & {
-
 }
+
+export type BusStructureT=InferAttributes<BusStructure>

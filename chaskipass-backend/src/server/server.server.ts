@@ -10,7 +10,6 @@ import clientsRoutes from '../routes/clients.routes';
 import ubicationsRoutes from '../routes/ubications.routes';
 import seatsRoutes from '../routes/seats.routes';
 
-
 import {
     Roles,
     Users,
@@ -31,7 +30,8 @@ import {
     NotificationMails,
     ClientCooperatives,
     Admin,
-    TemporalTickets
+    TemporalTickets,
+    BusStructure
 } from '../models/tableAssociations.models';
 
 export default class Server {
@@ -112,7 +112,8 @@ export default class Server {
                 NotificationMails.sync(),
                 ClientCooperatives.sync(),
                 Admin.sync(),
-                TemporalTickets.sync()
+                // TemporalTickets.sync(),
+                BusStructure.sync()
             ]);
             console.log("Database connected successfully");
         } catch (error) {

@@ -30,4 +30,5 @@ export enum HandleMessages{
     SEAT_DELETED_SUCCESSFULLY='Seat deleted sucessfully',
     FREQUENCY_CREATED_SUCCESSFULLY='Frequency created successfully',
     ROUTE_NOT_FOUND= 'Route not found',
+    BUS_STRUCTURE_SUCCESSFULLY_CREATED='Bus Structure created successfully',
 }

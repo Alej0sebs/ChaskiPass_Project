@@ -15,6 +15,7 @@ export class Buses extends Model<
     declare year: number;
     declare capacity: number;
     declare picture: string;  // Campo opcional
+    declare bus_structure_id: number;  // Campo opcional
 }
 
 // Inicializar el modelo usando `init()`
@@ -58,6 +59,10 @@ Buses.init({
     },
     picture: {
         type: DataTypes.TEXT,
+        allowNull: true,
+    },
+    bus_structure_id:{
+        type: DataTypes.INTEGER,
         allowNull: true,
     }
 }, {

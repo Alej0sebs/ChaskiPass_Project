@@ -7,7 +7,7 @@ interface BusElement {
     name: string;
     position: { x: number; y: number };
 }
-
+ 
 const TypebusRegistration = () => {
     const [elements, setElements] = useState<BusElement[]>([]); // Almacena los elementos del bus
     const [selectedElement, setSelectedElement] = useState<string | null>(null); // Almacena el ID del elemento seleccionado

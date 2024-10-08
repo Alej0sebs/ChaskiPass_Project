@@ -56,7 +56,7 @@ TemporalTickets.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'Temporaltickets',
+    tableName: 'Temporal_tickets',
 });
 
 export default TemporalTickets;

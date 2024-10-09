@@ -19,6 +19,7 @@ const TypebusRegistration = () => {
         const busContainer = document.getElementById('bus-container');
         const busRect = busContainer!.getBoundingClientRect();
 
+        if(type === 'seat' && seatName === '') return;
         let newElement = {
             id: '',
             type,
@@ -30,6 +31,7 @@ const TypebusRegistration = () => {
             // Asignar ID basado en el nombre del asiento
             newElement.id = `seat-${seatName.toLowerCase()}`;
             newElement.name = seatName;
+            setSeatName(''); // Limpiar el input después de agregar el asiento
         } else if (type === 'bathroom') {
             // ID autoincremental para baños
             newElement.id = `bath-${bathCounter}`;

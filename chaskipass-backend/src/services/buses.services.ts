@@ -26,7 +26,8 @@ export const busRegisterService = async ({cooperative_id, bus_number, license_pl
         model,
         year,
         capacity,
-        picture
+        picture,
+        bus_structure_id: 0
     });
 
     return { status: 201, json: { msg: HandleMessages.BUS_CREATED_SUCCESSFULLY } };
@@ -42,7 +43,7 @@ export const getBusesService = async (cooperative_id: string) => {
 };
 
 // Servicio para editar un bus por ID
-export const editBusByIdService = async ({id, cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity,picture}: BusT) => {
+export const editBusByIdService = async ({id, cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity,picture, bus_structure_id}: BusT) => {
     const busExists = await Buses.findOne({
         where: {
             id,
@@ -63,7 +64,8 @@ export const editBusByIdService = async ({id, cooperative_id, bus_number, licens
             model,
             year,
             capacity,
-            picture
+            picture,
+            bus_structure_id
         },
         { where: { id } }
     );

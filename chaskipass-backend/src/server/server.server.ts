@@ -9,6 +9,7 @@ import busesRoutes from '../routes/buses.routes';
 import clientsRoutes from '../routes/clients.routes';
 import ubicationsRoutes from '../routes/ubications.routes';
 import seatsRoutes from '../routes/seats.routes';
+import busStructureRoutes from '../routes/busStructure.routes';
 
 import {
     Roles,
@@ -62,6 +63,7 @@ export default class Server {
         this.app.use(`${prefixUrl}/seats`, seatsRoutes);
         this.app.use(`${prefixUrl}/ubi`, ubicationsRoutes);
         this.app.use(`${prefixUrl}/users`, usersRoute);
+        this.app.use(`${prefixUrl}/busStructure`, busStructureRoutes);
     }
 
     middlewares() {

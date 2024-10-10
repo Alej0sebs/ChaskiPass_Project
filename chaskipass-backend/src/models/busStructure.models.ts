@@ -31,7 +31,7 @@ BusStructure.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'BusStructure',
+    tableName: 'Bus_Structure',
     timestamps: false
 });
 

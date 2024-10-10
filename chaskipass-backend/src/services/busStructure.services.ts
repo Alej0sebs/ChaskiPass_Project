@@ -14,6 +14,6 @@ export const createBusStructureService = async ({name, layout, cooperative_id}:B
         cooperative_id
     });
 
-    return {msg: HandleMessages.BUS_STRUCTURE_SUCCESSFULLY_CREATED};
+    return {status:200 ,json:{msg: HandleMessages.BUS_STRUCTURE_SUCCESSFULLY_CREATED}};
 };
 

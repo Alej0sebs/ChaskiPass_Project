@@ -11,3 +11,7 @@ export type LayoutBusT = {
     cooperative_id: string,
     layout: SeatConfigT[],
 }
+
+
+
+

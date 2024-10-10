@@ -7,10 +7,10 @@ import { BusT } from '../types/index.types';
 export const busRegister = async (req: Request, res: Response) => {
     try {
         const { cooperative_id} = req.userReq ?? {};
-        const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture } = req.body;
+        const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture, } = req.body;
 
         const busInformation:BusT={
-            id: '',
+            id: 0,
             bus_number,
             license_plate,
             chassis_vin,
@@ -19,7 +19,8 @@ export const busRegister = async (req: Request, res: Response) => {
             year,
             capacity,
             picture,
-            cooperative_id: cooperative_id || ''
+            cooperative_id: cooperative_id || '',
+            bus_structure_id: 0 // necesito estructuras de buses antes de guardar
         }
         const result = await busRegisterService(busInformation);
 
@@ -49,7 +50,7 @@ export const editBusById = async (req: Request, res: Response) => {
         const { id } = req.params;
         const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture } = req.body;
         const busInformation:BusT={
-            id,
+            id: parseInt(id),
             bus_number,
             license_plate,
             chassis_vin,
@@ -58,7 +59,8 @@ export const editBusById = async (req: Request, res: Response) => {
             year,
             capacity,
             picture,
-            cooperative_id: cooperative_id || ''
+            cooperative_id: cooperative_id || '',
+            bus_structure_id: 0
         }
         const result = await editBusByIdService(busInformation);
 

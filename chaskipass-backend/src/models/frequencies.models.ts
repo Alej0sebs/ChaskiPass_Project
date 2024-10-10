@@ -14,6 +14,7 @@ export class Frequencies extends Model<
     declare arrival_time: string;
     declare status: boolean;
     declare trip_type: boolean;
+    declare price: number;
 }
 
 Frequencies.init({
@@ -51,6 +52,10 @@ Frequencies.init({
     },
     trip_type: {
         type: DataTypes.BOOLEAN,  // 0: direct, 1: with stops
+        allowNull: false,
+    },
+    price: {
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
     }
 }, {

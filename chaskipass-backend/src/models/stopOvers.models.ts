@@ -5,7 +5,7 @@ export class StopOvers extends Model<
     InferAttributes<StopOvers>,
     InferCreationAttributes<StopOvers>
 > {
-    declare id: string;
+    declare id: number;
     declare route_id: string;
     declare station_id: string;
     declare order: number;
@@ -13,7 +13,7 @@ export class StopOvers extends Model<
 
 StopOvers.init({
     id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },

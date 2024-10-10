@@ -5,11 +5,10 @@ import { BusT } from '../types/index.types';
 
 // Servicio para registrar un bus
 export const busRegisterService = async ({cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture}: BusT) => {
-    const id = `${license_plate.substring(0, 4)}-${year.toString().slice(-2)}`;
 
     const busExists = await Buses.findOne({
         where: {
-            [Op.or]: [{ id }, { license_plate }]
+            [Op.or]: [{ license_plate }]
         }
     });
 
@@ -18,7 +17,7 @@ export const busRegisterService = async ({cooperative_id, bus_number, license_pl
     }
 
     await Buses.create({
-        id,
+        id: 0,
         cooperative_id,
         bus_number,
         license_plate,
@@ -27,7 +26,8 @@ export const busRegisterService = async ({cooperative_id, bus_number, license_pl
         model,
         year,
         capacity,
-        picture
+        picture,
+        bus_structure_id: 0
     });
 
     return { status: 201, json: { msg: HandleMessages.BUS_CREATED_SUCCESSFULLY } };
@@ -43,7 +43,7 @@ export const getBusesService = async (cooperative_id: string) => {
 };
 
 // Servicio para editar un bus por ID
-export const editBusByIdService = async ({id, cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity,picture}: BusT) => {
+export const editBusByIdService = async ({id, cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity,picture, bus_structure_id}: BusT) => {
     const busExists = await Buses.findOne({
         where: {
             id,
@@ -64,7 +64,8 @@ export const editBusByIdService = async ({id, cooperative_id, bus_number, licens
             model,
             year,
             capacity,
-            picture
+            picture,
+            bus_structure_id
         },
         { where: { id } }
     );

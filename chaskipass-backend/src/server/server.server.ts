@@ -9,7 +9,7 @@ import busesRoutes from '../routes/buses.routes';
 import clientsRoutes from '../routes/clients.routes';
 import ubicationsRoutes from '../routes/ubications.routes';
 import seatsRoutes from '../routes/seats.routes';
-
+import busStructureRoutes from '../routes/busStructure.routes';
 
 import {
     Roles,
@@ -30,7 +30,9 @@ import {
     Payments,
     NotificationMails,
     ClientCooperatives,
-    Admin
+    Admin,
+    TemporalTickets,
+    BusStructure
 } from '../models/tableAssociations.models';
 
 export default class Server {
@@ -61,6 +63,7 @@ export default class Server {
         this.app.use(`${prefixUrl}/seats`, seatsRoutes);
         this.app.use(`${prefixUrl}/ubi`, ubicationsRoutes);
         this.app.use(`${prefixUrl}/users`, usersRoute);
+        this.app.use(`${prefixUrl}/busStructure`, busStructureRoutes);
     }
 
     middlewares() {
@@ -110,7 +113,9 @@ export default class Server {
                 Payments.sync(),
                 NotificationMails.sync(),
                 ClientCooperatives.sync(),
-                Admin.sync()
+                Admin.sync(),
+                // TemporalTickets.sync(),
+                BusStructure.sync()
             ]);
             console.log("Database connected successfully");
         } catch (error) {

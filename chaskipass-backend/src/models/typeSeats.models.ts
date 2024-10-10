@@ -9,6 +9,7 @@ export class TypeSeats extends Model<
     declare cooperative_id: string;
     declare name: string;
     declare description: string;
+    declare additional_cost: number;
 }
 
 TypeSeats.init({
@@ -27,7 +28,11 @@ TypeSeats.init({
     description: {
         type: DataTypes.TEXT,
         allowNull: true,
-    }
+    },
+    additional_cost: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+    },
 }, {
     sequelize: connectionDb,
     tableName: 'type_seats',

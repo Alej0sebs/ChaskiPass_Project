@@ -1,17 +1,34 @@
 import { useState } from "react";
+import { API_BASE_URL } from "../helpers/Constants";
+import { LayoutBusT } from "../types";
+import toast from "react-hot-toast";
+import { verifyError } from "../helpers/VerifyErrors";
 
 export default function useBusLayout(){
-    const [loading, setLoading] = useState(true);
-    const [busLayout, setBusLayout] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const sendBusLayout = async () => {
+    const sendBusLayout = async (layoutBus:LayoutBusT) => {
         setLoading(true);
         try{
-            const res= await fetch('http://localhost:3001/busLayout');
+            const res:Response= await fetch(`${API_BASE_URL}busStructure/layout`,{
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                credentials: 'include',
+                body: JSON.stringify(layoutBus),
+            });
             const data = await res.json();
+            if(data.error){
+                throw new Error(data.error);
+            }
         }catch(error){
-            // throw new Error(error);
+            toast.error(verifyError(error));
+        }finally{
+            setLoading(false);
         }
     };
 
+    return {
+        loading,
+        sendBusLayout,
+    };
 }

@@ -1,25 +1,29 @@
 import { useState, useEffect } from 'react';
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+import useBusLayout from '../../hooks/useBusLayout';
+import { SeatConfigT } from '../../types';
+import toast from 'react-hot-toast';
 
-interface BusElement {
-    id: string;
-    type: string;
-    name: string;
-    position: { x: number; y: number };
-}
- 
+// interface BusElement {
+//     id: string;
+//     type: string;
+//     name: string;
+//     position: { x: number; y: number };
+// }
+
 const TypebusRegistration = () => {
-    const [elements, setElements] = useState<BusElement[]>([]); // Almacena los elementos del bus
+    const [elements, setElements] = useState<SeatConfigT[]>([]); // Almacena los elementos del bus
     const [selectedElement, setSelectedElement] = useState<string | null>(null); // Almacena el ID del elemento seleccionado
     const [seatName, setSeatName] = useState(''); // Nombre dinámico del asiento
     const [bathCounter, setBathCounter] = useState(1); // Contador para los baños
     const [stairsCounter, setStairsCounter] = useState(1); // Contador para las escaleras
+    const { loading, sendBusLayout } = useBusLayout();
 
     const addElement = (type: string) => {
         const busContainer = document.getElementById('bus-container');
         const busRect = busContainer!.getBoundingClientRect();
 
-        if(type === 'seat' && seatName === '') return;
+        if (type === 'seat' && seatName === '') return;
         let newElement = {
             id: '',
             type,
@@ -110,6 +114,21 @@ const TypebusRegistration = () => {
         });
     }, [elements]);
 
+    // const saveSeatsConfiguration = async (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+    const saveSeatsConfiguration = async () => {
+        if (elements.length === 0) {
+            toast.error('No se puede guardar un bus sin asientos');
+            return;
+        };
+        await sendBusLayout({ //cambiar esto
+            id: '1',
+            name: 'Bus 1',
+            cooperative_id: '1',
+            layout: elements,
+        });
+    };
+
     return (
         <>
             <div className="mx-auto max-w-270">
@@ -189,13 +208,13 @@ const TypebusRegistration = () => {
                         </button>
                         <button
                             onClick={() => addElement('bathroom')}
-                            className="bg-green-500 text-white px-4 py-2 rounded"
+                            className="bg-purple-400 text-white px-4 py-2 rounded"
                         >
                             Agregar Baño
                         </button>
                         <button
                             onClick={() => addElement('stairs')}
-                            className="bg-yellow-500 text-white px-4 py-2 rounded"
+                            className="bg-orange-400 text-white px-4 py-2 rounded"
                         >
                             Agregar Escalera
                         </button>
@@ -206,6 +225,13 @@ const TypebusRegistration = () => {
                             disabled={selectedElement === null}
                         >
                             Eliminar Elemento Seleccionado
+                        </button>
+                        <button
+                            onClick={saveSeatsConfiguration}
+                            className='bg-green-500 text-white px-4 py-2 rounded'
+                            disabled={loading}
+                        >
+                            {loading ? <span className="loading loading-spinner"></span> : "Guardar"}
                         </button>
                     </div>
                 </div>

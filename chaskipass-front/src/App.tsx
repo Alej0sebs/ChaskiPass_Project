@@ -21,6 +21,7 @@ import RoutesRegistration from './pages/Registration/routes.registration';
 import TerminalsRegistration from './pages/Registration/terminals.registration';
 import TypebusRegistration from './pages/Registration/typebus.registration';
 import TicketsalesRegistration from './pages/Processes/ticketsales.processes';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -202,6 +203,7 @@ function App() {
               }
             />
           </Routes>
+          <Toaster />
         </DefaultLayout>
       )}
     </>

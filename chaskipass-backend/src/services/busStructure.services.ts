@@ -10,7 +10,7 @@ export const createBusStructureService = async ({name, layout, cooperative_id}:B
     await BusStructure.create({
         id: 0,
         name,
-        layout,
+        layout: JSON.stringify(layout),
         cooperative_id
     });
 

@@ -6,10 +6,10 @@ export type SeatConfigT = {
 };
 
 export type LayoutBusT = {
-    id: string,
+    id: number,
     name: string,
     cooperative_id: string,
-    layout: SeatConfigT[],
+    layout: {},
 };
 
 export type UserT={

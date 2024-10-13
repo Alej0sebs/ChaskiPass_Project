@@ -20,6 +20,7 @@ export default function useBusLayout(){
             if(data.error){
                 throw new Error(data.error);
             }
+            toast.success(data.msg);
         }catch(error){
             toast.error(verifyError(error));
         }finally{

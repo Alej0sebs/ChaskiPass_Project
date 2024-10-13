@@ -17,7 +17,7 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import BusRegistration from './pages/Registration/bus.registration';
-import RoutesRegistration from './pages/Registration/routes.registration';
+import RoutesRegistration from './pages/Processes/routes.processes';
 import TerminalsRegistration from './pages/Registration/terminals.registration';
 import TypebusRegistration from './pages/Registration/typebus.registration';
 import TicketsalesRegistration from './pages/Processes/ticketsales.processes';
@@ -186,7 +186,7 @@ function App() {
               }
             />
             <Route
-              path="/register/routes"
+              path="/processes/routes"
               element={
                 authUser ?
                   <>

@@ -173,7 +173,7 @@ const TypebusRegistration = () => {
             return;
         }
 
-        const cooperative = localStorage.getItem('chaski-log') || '{}'; 
+        const cooperative = localStorage.getItem('chaski-log') || '{}';
         sendBusLayout({
             id: 0,
             name: busConfigurationName,
@@ -283,9 +283,15 @@ const TypebusRegistration = () => {
                                 >
                                     {element.type === 'seat' && (
                                         <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="reserved">
-                                            {/* Seat SVG */}
                                             <rect x="8.75" y="2.75" width="22.5" height="26.5" rx="2.25" fill="#FFF" stroke="#B8B8B8" strokeWidth="1.5"
                                                 strokeLinejoin="round"></rect>
+                                            <rect x="10.25" y="11.75" width="14.5" height="5.5" rx="2.25" transform="rotate(90 10.25 11.75)" fill="#FFF"
+                                                stroke="#B8B8B8" strokeWidth="1.5" strokeLinejoin="round"></rect>
+                                            <rect x="35.25" y="11.75" width="14.5" height="5.5" rx="2.25" transform="rotate(90 35.25 11.75)" fill="#FFF"
+                                                stroke="#B8B8B8" strokeWidth="1.5" strokeLinejoin="round"></rect>
+                                            <rect x="8.75" y="22.75" width="22.5" height="6.5" rx="2.25" fill="#FFF" stroke="#B8B8B8" strokeWidth="1.5"
+                                                strokeLinejoin="round"></rect>
+                                            {/* Texto dinámico que muestra el nombre del asiento */}
                                             <text width="20" height="20" x="20" y="18" fill="#000" fontSize="10" textAnchor="middle">{element.name}</text>
                                         </svg>
                                     )}

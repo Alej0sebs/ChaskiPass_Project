@@ -1,7 +1,7 @@
-import { FaBus, FaRegRegistered } from "react-icons/fa";
-import { HiOutlineUpload } from "react-icons/hi";
+import { FaBus} from "react-icons/fa";
 import { TbBusStop } from "react-icons/tb";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+
 
 const RoutesRegistration = () => {
     return (

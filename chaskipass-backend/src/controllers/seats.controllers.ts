@@ -16,9 +16,11 @@ export const getSeats = async (req: Request, res: Response) => {
 
         const result = await getSeatsService(bus_id, paginationData);
         res.status(200).json(result);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -29,9 +31,11 @@ export const createSeat = async (req: Request, res: Response) => {
 
         const result = await createSeatService(bus_id, number_seat, type_seat_id);
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -43,9 +47,11 @@ export const updateSeat = async (req: Request, res: Response) => {
 
         const result = await updateSeatService(id, number_seat, type_seat_id);
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -56,8 +62,10 @@ export const deleteSeat = async (req: Request, res: Response) => {
 
         const result = await deleteSeatService(id);
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };

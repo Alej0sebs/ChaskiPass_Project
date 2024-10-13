@@ -25,9 +25,11 @@ export const busRegister = async (req: Request, res: Response) => {
         const result = await busRegisterService(busInformation);
 
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -38,8 +40,10 @@ export const getBuses = async (req: Request, res: Response) => {
 
         const result = await getBusesService(cooperative_id!);
         res.status(201).json(result);
+        return;
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -65,8 +69,10 @@ export const editBusById = async (req: Request, res: Response) => {
         const result = await editBusByIdService(busInformation);
 
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -79,7 +85,9 @@ export const deleteBusById = async (req: Request, res: Response) => {
         const result = await deleteBusByIdService(id, cooperative_id!);
 
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };

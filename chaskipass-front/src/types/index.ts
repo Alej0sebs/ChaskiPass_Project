@@ -25,7 +25,7 @@ export type UserT={
     cooperative_id: string
 };
 
-export type UserSignUp=Pick<UserT,'email' | 'user_name' | 'password'>
+export type UserSignUpT=Pick<UserT,'email' | 'user_name' | 'password'>
 
 
 export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperative_id'>

@@ -13,8 +13,10 @@ export const getUsers = async (req: Request, res: Response) => {
         const result = await getUsersService(cooperative_id!, dni!, paginationData);
 
         res.status(201).json(result);
+        return;
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -27,8 +29,10 @@ export const searchUserByFilter = async (req: Request, res: Response) => {
         const result = await searchUserByFilterService(cooperative_id!, dni!, paginationData);
 
         res.status(201).json(result);
+        return;
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -56,9 +60,11 @@ export const registerAndSendEmail = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: "Usuario registrado y correo enviado con éxito"
         });
+        return;
     } catch (error) {
         console.error('Error en el registro y envío de correo:', error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 

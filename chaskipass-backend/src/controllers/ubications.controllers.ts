@@ -10,11 +10,13 @@ export const getCities = async (req: Request, res: Response) => {
         const result = await getCitiesService(paginationData);
 
         res.status(201).json(result);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };
 
@@ -25,10 +27,12 @@ export const searchCitiesByFilter = async (req: Request, res: Response) => {
         const result = await searchCitiesByFilterService(paginationData);
 
         res.status(201).json(result);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({
             msg: HandleMessages.INTERNAL_SERVER_ERROR
         });
+        return;
     }
 };

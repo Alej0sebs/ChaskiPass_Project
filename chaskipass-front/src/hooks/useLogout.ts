@@ -1,38 +1,34 @@
 import { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
-import { UserSignUpT } from "../types";
 import { API_BASE_URL } from "../helpers/Constants";
 import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
 
-export default function useSignup(){
+export const useLogout = () => {
     const [loading, setLoading] = useState(false);
-    const {setAuthUser} = useAuthContext();
+    const { setAuthUser } = useAuthContext();
 
-    const login = async(userData:UserSignUpT)=>{
+    const logout = async () => {
         setLoading(true);
-
-        try {
-            const response:Response = await fetch(`${API_BASE_URL}auth/login`,{
-                method:'POST',
+        try{
+            const response:Response = await fetch(`${API_BASE_URL}auth/logout`,{
+                method:'GET',
                 headers:{
                     'Content-Type':'application/json',
                 },
-                credentials:'include',
-                body:JSON.stringify(userData),
             });
             const data = await response.json();
             if(data.error){
                 throw new Error(data.error);
             }
-            localStorage.setItem('chaski-log', JSON.stringify(data));
-            setAuthUser(data);
-        } catch (error) {
+            localStorage.removeItem('chaski-log');
+            setAuthUser(null);
+        }catch(error){
             toast.error(verifyError(error));
         }finally{
             setLoading(false);
         }
-    }
+    };
 
-    return {loading, login};
-}
+    return {loading, logout};
+};

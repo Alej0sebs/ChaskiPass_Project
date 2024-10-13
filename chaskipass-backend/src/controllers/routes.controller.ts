@@ -20,9 +20,11 @@ export const createRoute = async (req: Request, res: Response) => {
         const result = await createRouteService(routeInformation);
 
         res.status(201).json(result);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -46,8 +48,10 @@ export const createFrequency = async (req: Request, res: Response) => {
         const result = await createFrequencyService(frequencyInformation);
 
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };

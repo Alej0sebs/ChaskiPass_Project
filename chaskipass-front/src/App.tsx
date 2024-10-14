@@ -23,6 +23,7 @@ import TypebusRegistration from './pages/Registration/typebus.registration';
 import TicketsalesRegistration from './pages/Processes/ticketsales.processes';
 import { Toaster } from 'react-hot-toast';
 import { useAuthContext } from './context/AuthContext';
+import FrequencyRegistration from './pages/Processes/frequency.processes';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -222,6 +223,16 @@ function App() {
                   <>
                     <PageTitle title="Ticketsales| ChaskiPass" />
                     <TicketsalesRegistration />
+                  </> : <Navigate to='/auth/signin' />
+              }
+            />
+            <Route
+              path="/processes/frequency"
+              element={
+                authUser ?
+                  <>
+                    <PageTitle title="Frecuencias| ChaskiPass" />
+                    <FrequencyRegistration />
                   </> : <Navigate to='/auth/signin' />
               }
             />

@@ -1,18 +1,9 @@
+import { FaBus} from "react-icons/fa";
 import { TbBusStop } from "react-icons/tb";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import { useState } from "react";
-import TableRoutesComponent from "./tableRoutesComponent.processes";
 
 
-const RoutesRegistration = () => {
-
-    const [isStopsEnabled, setIsStopsEnabled] = useState(false);
-    const [stopOvers, setStopOvers] = useState([]); //tiene que ser del tipo de dato que se va a guardar id parada - nombre parada
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setIsStopsEnabled(e.target.checked); //actualizo el estado con el valor del checkbox
-    };
-
+const FrequencyRegistration = () => {
     return (
         <>
             <div className="mx-auto ">
@@ -29,7 +20,7 @@ const RoutesRegistration = () => {
                             <div className="p-7">
                                 <form action="#">
                                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-[33.33%]">
+                                        <div className="w-full sm:w-[25%]">
                                             <label
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                                                 htmlFor="departure_station"
@@ -49,8 +40,8 @@ const RoutesRegistration = () => {
                                                 />
                                             </div>
                                         </div>
-
-                                        <div className="w-full sm:w-[33.33%]">
+                                        
+                                        <div className="w-full sm:w-[25%]">
                                             <label
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                                                 htmlFor="arrival_station"
@@ -71,72 +62,50 @@ const RoutesRegistration = () => {
                                             </div>
                                         </div>
 
-                                        <div className="w-full sm:w-[33.33%]">
+                                        <div className="w-full sm:w-[25%]">
                                             <label
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                htmlFor="bus_company"
                                             >
-                                                Asignar Paradas
+                                                Asignar Bus
                                             </label>
                                             <div className="relative">
+                                                <span className="absolute left-4.5 top-4">
+                                                    <FaBus />
+                                                </span>
                                                 <input
-                                                    type="checkbox"
-                                                    value="synthwave"
-                                                    className="toggle theme-controller col-span-2 col-start-1 row-start-1 bg-blue-300 [--tglbg:theme(colors.blue.900)] checked:border-blue-800 checked:bg-blue-50 checked:[--tglbg:theme(colors.green.500)]"
-                                                    onChange={handleChange} />
+                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="text"
+                                                    name="bus_company"
+                                                    id="bus_company"
+                                                    placeholder="Bus"
+                                                />
                                             </div>
                                         </div>
                                     </div>
 
-                                    {isStopsEnabled && (
-                                        <div className="mb-5.5 flex flex-col gap-5.5">
-                                            {/* Contenedor para el input y el botón */}
-                                            <div className="w-full sm:w-[35%]">
-                                                <label
-                                                    className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                    htmlFor="bus_company"
-                                                >
-                                                    Agregar Paradas
-                                                </label>
-
-                                                {/* Flex para alinear input y botón */}
-                                                <div className="relative flex items-center gap-3">
-                                                    {/* Input */}
-                                                    <div className="relative w-full">
-                                                        <span className="absolute left-4.5 top-4">
-                                                            <TbBusStop />
-                                                        </span>
-                                                        <input
-                                                            className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                            list="roleOptions"
-                                                            id="roleDataList"
-                                                            placeholder="Busca o Selecciona la parada"
-                                                        />
-                                                        <datalist id="roleOptions">
-                                                            <option value="Parada 1" />
-                                                            <option value="Parada 2" />
-                                                            <option value="Parada 3" />
-                                                            <option value="Parada 4" />
-                                                        </datalist>
-                                                    </div>
-
-                                                    {/* Botón */}
-                                                    <button
-                                                        className="rounded bg-green-700 py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                                        type="submit"
-                                                    >
-                                                        Agregar
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {/* Colocar TableRoutesComponent debajo del input y botón */}
-                                            <div className="mt-5">
-                                                <TableRoutesComponent />
+                                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                        <div className="w-full sm:w-1/2">
+                                            <label
+                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
+                                                htmlFor="bus_company"
+                                            >
+                                                Cooperativa
+                                            </label>
+                                            <div className="relative">
+                                                <span className="absolute left-4.5 top-4">
+                                                    <FaBus />
+                                                </span>
+                                                <input
+                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="text"
+                                                    name="bus_company"
+                                                    id="bus_company"
+                                                    placeholder="Cooperativa X"
+                                                />
                                             </div>
                                         </div>
-                                    )}
-
-
+                                    </div>
 
                                     <div className="flex justify-end gap-4.5">
                                         <button
@@ -162,4 +131,4 @@ const RoutesRegistration = () => {
     );
 };
 
-export default RoutesRegistration;
+export default FrequencyRegistration;

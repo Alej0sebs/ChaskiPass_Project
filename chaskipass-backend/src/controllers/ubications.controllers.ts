@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { getCitiesService, searchCitiesByFilterService } from '../services/ubications.services';
+import { getBusStationService, getCitiesService, searchCitiesByFilterService } from '../services/ubications.services';
 import { HandleMessages } from '../error/handleMessages.error';
 import { getPaginationData } from '../utils/helpers.utils';
+
 
 export const getCities = async (req: Request, res: Response) => {
     try {
@@ -36,3 +37,22 @@ export const searchCitiesByFilter = async (req: Request, res: Response) => {
         return;
     }
 };
+
+
+
+
+export const getBusStation = async (req: Request, res: Response) => {
+    try {
+        const result = await getBusStationService();
+        if (result.length === 0) {
+            res.status(404).json({ msg: HandleMessages.BUS_STATION_EMPTY });
+            return;
+        };
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
+    }
+};
+

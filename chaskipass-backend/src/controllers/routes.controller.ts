@@ -9,7 +9,7 @@ export const createRoute = async (req: Request, res: Response) => {
     try {
         const { cooperative_id, dni } = req.userReq ?? {};
         const { departure_station_id, arrival_station_id, stopOverList } = req.body;
-        const routeInformation:RoutesT = {
+        const routeInformation: RoutesT = {
             id: '',
             dni: dni || '',
             cooperative_id: cooperative_id || '',
@@ -32,9 +32,9 @@ export const createRoute = async (req: Request, res: Response) => {
 export const createFrequency = async (req: Request, res: Response) => {
     try {
         const { cooperative_id, dni } = req.userReq ?? {};
-        const { id, bus_id, route_id, date, departure_time, arrival_time,price, status } = req.body;
-        
-        const frequencyInformation:FrequencyT = {
+        const { id, bus_id, route_id, date, departure_time, arrival_time, price, status } = req.body;
+
+        const frequencyInformation: FrequencyT = {
             id,
             cooperative_id: cooperative_id || '',
             bus_id,
@@ -55,3 +55,5 @@ export const createFrequency = async (req: Request, res: Response) => {
         return;
     }
 };
+
+

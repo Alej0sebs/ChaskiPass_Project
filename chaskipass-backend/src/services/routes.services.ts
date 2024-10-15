@@ -6,6 +6,7 @@ import { HandleMessages } from '../error/handleMessages.error';
 import { RoleEnum } from '../utils/enums.utils';
 import { FrequencyT, RoutesT, ValidateRoleAndRouteId } from '../types/index.types';
 
+
 // Servicio para crear una nueva ruta
 export const createRouteService = async ({dni,arrival_station_id,departure_station_id,cooperative_id,stopOverList}:RoutesT) => {
     const parameters: ValidateRoleAndRouteId = {
@@ -67,6 +68,7 @@ export const createFrequencyService = async ({cooperative_id,id, bus_id, route_i
     return { status: 201, json: { msg: HandleMessages.FREQUENCY_CREATED_SUCCESSFULLY  } };
 };
 
+
 // Función auxiliar para verificar la ruta y crear el ID único
 const verifyRoute = async ({ dni, cooperative_id, departure_station_id, arrival_station_id }: ValidateRoleAndRouteId) => {
     const userRole = await Users.findOne({
@@ -92,3 +94,4 @@ const verifyRoute = async ({ dni, cooperative_id, departure_station_id, arrival_
 
     return id;
 };
+

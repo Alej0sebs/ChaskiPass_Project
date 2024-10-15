@@ -22,7 +22,7 @@ StopOvers.init({
         allowNull: false,
     },
     station_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     order: {

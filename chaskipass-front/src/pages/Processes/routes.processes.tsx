@@ -90,7 +90,7 @@ const RoutesRegistration = () => {
                                     {isStopsEnabled && (
                                         <div className="mb-5.5 flex flex-col gap-5.5">
                                             {/* Contenedor para el input y el botón */}
-                                            <div className="w-full sm:w-[35%]">
+                                            <div className="w-full">
                                                 <label
                                                     className="mb-3 block text-sm font-medium text-black dark:text-white"
                                                     htmlFor="bus_company"
@@ -101,7 +101,7 @@ const RoutesRegistration = () => {
                                                 {/* Flex para alinear input y botón */}
                                                 <div className="relative flex items-center gap-3">
                                                     {/* Input */}
-                                                    <div className="relative w-full">
+                                                    <div className="relative w-full sm:w-[50%]">
                                                         <span className="absolute left-4.5 top-4">
                                                             <TbBusStop />
                                                         </span>

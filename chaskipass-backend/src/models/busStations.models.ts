@@ -16,8 +16,9 @@ export class BusStations extends Model<
 
 BusStations.init({
     id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
     city_id: {
         type: DataTypes.STRING(5),

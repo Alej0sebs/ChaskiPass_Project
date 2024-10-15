@@ -17,11 +17,11 @@ Routes.init({
         primaryKey: true,
     },
     departure_station_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     arrival_station_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     cooperative_id: {

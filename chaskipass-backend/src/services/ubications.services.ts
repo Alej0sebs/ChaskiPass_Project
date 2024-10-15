@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import Cities from '../models/cities.models';
 import { DataPaginationT } from '../types/index.types';
+import BusStations from '../models/busStations.models';
 
 // Servicio para obtener las ciudades con paginación
 export const getCitiesService = async ({page, limit}: DataPaginationT) => {
@@ -44,3 +45,22 @@ export const searchCitiesByFilterService = async ({page, limit, pattern}: DataPa
         list: citiesList
     };
 };
+
+
+// export const createStationService = async ({name, city_id}) => {
+
+// }
+
+export const getBusStationService = async () => { 
+    const busStation = await BusStations.findAll({
+        attributes: ['id', 'name'],
+        include: [{
+            model: Cities,
+            attributes: ['id','name'],
+            required: true
+        }]
+    });
+
+    return busStation;
+
+}

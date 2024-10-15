@@ -17,7 +17,7 @@ export class Users extends Model<
     declare role_id: string;
     declare cooperative_id: string;
 }
-
+ 
 // Inicializar el modelo usando `init()`
 Users.init({
     dni: {

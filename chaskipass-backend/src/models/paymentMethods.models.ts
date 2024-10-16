@@ -20,7 +20,7 @@ PaymentMethods.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'payment_methods',
+    tableName: 'Payment_methods',
     timestamps: false
 });
 

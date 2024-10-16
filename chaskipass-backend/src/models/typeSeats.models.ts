@@ -35,7 +35,7 @@ TypeSeats.init({
     },
 }, {
     sequelize: connectionDb,
-    tableName: 'type_seats',
+    tableName: 'Type_seats',
     timestamps: false
 });
 

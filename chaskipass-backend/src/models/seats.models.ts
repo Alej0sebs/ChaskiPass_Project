@@ -30,7 +30,7 @@ Seats.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'seats',
+    tableName: 'Seats',
     timestamps: false
 });
 

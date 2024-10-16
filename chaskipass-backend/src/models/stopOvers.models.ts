@@ -31,7 +31,7 @@ StopOvers.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'stopOvers',
+    tableName: 'Stopovers',
     timestamps: false
 });
 

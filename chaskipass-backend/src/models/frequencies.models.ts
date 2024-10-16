@@ -60,7 +60,7 @@ Frequencies.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'frequencies',
+    tableName: 'Frequencies',
     timestamps: false
 });
 

@@ -30,7 +30,7 @@ Routes.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'routes',
+    tableName: 'Routes',
     timestamps: false
 });
 

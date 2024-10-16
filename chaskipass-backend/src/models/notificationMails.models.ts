@@ -40,7 +40,7 @@ NotificationMails.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'notification_mails',
+    tableName: 'Notification_mails',
     timestamps: false
 });
 

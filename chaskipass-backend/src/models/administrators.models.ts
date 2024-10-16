@@ -39,5 +39,5 @@ Admin.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'admins',
+    tableName: 'Admins',
 });

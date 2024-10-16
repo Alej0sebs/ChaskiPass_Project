@@ -56,7 +56,7 @@ Tickets.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'tickets',
+    tableName: 'Tickets',
 });
 
 export default Tickets;

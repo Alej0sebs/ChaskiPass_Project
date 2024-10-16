@@ -63,5 +63,5 @@ Users.init({
     }
 }, {
     sequelize: connectionDb,  // Conexión a la base de datos
-    tableName: 'users',       // Nombre de la tabla en la base de datos
+    tableName: 'Users',       // Nombre de la tabla en la base de datos
 });

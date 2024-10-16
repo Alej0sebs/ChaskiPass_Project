@@ -25,7 +25,7 @@ Roles.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'roles',
+    tableName: 'Roles',
     timestamps: false
 });
 

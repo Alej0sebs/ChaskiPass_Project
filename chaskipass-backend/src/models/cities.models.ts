@@ -25,7 +25,7 @@ Cities.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'cities',
+    tableName: 'Cities',
     timestamps: false
 });
 

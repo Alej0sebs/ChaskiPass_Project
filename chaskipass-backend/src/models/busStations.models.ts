@@ -46,7 +46,7 @@ BusStations.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'bus_stations',
+    tableName: 'Bus_stations',
     timestamps: false
 });
 

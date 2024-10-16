@@ -40,7 +40,7 @@ Cooperatives.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'cooperatives',
+    tableName: 'Cooperatives',
     timestamps: false
 });
 

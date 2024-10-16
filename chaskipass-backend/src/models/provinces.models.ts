@@ -20,7 +20,7 @@ Provinces.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'provinces',
+    tableName: 'Provinces',
     timestamps: false
 });
 

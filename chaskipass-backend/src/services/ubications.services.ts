@@ -22,6 +22,7 @@ export const getCitiesService = async ({page, limit}: DataPaginationT) => {
     };
 };
 
+
 // Servicio para buscar ciudades por filtro
 export const searchCitiesByFilterService = async ({page, limit, pattern}: DataPaginationT) => {
     const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());

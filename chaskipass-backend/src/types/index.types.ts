@@ -11,6 +11,7 @@ import Frequencies from "../models/frequencies.models";
 import BusStructure from "../models/busStructure.models";
 import BusStations from "../models/busStations.models";
 import Seats from "../models/seats.models";
+import { StationCooperative } from "../models/stationCooperative.models";
 
 // export type UserT=InferAttributes<Users>
 // export type UserLoginT=Pick<UserT, 'user_name' | 'email' | 'password' | 'dni' | 'cooperative_id'>
@@ -57,3 +58,7 @@ export type BusStationT=InferAttributes<BusStations>
 export type SeatT=InferAttributes<Seats>;
 
 export type SeatCreateT=Pick<SeatT, 'bus_id' | 'number_seat' | 'type_seat_id'>;
+
+export type StationCooperativeT = InferAttributes<StationCooperative>
+
+export type NewStationT= InferAttributes<BusStations>;

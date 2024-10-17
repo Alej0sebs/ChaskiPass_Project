@@ -46,3 +46,8 @@ export const createRoles = async (req: Request, res: Response) => {
         return;
     }
 };
+
+
+export const createNewStation= async (req: Request, res: Response) => {
+
+};

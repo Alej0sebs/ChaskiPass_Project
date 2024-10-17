@@ -38,9 +38,6 @@ export const searchCitiesByFilter = async (req: Request, res: Response) => {
     }
 };
 
-
-
-
 export const getBusStation = async (req: Request, res: Response) => {
     try {
         const result = await getBusStationService();

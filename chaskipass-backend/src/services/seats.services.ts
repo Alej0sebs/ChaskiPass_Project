@@ -31,7 +31,7 @@ export const createSeatService = async ({bus_id, number_seat, type_seat_id}:Seat
     // Verificar si el tipo de asiento existe
     const typeSeat = await TypeSeats.findOne({ where: { id: type_seat_id } });
     if (!typeSeat) {
-        return { status: 400, json: { message: 'type_id no existe en Type_seats' } };
+        return { status: 400, json: { message: HandleMessages.TYPE_SEATID_NOT_FOUND } };
     }
 
     // Crear nuevo asiento

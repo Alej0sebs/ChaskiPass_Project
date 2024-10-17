@@ -64,6 +64,7 @@ export default class Server {
         this.app.use(`${prefixUrl}/ubi`, ubicationsRoutes);
         this.app.use(`${prefixUrl}/users`, usersRoute);
         this.app.use(`${prefixUrl}/busStructure`, busStructureRoutes);
+        this.app.use(`${prefixUrl}/linkedStations`, ubicationsRoutes);
     }
 
     middlewares() {

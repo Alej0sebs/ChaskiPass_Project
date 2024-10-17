@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { getClientsService, createClientService, updateClientService, deleteClientService } from '../services/clients.services';
 import { HandleMessages } from '../error/handleMessages.error';
-import Clients from '../models/clients.models';
 import { getPaginationData } from '../utils/helpers.utils';
 
 // Obtener lista de clientes con paginación

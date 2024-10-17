@@ -56,10 +56,7 @@ export const registerAndSendEmail = async (req: Request, res: Response) => {
 
         // Enviar el correo si el usuario se creó
         await sendEmail(email, generateMailMessage(password, name));
-
-        res.status(201).json({
-            msg: "Usuario registrado y correo enviado con éxito"
-        });
+        res.status(result.status).json(result.json);
         return;
     } catch (error) {
         console.error('Error en el registro y envío de correo:', error);

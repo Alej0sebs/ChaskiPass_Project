@@ -31,7 +31,7 @@ export const createRouteService = async ({dni,arrival_station_id,departure_stati
             await StopOvers.create({
                 id:0,
                 route_id: route.id,
-                station_id: Number(stopOver),
+                station_id: parseInt(stopOver as string),
                 order: index + 1
             });
         }));

@@ -38,7 +38,6 @@ export const loginUserService = async (
             }
         };
     } catch (error) {
-        console.error(error);
         return {
             status: 500,
             json: { error: HandleMessages.INTERNAL_SERVER_ERROR }

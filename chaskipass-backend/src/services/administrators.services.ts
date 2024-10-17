@@ -76,7 +76,7 @@ export const createCooperativeService = async (
     address,
     phone,
     email,
-    description}:CooperativesT
+    logo}:CooperativesT
 ) => {
     await Cooperatives.create({
         id,
@@ -84,7 +84,7 @@ export const createCooperativeService = async (
         address,
         phone,
         email,
-        description
+        logo
     });
 
     return { status: 201, json: { msg: HandleMessages.COOPERATIVE_CREATED_SUCCESSFULLY } };

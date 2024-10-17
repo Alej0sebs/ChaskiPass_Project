@@ -17,7 +17,7 @@ export class Users extends Model<
     declare role_id: string;
     declare cooperative_id: string;
 }
- 
+
 // Inicializar el modelo usando `init()`
 Users.init({
     dni: {
@@ -54,7 +54,7 @@ Users.init({
         allowNull: true,
     },
     role_id: {
-        type: DataTypes.CHAR(5),
+        type: DataTypes.STRING(5),
         allowNull: false,
     },
     cooperative_id: {

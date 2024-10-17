@@ -7,7 +7,7 @@ export class Frequencies extends Model<
 > {
     declare id: string;
     declare cooperative_id: string;
-    declare bus_id: string;
+    declare bus_id: number;
     declare route_id: string;
     declare date: Date;
     declare departure_time: string;
@@ -27,7 +27,7 @@ Frequencies.init({
         allowNull: false,
     },
     bus_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     route_id: {
@@ -39,11 +39,11 @@ Frequencies.init({
         allowNull: false,
     },
     departure_time: {
-        type: DataTypes.TIME,
+        type: DataTypes.STRING(10),
         allowNull: false,
     },
     arrival_time: {
-        type: DataTypes.TIME,
+        type: DataTypes.STRING(10),
         allowNull: false,
     },
     status: {

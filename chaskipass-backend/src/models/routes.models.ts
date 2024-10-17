@@ -6,8 +6,8 @@ export class Routes extends Model<
     InferCreationAttributes<Routes>
 > {
     declare id: string;
-    declare departure_station_id: string;
-    declare arrival_station_id: string;
+    declare departure_station_id: number;
+    declare arrival_station_id: number;
     declare cooperative_id: string;
 }
 

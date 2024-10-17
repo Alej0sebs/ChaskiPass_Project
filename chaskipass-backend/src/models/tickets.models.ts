@@ -6,14 +6,15 @@ export class Tickets extends Model<
     InferCreationAttributes<Tickets>
 > {
     declare id: number;
-    declare seat_id: string;
     declare client_dni: string;
     declare frequency_id: string;
-    declare departure_station: string;
-    declare arrival_station: string;
-    declare date: Date;
+    declare seat_id: string;
+    declare serie_station_id: number;
     declare ticket_code: string;
     declare price: number;
+    declare departure_station: number;
+    declare arrival_station: number;
+    declare date: Date;
 }
 
 Tickets.init({
@@ -21,10 +22,6 @@ Tickets.init({
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-    },
-    seat_id: {
-        type: DataTypes.STRING(10),
-        allowNull: false,
     },
     client_dni: {
         type: DataTypes.STRING(10),
@@ -34,12 +31,20 @@ Tickets.init({
         type: DataTypes.STRING(10),
         allowNull: false,
     },
-    departure_station: {
+    seat_id: {
         type: DataTypes.STRING(10),
         allowNull: false,
     },
+    serie_station_id:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+    },
+    departure_station: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
     arrival_station: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     date: {

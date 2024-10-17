@@ -1,5 +1,5 @@
 export enum RoleEnum {
-    administrator = 'ADMIN',
-    clerk = 'OFI01',
-    driver = 'OPE01',
+    administrator = 'admin',
+    clerk = 'clerk',
+    driver = 'drive',
 }

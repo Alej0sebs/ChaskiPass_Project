@@ -31,7 +31,7 @@ export const createRouteService = async ({dni,arrival_station_id,departure_stati
             await StopOvers.create({
                 id:0,
                 route_id: route.id,
-                station_id: stopOver,
+                station_id: Number(stopOver),
                 order: index + 1
             });
         }));
@@ -85,7 +85,8 @@ const verifyRoute = async ({ dni, cooperative_id, departure_station_id, arrival_
 
     // Generar el ID único de la ruta basado en cooperative_id y estaciones
     const date = new Date();
-    const id = `${cooperative_id?.substring(0, 3)}${departure_station_id.substring(0, 5)}-${date.getHours()}${date.getMinutes()}-${arrival_station_id.substring(0, 5)}`;
+    //revisar esta generacion del id
+    const id = `${cooperative_id?.substring(0, 3)}${departure_station_id}-${date.getHours()}${date.getMinutes()}-${arrival_station_id}`;
 
     const routeExists = await Routes.findOne({ where: { id } });
     if (routeExists) {

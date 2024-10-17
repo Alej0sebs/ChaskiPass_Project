@@ -10,7 +10,7 @@ export class Cooperatives extends Model<
     declare address: string;
     declare phone: string;
     declare email: string;
-    declare description: string;
+    declare logo: string;
 }
 
 Cooperatives.init({
@@ -34,7 +34,7 @@ Cooperatives.init({
         type: DataTypes.STRING(50),
         allowNull: false,
     },
-    description: {
+    logo: {
         type: DataTypes.TEXT,
         allowNull: true,
     }

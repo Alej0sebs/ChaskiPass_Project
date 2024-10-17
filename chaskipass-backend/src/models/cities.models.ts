@@ -16,7 +16,7 @@ Cities.init({
         primaryKey: true,
     },
     province_id: {
-        type: DataTypes.CHAR(3),
+        type: DataTypes.STRING(3),
         allowNull: false,
     },
     name: {

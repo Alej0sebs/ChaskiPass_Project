@@ -15,7 +15,7 @@ PaymentMethods.init({
         primaryKey: true,
     },
     name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(10),
         allowNull: false,
     }
 }, {

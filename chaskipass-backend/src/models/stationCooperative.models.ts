@@ -5,7 +5,7 @@ export class StationCooperative extends Model<
     InferAttributes<StationCooperative>,
     InferCreationAttributes<StationCooperative>> {
     declare id: number;
-    declare bus_station_id: number;
+    declare station_id: number;
     declare cooperative_id: string;
 }
 
@@ -15,7 +15,7 @@ StationCooperative.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    bus_station_id: {
+    station_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },

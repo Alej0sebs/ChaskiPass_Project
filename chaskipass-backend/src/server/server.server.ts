@@ -28,11 +28,11 @@ import {
     Clients,
     PaymentMethods,
     Payments,
-    NotificationMails,
     ClientCooperatives,
     Admin,
-    TemporalTickets,
-    BusStructure
+    BusStructure,
+    SeriesStation,
+    StationCooperative
 } from '../models/tableAssociations.models';
 
 export default class Server {
@@ -93,30 +93,28 @@ export default class Server {
     sequelize rules*/
     async dbConnect() {
         try {
-            await Promise.all([
                 // { alter: true } is used to update the database schema
-                Roles.sync(),
-                Users.sync(),
-                Cooperatives.sync(),
-                Buses.sync(),
-                TypeSeats.sync(),
-                Seats.sync(),
-                Frequencies.sync(),
-                Tickets.sync(),
-                Routes.sync(),
-                StopOvers.sync(),
-                BusStations.sync(),
-                Provinces.sync(),
-                Cities.sync(),
-                Clients.sync(),
-                PaymentMethods.sync(),
-                Payments.sync(),
-                NotificationMails.sync(),
-                ClientCooperatives.sync(),
-                Admin.sync(),
-                // TemporalTickets.sync(),
-                BusStructure.sync()
-            ]);
+                await Admin.sync(),
+                await Provinces.sync(),
+                await Cities.sync(),
+                await Roles.sync(),
+                await Cooperatives.sync(),        
+                await BusStructure.sync(),
+                await PaymentMethods.sync(),      
+                await Users.sync(),               
+                await Buses.sync(),
+                await BusStations.sync(),
+                await Routes.sync(),
+                await TypeSeats.sync(),
+                await Seats.sync(),               
+                await StopOvers.sync(),
+                await Frequencies.sync(),          
+                await SeriesStation.sync(),        
+                await Clients.sync(),              
+                await ClientCooperatives.sync(),   
+                await Tickets.sync(),              
+                await Payments.sync(),         
+                await StationCooperative.sync(),
             console.log("Database connected successfully");
         } catch (error) {
             console.log("Unable to connect to the db: " + error);

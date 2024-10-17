@@ -29,7 +29,7 @@ export const createSeat = async (req: Request, res: Response) => {
     try {
         const { bus_id, number_seat, type_seat_id } = req.body;
 
-        const result = await createSeatService(bus_id, number_seat, type_seat_id);
+        const result = await createSeatService({bus_id, number_seat, type_seat_id});
         res.status(result.status).json(result.json);
         return;
     } catch (error) {

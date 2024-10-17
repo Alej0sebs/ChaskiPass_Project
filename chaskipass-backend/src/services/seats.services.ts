@@ -3,7 +3,7 @@ import { Buses } from '../models/buses.models';
 import TypeSeats from '../models/typeSeats.models';
 import { v4 as uuidv4 } from 'uuid';
 import { HandleMessages } from '../error/handleMessages.error';
-import { DataPaginationT } from '../types/index.types';
+import { DataPaginationT, SeatCreateT } from '../types/index.types';
 
 // Servicio para obtener los asientos de un bus
 export const getSeatsService = async (bus_id: string, {page, limit}:DataPaginationT) => {
@@ -27,7 +27,7 @@ export const getSeatsService = async (bus_id: string, {page, limit}:DataPaginati
 };
 
 // Servicio para crear un nuevo asiento
-export const createSeatService = async (bus_id: string, number_seat: number, type_seat_id: string) => {
+export const createSeatService = async ({bus_id, number_seat, type_seat_id}:SeatCreateT) => {
     // Verificar si el tipo de asiento existe
     const typeSeat = await TypeSeats.findOne({ where: { id: type_seat_id } });
     if (!typeSeat) {

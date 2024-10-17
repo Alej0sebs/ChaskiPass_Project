@@ -12,11 +12,11 @@ export class Roles extends Model<
 
 Roles.init({
     id: {
-        type: DataTypes.CHAR(5),
+        type: DataTypes.STRING(5),
         primaryKey: true,
     },
     name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(20),
         allowNull: false,
     },
     description: {

@@ -11,7 +11,7 @@ export class Provinces extends Model<
 
 Provinces.init({
     id: {
-        type: DataTypes.CHAR(3),
+        type: DataTypes.STRING(3),
         primaryKey: true,
     },
     name: {

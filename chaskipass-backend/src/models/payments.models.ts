@@ -11,15 +11,17 @@ export class Payments extends Model<
     declare payment_date: Date;
     declare voucher: string;
     declare status: 'pending' | 'canceled' | 'completed';
+    declare cooperative_id: string;
 }
 
 Payments.init({
     id: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
     ticket_id: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     payment_method: {
@@ -36,6 +38,10 @@ Payments.init({
     },
     status: {
         type: DataTypes.ENUM('pending', 'canceled', 'completed'),
+        allowNull: false,
+    },
+    cooperative_id: {
+        type: DataTypes.STRING(10),
         allowNull: false,
     }
 }, {

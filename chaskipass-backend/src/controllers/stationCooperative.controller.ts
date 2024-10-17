@@ -7,11 +7,12 @@ import { HandleMessages } from "../error/handleMessages.error";
 export const linkCooperativeStation = async (req: Request, res: Response) => {
     try {
         const { cooperative_id } = req.userReq ?? {};
-        const { station_id } = req.query;
+        //Cuando envio el valor como ruta/:id debo tomar el valor como req.params cunado envio como ?page=1 uso req.query
+        const id  = req.params.id;
         const values: StationCooperativeT = {
             id: 0,
             cooperative_id: cooperative_id || "",
-            station_id: parseInt(station_id as string)
+            station_id: parseInt(id)
         };
         const result = await linkCooperativeStationService(values);
         if (result.status !== 201) {
@@ -29,10 +30,9 @@ export const linkCooperativeStation = async (req: Request, res: Response) => {
 
 export const getStationCooperative = async (req: Request, res: Response) => {
     try{
-        const { cooperative_id } = req.userReq ?? {};
+        const cooperative_id=req.params.cooperative_id;
         const paginationData = getPaginationData(req.query);
         const result = await getStationCooperativeService(cooperative_id!, paginationData);
-
         res.status(201).json(result);
         return;
     }catch(error){

@@ -25,7 +25,7 @@ ClientCooperatives.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'client_cooperatives',
+    tableName: 'Clients_cooperatives',
 });
 
 export default ClientCooperatives;

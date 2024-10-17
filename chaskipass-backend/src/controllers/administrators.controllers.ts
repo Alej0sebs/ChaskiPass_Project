@@ -13,30 +13,24 @@ export const createSaasAdministrator = async (req: Request, res: Response) => {
         const { dni, user_name, email, password } = req.body;
         const result = await createSaasAdministratorService({dni, user_name, email, password, role_id: ''});
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
-// Crear un nuevo inquilino (tenant)
-export const createNewTenant = async (req: Request, res: Response) => {
-    try {
-        const { dni, name, last_name, user_name, email, phone, password, address, role_id, cooperative_id } = req.body;
-        const result = await createNewTenantService({dni, name, last_name, user_name, email, phone, password, address, role_id, cooperative_id});
-        res.status(result.status).json(result.json);
-    } catch (error) {
-        res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
-    }
-};
 
 // Crear una cooperativa
 export const createCooperative = async (req: Request, res: Response) => {
     try {
-        const { id, name, address, phone, email, description } = req.body;
-        const result = await createCooperativeService({id, name, address, phone, email, description});
+        const { id, name, address, phone, email, logo } = req.body;
+        const result = await createCooperativeService({id, name, address, phone, email, logo});
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };
 
@@ -46,7 +40,14 @@ export const createRoles = async (req: Request, res: Response) => {
         const { id, name, description } = req.body;
         const result = await createRoleService({id, name, description});
         res.status(result.status).json(result.json);
+        return;
     } catch (error) {
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
+};
+
+
+export const createNewStation= async (req: Request, res: Response) => {
+
 };

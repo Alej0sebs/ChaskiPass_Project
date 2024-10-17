@@ -4,26 +4,39 @@ import useBusLayout from '../../hooks/useBusLayout';
 import { SeatConfigT } from '../../types';
 import toast from 'react-hot-toast';
 
-// interface BusElement {
-//     id: string;
-//     type: string;
-//     name: string;
-//     position: { x: number; y: number };
-// }
-
 const TypebusRegistration = () => {
-    const [elements, setElements] = useState<SeatConfigT[]>([]); // Almacena los elementos del bus
+    const [busConfigurationName, setBusConfigurationName] = useState(''); // Nuevo estado para el nombre del bus
+    const [numFloors, setNumFloors] = useState(1); // Estado para el número de pisos
+    const [floorElements, setFloorElements] = useState<{ [key: number]: SeatConfigT[] }>({ 1: [] }); // Estado para almacenar elementos por piso
     const [selectedElement, setSelectedElement] = useState<string | null>(null); // Almacena el ID del elemento seleccionado
     const [seatName, setSeatName] = useState(''); // Nombre dinámico del asiento
     const [bathCounter, setBathCounter] = useState(1); // Contador para los baños
     const [stairsCounter, setStairsCounter] = useState(1); // Contador para las escaleras
+    const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado
     const { loading, sendBusLayout } = useBusLayout();
 
+    // Función para verificar si el nombre del asiento ya existe en cualquier piso
+    const seatNameExists = (name: string) => {
+        for (const floor in floorElements) {
+            if (floorElements[floor].some(el => el.type === 'seat' && el.name.toLowerCase() === name.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     const addElement = (type: string) => {
-        const busContainer = document.getElementById('bus-container');
+        const busContainer = document.getElementById(`bus-container-${selectedFloor}`);
         const busRect = busContainer!.getBoundingClientRect();
 
         if (type === 'seat' && seatName === '') return;
+
+        // Verificar si el nombre del asiento ya existe
+        if (type === 'seat' && seatNameExists(seatName)) {
+            toast.error(`El nombre del asiento "${seatName}" ya existe en otro piso.`);
+            return;
+        }
+
         let newElement = {
             id: '',
             type,
@@ -32,23 +45,24 @@ const TypebusRegistration = () => {
         };
 
         if (type === 'seat' && seatName) {
-            // Asignar ID basado en el nombre del asiento
             newElement.id = `seat-${seatName.toLowerCase()}`;
             newElement.name = seatName;
-            setSeatName(''); // Limpiar el input después de agregar el asiento
+            setSeatName('');
         } else if (type === 'bathroom') {
-            // ID autoincremental para baños
             newElement.id = `bath-${bathCounter}`;
-            setBathCounter(bathCounter + 1); // Incrementar contador para el próximo baño
+            setBathCounter(bathCounter + 1);
         } else if (type === 'stairs') {
-            // ID autoincremental para escaleras
             newElement.id = `stairs-${stairsCounter}`;
-            setStairsCounter(stairsCounter + 1); // Incrementar contador para las próximas escaleras
+            setStairsCounter(stairsCounter + 1);
         }
 
-        // Verificar si ya existe un elemento con el mismo ID para evitar duplicados
-        if (!elements.some(el => el.id === newElement.id)) {
-            setElements([...elements, newElement]);
+        const currentFloorElements = floorElements[selectedFloor] || [];
+
+        if (!currentFloorElements.some(el => el.id === newElement.id)) {
+            setFloorElements({
+                ...floorElements,
+                [selectedFloor]: [...currentFloorElements, newElement]
+            });
         } else {
             alert(`El ID "${newElement.id}" ya existe. Por favor, elige un nombre diferente para el asiento.`);
         }
@@ -56,16 +70,32 @@ const TypebusRegistration = () => {
 
     const removeSelectedElement = () => {
         if (selectedElement !== null) {
-            const updatedElements = elements.filter((el) => el.id !== selectedElement);
-            setElements(updatedElements);
-            setSelectedElement(null); // Deseleccionar después de eliminar
+            const updatedElements = floorElements[selectedFloor].filter((el) => el.id !== selectedElement);
+            setFloorElements({
+                ...floorElements,
+                [selectedFloor]: updatedElements
+            });
+            setSelectedElement(null);
+        }
+    };
+
+    const handleFloorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newNumFloors = parseInt(e.target.value, 10);
+        setNumFloors(newNumFloors);
+
+        // Crear nuevos pisos si se selecciona más de 1
+        if (newNumFloors === 2 && !floorElements[2]) {
+            setFloorElements({
+                ...floorElements,
+                2: []
+            });
         }
     };
 
     useEffect(() => {
         const handleDrag = (e: MouseEvent, id: string) => {
             const element = document.getElementById(id);
-            const busContainer = document.getElementById('bus-container');
+            const busContainer = document.getElementById(`bus-container-${selectedFloor}`);
             const busRect = busContainer!.getBoundingClientRect();
             const elementRect = element!.getBoundingClientRect();
 
@@ -76,22 +106,23 @@ const TypebusRegistration = () => {
                 let newLeft = (event.clientX - busRect.left - shiftX) / busRect.width * 100;
                 let newTop = (event.clientY - busRect.top - shiftY) / busRect.height * 100;
 
-                // Obtener el tamaño del elemento
                 const elementWidth = (elementRect.width / busRect.width) * 100;
                 const elementHeight = (elementRect.height / busRect.height) * 100;
 
-                // Limitar la posición para que no se salga del contenedor
                 if (newLeft < 0) newLeft = 0;
                 if (newTop < 0) newTop = 0;
-                if (newLeft > 100 - elementWidth) newLeft = 100 - elementWidth; // Ajuste con el ancho del elemento
-                if (newTop > 100 - elementHeight) newTop = 100 - elementHeight; // Ajuste con la altura del elemento
+                if (newLeft > 100 - elementWidth) newLeft = 100 - elementWidth;
+                if (newTop > 100 - elementHeight) newTop = 100 - elementHeight;
 
-                const updatedElements = elements.map(el =>
+                const updatedElements = floorElements[selectedFloor].map(el =>
                     el.id === id
                         ? { ...el, position: { x: newLeft, y: newTop } }
                         : el
                 );
-                setElements(updatedElements);
+                setFloorElements({
+                    ...floorElements,
+                    [selectedFloor]: updatedElements
+                });
             };
 
             document.addEventListener('mousemove', onMouseMove);
@@ -102,54 +133,148 @@ const TypebusRegistration = () => {
             };
         };
 
-        elements.forEach((el) => {
+        floorElements[selectedFloor]?.forEach((el) => {
             const element = document.getElementById(el.id);
             if (element) {
-                element!.onmousedown = (e) => {
-                    setSelectedElement(el.id); // Selecciona el elemento cuando se hace clic en él
+                element.onmousedown = (e) => {
+                    setSelectedElement(el.id);
                     handleDrag(e as any, el.id);
                 };
-                element!.ondragstart = () => false; // Desactivar el arrastre por defecto
+                element.ondragstart = () => false;
             }
         });
-    }, [elements]);
+    }, [floorElements, selectedFloor]);
 
-    // const saveSeatsConfiguration = async (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-    const saveSeatsConfiguration = async () => {
-        if (elements.length === 0) {
-            toast.error('No se puede guardar un bus sin asientos');
+    // Solución al problema de las posiciones incorrectas al cambiar de piso
+    useEffect(() => {
+        floorElements[selectedFloor]?.forEach((el) => {
+            const element = document.getElementById(el.id);
+            if (element) {
+                const busContainer = document.getElementById(`bus-container-${selectedFloor}`);
+                const busRect = busContainer!.getBoundingClientRect();
+
+                // Calcular la posición absoluta correctamente
+                const absoluteLeft = (el.position.x / 100) * busRect.width;
+                const absoluteTop = (el.position.y / 100) * busRect.height;
+
+                element.style.left = `${absoluteLeft}px`;
+                element.style.top = `${absoluteTop}px`;
+            }
+        });
+    }, [selectedFloor, floorElements]);
+
+    const saveSeatsConfiguration = () => {
+        if (!busConfigurationName) {
+            toast.error('Debes asignar un nombre al bus.');
             return;
-        };
-        await sendBusLayout({ //cambiar esto
-            id: '1',
-            name: 'Bus 1',
-            cooperative_id: '1',
-            layout: elements,
+        }
+        if (floorElements[1].length === 0) {
+            toast.error('El primer piso debe tener al menos un elemento.');
+            return;
+        }
+
+        const cooperative = localStorage.getItem('chaski-log') || '{}';
+        sendBusLayout({
+            id: 0,
+            name: busConfigurationName,
+            cooperative_id: JSON.parse(cooperative).cooperative,
+            layout: floorElements,
         });
     };
 
     return (
-        <>
-            <div className="mx-auto max-w-270">
-                <Breadcrumb pageName="Registro de buses" />
-                <div className="flex flex-col md:flex-row items-start gap-4">
-                    {/* Contenedor del bus con mejoras visuales */}
-                    <div
-                        id="bus-container"
-                        className="relative h-[600px] w-[350px] md:w-[350px] border-4 border-gray-700 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-100 shadow-lg"
-                    >
-                        {elements.map((element) => {
-                            const busContainer = document.getElementById('bus-container');
-                            const busRect = busContainer!.getBoundingClientRect();
+        <div className="mx-auto max-w-270">
+            <Breadcrumb pageName="Registro de buses" />
+            <div className="flex flex-col md:flex-row items-start gap-4">
+                <div className="controls mt-4 flex flex-col gap-4">
+                    {/* Input para el nombre del bus */}
+                    <input
+                        type="text"
+                        placeholder="Nombre del bus"
+                        value={busConfigurationName}
+                        onChange={(e) => setBusConfigurationName(e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1"
+                    />
+                    {/* Selector para el número de pisos */}
+                    <label>Número de pisos:</label>
+                    <select value={numFloors} onChange={handleFloorChange} className="border border-gray-300 rounded px-2 py-1">
+                        <option value={1}>1 Piso</option>
+                        <option value={2}>2 Pisos</option>
+                    </select>
+                    <div>
+                        {/* Selección de piso actual para edición */}
+                        <label>Piso actual: </label>
+                        <select
+                            value={selectedFloor}
+                            onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
+                            className="border border-gray-300 rounded px-2 py-1"
+                        >
+                            {Array.from({ length: numFloors }, (_, i) => i + 1).map(floor => (
+                                <option key={floor} value={floor}>Piso {floor}</option>
+                            ))}
+                        </select>
+                    </div>
 
-                            const absoluteLeft = (element!.position.x / 100) * busRect.width;
-                            const absoluteTop = (element!.position.y / 100) * busRect.height;
+                    {/* Input para el nombre del asiento */}
+                    <input
+                        type="text"
+                        placeholder="Nombre del asiento (e.g. V1)"
+                        value={seatName}
+                        onChange={(e) => setSeatName(e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1"
+                    />
+                    <button
+                        onClick={() => addElement('seat')}
+                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                    >
+                        Agregar Asiento
+                    </button>
+                    <button
+                        onClick={() => addElement('bathroom')}
+                        className="bg-purple-400 text-white px-4 py-2 rounded"
+                    >
+                        Agregar Baño
+                    </button>
+                    <button
+                        onClick={() => addElement('stairs')}
+                        className="bg-orange-400 text-white px-4 py-2 rounded"
+                    >
+                        Agregar Escalera
+                    </button>
+                    {/* Botón para eliminar el elemento seleccionado */}
+                    <button
+                        onClick={removeSelectedElement}
+                        className={`bg-red-500 text-white px-4 py-2 rounded ${selectedElement === null ? 'opacity-50' : ''}`}
+                        disabled={selectedElement === null}
+                    >
+                        Eliminar Elemento Seleccionado
+                    </button>
+                    <button
+                        onClick={saveSeatsConfiguration}
+                        className='bg-green-500 text-white px-4 py-2 rounded'
+                        disabled={loading}
+                    >
+                        {loading ? <span className="loading loading-spinner"></span> : "Guardar"}
+                    </button>
+                </div>
+
+                {/* Contenedores para los pisos */}
+                {Array.from({ length: numFloors }, (_, i) => i + 1).map(floor => (
+                    <div
+                        key={floor}
+                        id={`bus-container-${floor}`}
+                        className={`relative h-[600px] w-[350px] border-4 border-gray-700 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-100 shadow-lg ${selectedFloor === floor ? 'block' : 'hidden'}`}
+                    >
+                        {floorElements[floor]?.map((element) => {
+                            const busContainer = document.getElementById(`bus-container-${floor}`);
+                            const busRect = busContainer!.getBoundingClientRect();
+                            const absoluteLeft = (element.position.x / 100) * busRect.width;
+                            const absoluteTop = (element.position.y / 100) * busRect.height;
 
                             return (
                                 <div
-                                    key={element!.id}
-                                    id={element!.id}
+                                    key={element.id}
+                                    id={element.id}
                                     className={`absolute cursor-grab ${selectedElement === element.id ? 'border border-blue-500' : ''}`}
                                     style={{
                                         left: `${absoluteLeft}px`,
@@ -172,6 +297,7 @@ const TypebusRegistration = () => {
                                     )}
                                     {element.type === 'bathroom' && (
                                         <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            {/* Bathroom SVG */}
                                             <rect x="10" y="2" width="20" height="28" rx="3" fill="#FFF" stroke="#000" strokeWidth="1.5" />
                                             <circle cx="20" cy="12" r="4" fill="#000" />
                                             <rect x="15" y="18" width="10" height="8" fill="#000" />
@@ -179,6 +305,7 @@ const TypebusRegistration = () => {
                                     )}
                                     {element.type === 'stairs' && (
                                         <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            {/* Stairs SVG */}
                                             <rect x="5" y="5" width="30" height="22" fill="#FFF" stroke="#000" strokeWidth="1.5" />
                                             <line x1="10" y1="20" x2="30" y2="20" stroke="#000" strokeWidth="1.5" />
                                             <line x1="10" y1="15" x2="30" y2="15" stroke="#000" strokeWidth="1.5" />
@@ -189,54 +316,9 @@ const TypebusRegistration = () => {
                             );
                         })}
                     </div>
-
-                    {/* Controles para agregar y eliminar elementos */}
-                    <div className="controls mt-4 flex flex-col gap-4">
-                        {/* Input para el nombre del asiento */}
-                        <input
-                            type="text"
-                            placeholder="Nombre del asiento (e.g. V1)"
-                            value={seatName}
-                            onChange={(e) => setSeatName(e.target.value)}
-                            className="border border-gray-300 rounded px-2 py-1"
-                        />
-                        <button
-                            onClick={() => addElement('seat')}
-                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                        >
-                            Agregar Asiento
-                        </button>
-                        <button
-                            onClick={() => addElement('bathroom')}
-                            className="bg-purple-400 text-white px-4 py-2 rounded"
-                        >
-                            Agregar Baño
-                        </button>
-                        <button
-                            onClick={() => addElement('stairs')}
-                            className="bg-orange-400 text-white px-4 py-2 rounded"
-                        >
-                            Agregar Escalera
-                        </button>
-                        {/* Botón para eliminar el elemento seleccionado */}
-                        <button
-                            onClick={removeSelectedElement}
-                            className={`bg-red-500 text-white px-4 py-2 rounded ${selectedElement === null ? 'opacity-50' : ''}`}
-                            disabled={selectedElement === null}
-                        >
-                            Eliminar Elemento Seleccionado
-                        </button>
-                        <button
-                            onClick={saveSeatsConfiguration}
-                            className='bg-green-500 text-white px-4 py-2 rounded'
-                            disabled={loading}
-                        >
-                            {loading ? <span className="loading loading-spinner"></span> : "Guardar"}
-                        </button>
-                    </div>
-                </div>
+                ))}
             </div>
-        </>
+        </div>
     );
 };
 

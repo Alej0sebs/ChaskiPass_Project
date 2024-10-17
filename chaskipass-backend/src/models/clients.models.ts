@@ -40,7 +40,7 @@ Clients.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'clients',
+    tableName: 'Clients',
     timestamps: false
 });
 

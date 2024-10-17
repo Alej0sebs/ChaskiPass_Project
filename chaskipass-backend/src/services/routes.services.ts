@@ -6,6 +6,7 @@ import { HandleMessages } from '../error/handleMessages.error';
 import { RoleEnum } from '../utils/enums.utils';
 import { FrequencyT, RoutesT, ValidateRoleAndRouteId } from '../types/index.types';
 
+
 // Servicio para crear una nueva ruta
 export const createRouteService = async ({dni,arrival_station_id,departure_station_id,cooperative_id,stopOverList}:RoutesT) => {
     const parameters: ValidateRoleAndRouteId = {
@@ -30,7 +31,7 @@ export const createRouteService = async ({dni,arrival_station_id,departure_stati
             await StopOvers.create({
                 id:0,
                 route_id: route.id,
-                station_id: stopOver,
+                station_id: parseInt(stopOver as string),
                 order: index + 1
             });
         }));
@@ -67,6 +68,7 @@ export const createFrequencyService = async ({cooperative_id,id, bus_id, route_i
     return { status: 201, json: { msg: HandleMessages.FREQUENCY_CREATED_SUCCESSFULLY  } };
 };
 
+
 // Función auxiliar para verificar la ruta y crear el ID único
 const verifyRoute = async ({ dni, cooperative_id, departure_station_id, arrival_station_id }: ValidateRoleAndRouteId) => {
     const userRole = await Users.findOne({
@@ -83,7 +85,8 @@ const verifyRoute = async ({ dni, cooperative_id, departure_station_id, arrival_
 
     // Generar el ID único de la ruta basado en cooperative_id y estaciones
     const date = new Date();
-    const id = `${cooperative_id?.substring(0, 3)}${departure_station_id.substring(0, 5)}-${date.getHours()}${date.getMinutes()}-${arrival_station_id.substring(0, 5)}`;
+    //revisar esta generacion del id
+    const id = `${cooperative_id?.substring(0, 3)}${departure_station_id}-${date.getHours()}${date.getMinutes()}-${arrival_station_id}`;
 
     const routeExists = await Routes.findOne({ where: { id } });
     if (routeExists) {
@@ -92,3 +95,4 @@ const verifyRoute = async ({ dni, cooperative_id, departure_station_id, arrival_
 
     return id;
 };
+

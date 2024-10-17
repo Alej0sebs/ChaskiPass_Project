@@ -9,6 +9,9 @@ import Roles from "../models/roles.models";
 import Tickets from "../models/tickets.models";
 import Frequencies from "../models/frequencies.models";
 import BusStructure from "../models/busStructure.models";
+import BusStations from "../models/busStations.models";
+import Seats from "../models/seats.models";
+import { StationCooperative } from "../models/stationCooperative.models";
 
 // export type UserT=InferAttributes<Users>
 // export type UserLoginT=Pick<UserT, 'user_name' | 'email' | 'password' | 'dni' | 'cooperative_id'>
@@ -16,8 +19,8 @@ import BusStructure from "../models/busStructure.models";
 export type ValidateRoleAndRouteId = {
     dni: string,
     cooperative_id: string,
-    departure_station_id: string,
-    arrival_station_id: string
+    departure_station_id: number,
+    arrival_station_id: number
 }
 export type SaasAdmin = InferAttributes<Admin>;
 
@@ -49,3 +52,13 @@ export type TicketInformationT=InferAttributes<Tickets> & {
 }
 
 export type BusStructureT=InferAttributes<BusStructure>
+
+export type BusStationT=InferAttributes<BusStations>
+
+export type SeatT=InferAttributes<Seats>;
+
+export type SeatCreateT=Pick<SeatT, 'bus_id' | 'number_seat' | 'type_seat_id'>;
+
+export type StationCooperativeT = InferAttributes<StationCooperative>
+
+export type NewStationT= InferAttributes<BusStations>;

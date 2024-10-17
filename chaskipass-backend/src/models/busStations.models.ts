@@ -5,7 +5,7 @@ export class BusStations extends Model<
     InferAttributes<BusStations>,
     InferCreationAttributes<BusStations>
 > {
-    declare id: string;
+    declare id: number;
     declare city_id: string;
     declare name: string;
     declare address: string;
@@ -16,11 +16,12 @@ export class BusStations extends Model<
 
 BusStations.init({
     id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
     city_id: {
-        type: DataTypes.STRING(5),
+        type: DataTypes.STRING(10),
         allowNull: false,
     },
     name: {
@@ -28,7 +29,7 @@ BusStations.init({
         allowNull: false,
     },
     address: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING(80),
         allowNull: false,
     },
     phone: {
@@ -36,16 +37,16 @@ BusStations.init({
         allowNull: true,
     },
     open_time: {
-        type: DataTypes.TIME,
+        type: DataTypes.STRING(10),
         allowNull: false,
     },
     close_time: {
-        type: DataTypes.TIME,
+        type: DataTypes.STRING(10),
         allowNull: false,
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'bus_stations',
+    tableName: 'Bus_stations',
     timestamps: false
 });
 

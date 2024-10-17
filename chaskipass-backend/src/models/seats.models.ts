@@ -6,7 +6,7 @@ export class Seats extends Model<
     InferCreationAttributes<Seats>
 > {
     declare id: string;
-    declare bus_id: string;
+    declare bus_id: number;
     declare number_seat: number;
     declare type_seat_id: string;
 }
@@ -17,7 +17,7 @@ Seats.init({
         primaryKey: true,
     },
     bus_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     number_seat: {
@@ -30,7 +30,7 @@ Seats.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'seats',
+    tableName: 'Seats',
     timestamps: false
 });
 

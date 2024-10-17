@@ -4,7 +4,8 @@ import { Admin } from '../models/administrators.models';
 import Cooperatives from '../models/cooperatives.models';
 import Roles from '../models/roles.models';
 import { HandleMessages } from '../error/handleMessages.error';
-import { CooperativesT, RolesT, SaasAdmin, UserT } from '../types/index.types';
+import { CooperativesT, NewStationT, RolesT, SaasAdmin, UserT } from '../types/index.types';
+import BusStations from '../models/busStations.models';
 
 // Servicio para crear un administrador SaaS
 export const createSaasAdministratorService = async ({dni, user_name, email, password}:SaasAdmin) => {
@@ -76,7 +77,7 @@ export const createCooperativeService = async (
     address,
     phone,
     email,
-    description}:CooperativesT
+    logo}:CooperativesT
 ) => {
     await Cooperatives.create({
         id,
@@ -84,7 +85,7 @@ export const createCooperativeService = async (
         address,
         phone,
         email,
-        description
+        logo
     });
 
     return { status: 201, json: { msg: HandleMessages.COOPERATIVE_CREATED_SUCCESSFULLY } };
@@ -99,4 +100,28 @@ export const createRoleService = async ({id, name, description}:RolesT) => {
     });
 
     return { status: 201, json: { msg: HandleMessages.ROLE_CREATED_SUCCESSFULLY } };
+};
+
+//Ambato id 162
+export const createNewStationService = async ({city_id, name, address, phone, open_time, close_time}:NewStationT) => {
+    const stationExists = await BusStations.count({
+        where:{
+            city_id,
+            name
+        }
+    });
+
+    if(stationExists != 0) return {status: 400, json:{message: HandleMessages.BUS_NOT_FOUND}};
+
+    await BusStations.create({
+        id:0,
+        city_id,
+        name,
+        address,
+        phone,
+        open_time,  
+        close_time        
+    });
+
+    return {status: 201, json:{message: HandleMessages.STATION_CREATED_SUCCESSFULLY}};
 };

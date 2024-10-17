@@ -6,8 +6,8 @@ export class Routes extends Model<
     InferCreationAttributes<Routes>
 > {
     declare id: string;
-    declare departure_station_id: string;
-    declare arrival_station_id: string;
+    declare departure_station_id: number;
+    declare arrival_station_id: number;
     declare cooperative_id: string;
 }
 
@@ -17,11 +17,11 @@ Routes.init({
         primaryKey: true,
     },
     departure_station_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     arrival_station_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     cooperative_id: {
@@ -30,7 +30,7 @@ Routes.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'routes',
+    tableName: 'Routes',
     timestamps: false
 });
 

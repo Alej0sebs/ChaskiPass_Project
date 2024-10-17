@@ -15,12 +15,12 @@ PaymentMethods.init({
         primaryKey: true,
     },
     name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(10),
         allowNull: false,
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'payment_methods',
+    tableName: 'Payment_methods',
     timestamps: false
 });
 

@@ -7,7 +7,7 @@ export class StopOvers extends Model<
 > {
     declare id: number;
     declare route_id: string;
-    declare station_id: string;
+    declare station_id: number;
     declare order: number;
 }
 
@@ -22,7 +22,7 @@ StopOvers.init({
         allowNull: false,
     },
     station_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     order: {
@@ -31,7 +31,7 @@ StopOvers.init({
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'stopOvers',
+    tableName: 'Stopovers',
     timestamps: false
 });
 

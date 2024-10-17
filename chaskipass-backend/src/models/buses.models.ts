@@ -67,7 +67,7 @@ Buses.init({
     }
 }, {
     sequelize: connectionDb,  // Conexión a la base de datos
-    tableName: 'buses',       // Nombre de la tabla en la base de datos
+    tableName: 'Buses',       // Nombre de la tabla en la base de datos
     timestamps: false         // Deshabilitar timestamps si no son necesarios
 });
 

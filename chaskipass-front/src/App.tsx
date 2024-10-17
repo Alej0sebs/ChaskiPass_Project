@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -17,15 +17,19 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import BusRegistration from './pages/Registration/bus.registration';
-import RoutesRegistration from './pages/Registration/routes.registration';
+import RoutesRegistration from './pages/Processes/routes.processes';
 import TerminalsRegistration from './pages/Registration/terminals.registration';
 import TypebusRegistration from './pages/Registration/typebus.registration';
 import TicketsalesRegistration from './pages/Processes/ticketsales.processes';
 import { Toaster } from 'react-hot-toast';
+import { useAuthContext } from './context/AuthContext';
+import FrequencyRegistration from './pages/Processes/frequency.processes';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
+  //user authenticated?
+  const { authUser } = useAuthContext();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -43,27 +47,31 @@ function App() {
   ) : (
     <>
       {isAuthRoute ? (
-        <Routes>
-          <Route
-            path="/auth/signin"
-            element={
-              <>
-                <PageTitle title="Signin | ChaskiPass" />
-                <SignIn />
-              </>
-            }
-          />
-        </Routes>
+        <>
+          <Routes>
+            <Route
+              path="/auth/signin"
+              element={
+                authUser ? <Navigate to='/' /> :
+                  <>
+                    <PageTitle title="Signin | ChaskiPass" />
+                    <SignIn />
+                  </>
+              }
+            />
+          </Routes>
+          <Toaster />
+        </>
       ) : (
         <DefaultLayout>
           <Routes>
             <Route
-              index
+              path='/'
               element={
-                <>
+                authUser ? <>
                   <PageTitle title="eCommerce Dashboard | ChaskiPass" />
                   <ECommerce />
-                </>
+                </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
@@ -78,128 +86,154 @@ function App() {
             <Route
               path="/profile"
               element={
-                <>
-                  <PageTitle title="Profile | ChaskiPass" />
-                  <Profile />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Profile | ChaskiPass" />
+                    <Profile />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/forms/form-elements"
               element={
-                <>
-                  <PageTitle title="Form Elements | ChaskiPass" />
-                  <FormElements />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Form Elements | ChaskiPass" />
+                    <FormElements />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/forms/form-layout"
               element={
-                <>
-                  <PageTitle title="Form Layout | ChaskiPass" />
-                  <FormLayout />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Form Layout | ChaskiPass" />
+                    <FormLayout />
+                  </> :
+                  <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/tables"
               element={
-                <>
-                  <PageTitle title="Tables | ChaskiPass" />
-                  <Tables />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Tables | ChaskiPass" />
+                    <Tables />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/settings"
               element={
-                <>
-                  <PageTitle title="Settings | ChaskiPass" />
-                  <Settings />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Settings | ChaskiPass" />
+                    <Settings />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/chart"
               element={
-                <>
-                  <PageTitle title="Basic Chart | ChaskiPass" />
-                  <Chart />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Basic Chart | ChaskiPass" />
+                    <Chart />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/ui/alerts"
               element={
-                <>
-                  <PageTitle title="Alerts | ChaskiPass" />
-                  <Alerts />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Alerts | ChaskiPass" />
+                    <Alerts />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/ui/buttons"
               element={
-                <>
-                  <PageTitle title="Buttons | ChaskiPass" />
-                  <Buttons />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Buttons | ChaskiPass" />
+                    <Buttons />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/auth/signup"
               element={
-                <>
-                  <PageTitle title="Signin | ChaskiPass" />
-                  <SignUp />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Signin | ChaskiPass" />
+                    <SignUp />
+                  </> :
+                  <Navigate to='/auth/signin' />
               }
             />
             {/* Added by me  */}
             <Route
               path="/register/bus"
               element={
-                <>
-                  <PageTitle title="Bus | ChaskiPass" />
-                  <BusRegistration />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Bus | ChaskiPass" />
+                    <BusRegistration />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
-              path="/register/routes"
+              path="/processes/routes"
               element={
-                <>
-                  <PageTitle title="Routes | ChaskiPass" />
-                  <RoutesRegistration />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Routes | ChaskiPass" />
+                    <RoutesRegistration />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/register/terminals"
               element={
-                <>
-                  <PageTitle title="Terminals| ChaskiPass" />
-                  <TerminalsRegistration />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Terminals| ChaskiPass" />
+                    <TerminalsRegistration />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
             <Route
               path="/register/typebus"
               element={
-                <>
-                  <PageTitle title="Typebus| ChaskiPass" />
-                  <TypebusRegistration />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Typebus| ChaskiPass" />
+                    <TypebusRegistration />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
-              <Route
+            <Route
               path="/processes/ticketsales"
               element={
-                <>
-                  <PageTitle title="Ticketsales| ChaskiPass" />
-                  <TicketsalesRegistration />
-                </>
+                authUser ?
+                  <>
+                    <PageTitle title="Ticketsales| ChaskiPass" />
+                    <TicketsalesRegistration />
+                  </> : <Navigate to='/auth/signin' />
+              }
+            />
+            <Route
+              path="/processes/frequency"
+              element={
+                authUser ?
+                  <>
+                    <PageTitle title="Frecuencias| ChaskiPass" />
+                    <FrequencyRegistration />
+                  </> : <Navigate to='/auth/signin' />
               }
             />
           </Routes>

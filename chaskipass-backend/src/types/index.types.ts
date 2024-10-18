@@ -28,6 +28,8 @@ export type UserLoginT = Pick<Users, 'user_name' | 'email' | 'password'>;
 
 export type UserT = InferAttributes<Users>;
 
+export type UpdateUserT = Pick<Users, 'dni'|'name' | 'last_name'| 'user_name' | 'phone' | 'address' |  'password'>;
+
 export type ClientsT = InferAttributes<Clients>;
 
 export type BusT = InferAttributes<Buses>;
@@ -57,7 +59,7 @@ export type BusStationT=InferAttributes<BusStations>
 
 export type SeatT=InferAttributes<Seats>;
 
-export type SeatCreateT=Pick<SeatT, 'bus_id' | 'number_seat' | 'type_seat_id'>;
+export type SeatCreateT=Pick<Seats, 'bus_id' | 'number_seat' | 'type_seat_id'>;
 
 export type StationCooperativeT = InferAttributes<StationCooperative>
 

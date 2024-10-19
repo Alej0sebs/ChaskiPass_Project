@@ -32,8 +32,8 @@ import {
     ClientCooperatives,
     Admin,
     BusStructure,
-    SeriesStation,
-    StationCooperative
+    StationCooperative,
+    SerialStation
 } from '../models/tableAssociations.models';
 
 export default class Server {
@@ -111,7 +111,7 @@ export default class Server {
                 await Seats.sync(),               
                 await StopOvers.sync(),
                 await Frequencies.sync(),          
-                await SeriesStation.sync(),        
+                await SerialStation.sync(),        
                 await Clients.sync(),              
                 await ClientCooperatives.sync(),   
                 await Tickets.sync(),              

@@ -12,6 +12,7 @@ import BusStructure from "../models/busStructure.models";
 import BusStations from "../models/busStations.models";
 import Seats from "../models/seats.models";
 import { StationCooperative } from "../models/stationCooperative.models";
+import { SerialStation } from "../models/serialStation.model";
 
 // export type UserT=InferAttributes<Users>
 // export type UserLoginT=Pick<UserT, 'user_name' | 'email' | 'password' | 'dni' | 'cooperative_id'>
@@ -64,3 +65,5 @@ export type SeatCreateT=Pick<Seats, 'bus_id' | 'number_seat' | 'type_seat_id'>;
 export type StationCooperativeT = InferAttributes<StationCooperative>
 
 export type NewStationT= InferAttributes<BusStations>;
+
+export type SerialNumberT= InferAttributes<SerialStation>

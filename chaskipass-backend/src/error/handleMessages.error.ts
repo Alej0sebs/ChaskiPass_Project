@@ -38,4 +38,5 @@ export enum HandleMessages{
     COOP_LINK_SUCCESFULLY='Estación vinculada con éxito',
     COOP_STATION_EXIST='La estación ya está vinculada',
     STATION_CREATED_SUCCESSFULLY='Estación creada con éxito',
+    USER_UPDATED_SUCCESSFULLY='Usuario actualizado con éxito',
 }

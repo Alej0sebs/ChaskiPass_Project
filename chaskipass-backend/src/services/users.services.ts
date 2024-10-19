@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Users } from '../models/users.models';
 import { HandleMessages } from '../error/handleMessages.error';
 import { Op } from 'sequelize';
-import { DataPaginationT, UserT } from '../types/index.types';
+import { DataPaginationT, UpdateUserT, UserT } from '../types/index.types';
 
 
 // Servicio para obtener usuarios con paginación
@@ -28,6 +28,17 @@ export const getUsersService = async (cooperative_id: string, dni: string, {page
         list: usersList
     };
 };
+
+export const getUserByIdService = async(dni:string) =>{
+    const user= await Users.findOne({
+        where:{
+            dni
+        },
+        attributes: { exclude: ['password'] }
+    }) as Users;
+
+    return user;
+}
 
 // Servicio para buscar usuarios con filtro
 export const searchUserByFilterService = async (cooperative_id: string, dni: string, {pattern, page, limit}: DataPaginationT) => {
@@ -59,7 +70,7 @@ export const searchUserByFilterService = async (cooperative_id: string, dni: str
 };
 
 // Lógica para crear usuario
-export const createUserLogic = async (userData: UserT) => {
+export const createUserService = async (userData: UserT) => {
     const { dni, name, last_name, user_name, email, phone, password, address, role_id, cooperative_id } = userData;
 
     // Verificar si el usuario ya existe
@@ -92,4 +103,32 @@ export const createUserLogic = async (userData: UserT) => {
     return { status: 201, json: { msg: HandleMessages.USER_CREATED_SUCCESSFULLY } };
 };
 
+export const updateUserService = async (userData: UpdateUserT) => {
+    const { dni, name, last_name, user_name, phone, address, password } = userData;
 
+    // Verificar si el usuario ya existe
+    const userExists: Users = await Users.findOne({
+        where: { dni },
+        attributes: { exclude: ["password"] }
+    }) as Users;
+
+    if (!userExists) {
+        return { status: 400, json: { error: HandleMessages.USER_NOT_FOUND } };
+    }
+
+    const updatedPassword = await bcrypt.hash(password, 10);
+
+    // Actualizar usuario
+    await Users.update({
+        name,
+        last_name,
+        user_name,
+        phone,
+        address,
+        password: updatedPassword
+    }, {
+        where: { dni }
+    });
+
+    return { status: 201, json: { msg: HandleMessages.USER_UPDATED_SUCCESSFULLY } };
+};

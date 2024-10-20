@@ -13,7 +13,7 @@ export class Seats extends Model<
 
 Seats.init({
     id: {
-        type: DataTypes.STRING(15),
+        type: DataTypes.STRING(20), //seria mejor usar 36 por el uuid Unico
         primaryKey: true,
     },
     bus_id: {

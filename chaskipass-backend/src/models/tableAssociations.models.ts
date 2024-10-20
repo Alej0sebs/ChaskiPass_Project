@@ -17,7 +17,7 @@ import { Users } from "./users.models";
 import { ClientCooperatives } from "./clientCooperatives";
 import { Admin } from "./administrators.models";
 import BusStructure from "./busStructure.models";
-import { SeriesStation } from "./seriesStation.model";
+import { SerialStation } from "./serialStation.model";
 import { StationCooperative } from "./stationCooperative.models";
 
 Roles.hasMany(Users, {foreignKey: 'role_id', sourceKey: 'id'});
@@ -43,8 +43,8 @@ BusStations.hasMany(Tickets, {foreignKey: 'departure_station', sourceKey: 'id'})
 Tickets.belongsTo(BusStations, {foreignKey: 'departure_station', targetKey: 'id'});
 BusStations.hasMany(Tickets, {foreignKey: 'arrival_station', sourceKey: 'id'});
 Tickets.belongsTo(BusStations, {foreignKey: 'arrival_station', targetKey: 'id'});
-BusStations.hasMany(SeriesStation, {foreignKey: 'station_id', sourceKey: 'id'});
-SeriesStation.belongsTo(BusStations, {foreignKey: 'station_id', targetKey: 'id'});
+BusStations.hasMany(SerialStation, {foreignKey: 'station_id', sourceKey: 'id'});
+SerialStation.belongsTo(BusStations, {foreignKey: 'station_id', targetKey: 'id'});
 BusStations.hasMany(StationCooperative, {foreignKey: 'station_id', sourceKey: 'id'});
 StationCooperative.belongsTo(BusStations, {foreignKey: 'station_id', targetKey: 'id'});
 
@@ -64,8 +64,8 @@ Cooperatives.hasMany(ClientCooperatives, {foreignKey: 'cooperative_id', sourceKe
 ClientCooperatives.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
 Cooperatives.hasMany(Payments, {foreignKey: 'cooperative_id', sourceKey: 'id'});
 Payments.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
-Cooperatives.hasMany(SeriesStation, {foreignKey: 'cooperative_id', sourceKey: 'id'});
-SeriesStation.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
+Cooperatives.hasMany(SerialStation, {foreignKey: 'cooperative_id', sourceKey: 'id'});
+SerialStation.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
 
 Cities.hasMany(BusStations, {foreignKey: 'city_id', sourceKey: 'id'});
 BusStations.belongsTo(Cities, {foreignKey: 'city_id', targetKey: 'id'});
@@ -82,8 +82,8 @@ Seats.hasMany(Tickets, {foreignKey: 'seat_id', sourceKey: 'id'});
 
 Tickets.hasMany(Payments, {foreignKey: 'ticket_id', sourceKey: 'id'});
 Payments.belongsTo(Tickets, {foreignKey: 'ticket_id', targetKey: 'id'});
-SeriesStation.hasMany(Tickets, {foreignKey: 'serie_station_id', sourceKey: 'id'});
-Tickets.belongsTo(SeriesStation, {foreignKey: 'serie_station_id', targetKey: 'id'});
+SerialStation.hasMany(Tickets, {foreignKey: 'serial_station_id', sourceKey: 'id'});
+Tickets.belongsTo(SerialStation, {foreignKey: 'serial_station_id', targetKey: 'id'});
 
 Frequencies.hasMany(Tickets, {foreignKey: 'frequency_id', sourceKey: 'id'});
 Tickets.belongsTo(Frequencies, {foreignKey: 'frequency_id', targetKey: 'id'});
@@ -91,8 +91,8 @@ Tickets.belongsTo(Frequencies, {foreignKey: 'frequency_id', targetKey: 'id'});
 PaymentMethods.hasMany(Payments, {foreignKey: 'payment_method', sourceKey: 'id'});
 Payments.belongsTo(PaymentMethods, {foreignKey: 'payment_method', targetKey: 'id'});
 
-Users.hasMany(SeriesStation, {foreignKey: 'user_id', sourceKey: 'dni'});
-SeriesStation.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'dni'});
+Users.hasMany(SerialStation, {foreignKey: 'user_id', sourceKey: 'dni'});
+SerialStation.belongsTo(Users, {foreignKey: 'user_id', targetKey: 'dni'});
 
 export{
     Roles,
@@ -114,6 +114,6 @@ export{
     ClientCooperatives,
     Admin,
     BusStructure,
-    SeriesStation,
+    SerialStation,
     StationCooperative
 };

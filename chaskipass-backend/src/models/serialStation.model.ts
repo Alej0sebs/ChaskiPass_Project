@@ -1,17 +1,18 @@
 import { DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import connectionDb from "../db/connection.db";
 
-export class SeriesStation extends Model<
-    InferAttributes<SeriesStation>,
-    InferCreationAttributes<SeriesStation>> {
+export class SerialStation extends Model<
+    InferAttributes<SerialStation>,
+    InferCreationAttributes<SerialStation>> {
     declare id: number;
     declare station_id: number;
     declare user_id: string;
     declare cooperative_id: string;
-    declare series_number: string;
+    declare serial_number: string;
+    declare status:boolean;
 }
 
-SeriesStation.init({
+SerialStation.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -29,12 +30,16 @@ SeriesStation.init({
         type: DataTypes.STRING(10),
         allowNull: false,
     },
-    series_number: {
+    serial_number: {
         type: DataTypes.STRING(5),
         allowNull: false,
+    },
+    status:{
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
     }
 }, {
     sequelize: connectionDb,
-    tableName: 'Series_station',
+    tableName: 'Serial_station',
     timestamps: false
 })

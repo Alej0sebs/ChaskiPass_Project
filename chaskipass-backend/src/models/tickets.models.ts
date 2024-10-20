@@ -9,7 +9,7 @@ export class Tickets extends Model<
     declare client_dni: string;
     declare frequency_id: string;
     declare seat_id: string;
-    declare serie_station_id: number;
+    declare serial_station_id: number;
     declare ticket_code: string;
     declare price: number;
     declare departure_station: number;
@@ -32,10 +32,10 @@ Tickets.init({
         allowNull: false,
     },
     seat_id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(),
         allowNull: false,
     },
-    serie_station_id:{
+    serial_station_id:{
         type:DataTypes.INTEGER,
         allowNull:false,
     },

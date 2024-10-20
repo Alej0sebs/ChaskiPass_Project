@@ -3,8 +3,6 @@ import { HandleMessages } from '../error/handleMessages.error';
 import { createUserService, getUserByIdService, getUsersService, searchUserByFilterService, updateUserService } from '../services/users.services';
 import { sendEmail } from '../services/mail.services';
 import { getPaginationData } from '../utils/helpers.utils';
-import { UserT } from '../types/index.types';
-
 
 // Obtener lista de usuarios con paginación
 export const getUsers = async (req: Request, res: Response) => {
@@ -54,11 +52,13 @@ export const searchUserByFilter = async (req: Request, res: Response) => {
 // Registrar usuario y enviar correo
 export const registerAndSendEmail = async (req: Request, res: Response) => {
     try {
-        const { dni, name, last_name, user_name, email, phone, address, role_id, cooperative_id } = req.body;
-
+        let { dni, name, last_name, user_name, email, phone, address, role_id, cooperative_id } = req.body;
         // Generar contraseña aleatoria
         const password = generateRandomPassword();
-
+        
+        if(cooperative_id === undefined || cooperative_id === null || cooperative_id===''){
+            cooperative_id = req.userReq?.cooperative_id;
+        }
         // Crear el usuario llamando a la lógica de negocio
         const result = await createUserService({
             dni, name, last_name, user_name, email, phone, password, address, role_id, cooperative_id
@@ -81,15 +81,16 @@ export const registerAndSendEmail = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-    const {dni, name, last_name, user_name, phone, address, role_id, password} = req.body;
-    const result = await updateUserService({dni, name, last_name, user_name, phone, address, password});
-    if(result.status !== 201){
+    const { dni, name, last_name, user_name, phone, address, role_id, password } = req.body;
+    const result = await updateUserService({ dni, name, last_name, user_name, phone, address, password });
+    if (result.status !== 201) {
         res.status(result.status).json(result.json);
         return;
     }
     res.status(result.status).json(result.json);
     return;
 };
+
 
 // Generar contraseña aleatoria
 const generateRandomPassword = (): string => {

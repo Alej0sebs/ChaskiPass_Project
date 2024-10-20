@@ -1,0 +1,41 @@
+import { Request, Response } from 'express';
+import { createSellerSerialNumberService, getSerialNumbersService } from '../services/serialStation.services';
+import { SerialNumberT } from '../types/index.types';
+import { getPaginationData } from '../utils/helpers.utils';
+
+export const creatSellerSerialNumber= async(req:Request, res:Response)=>{
+    try{
+        const { cooperative_id } = req.userReq ?? {};
+        const {station_id, serial_number, user_id, status} = req.body;
+        const values:SerialNumberT={
+            id: 0,
+            cooperative_id: cooperative_id || "",
+            station_id,
+            serial_number,
+            user_id,
+            status
+        };
+        const result = await createSellerSerialNumberService(values);
+        if(result.status !== 201){
+            res.status(result.status).json(result.json);
+            return;
+        };
+        res.status(result.status).json(result.json);
+        return;
+    }catch(error){
+        res.status(500).json({msg: 'Internal server error'});
+        return;
+    }
+};
+
+export const getSerialNumbers = async(req:Request, res:Response)=>{
+    try{
+        const paginationData = await getPaginationData(req.query);
+        const result = await getSerialNumbersService(paginationData);
+        res.status(201).json(result);
+        return;
+    }catch(error){
+        res.status(500).json({msg: 'Internal server error'});
+        return;
+    }
+};

@@ -39,4 +39,6 @@ export enum HandleMessages{
     COOP_STATION_EXIST='La estación ya está vinculada',
     STATION_CREATED_SUCCESSFULLY='Estación creada con éxito',
     USER_UPDATED_SUCCESSFULLY='Usuario actualizado con éxito',
+    EXISTING_SERIAL_NUMBER='El número de serie ya existe',
+    SERIAL_NUMBER_CREATED_SUCCESSFULLY='El número de serie ha sido creado con éxito'
 }

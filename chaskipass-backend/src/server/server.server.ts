@@ -11,6 +11,7 @@ import ubicationsRoutes from '../routes/ubications.routes';
 import seatsRoutes from '../routes/seats.routes';
 import busStructureRoutes from '../routes/busStructure.routes';
 import stationCooperativesRoutes from '../routes/stationCooperative.routes';
+import serialStationRoutes from '../routes/serialStation.routes';
 
 import {
     Roles,
@@ -32,8 +33,8 @@ import {
     ClientCooperatives,
     Admin,
     BusStructure,
-    SeriesStation,
-    StationCooperative
+    StationCooperative,
+    SerialStation
 } from '../models/tableAssociations.models';
 
 export default class Server {
@@ -66,6 +67,8 @@ export default class Server {
         this.app.use(`${prefixUrl}/users`, usersRoute);
         this.app.use(`${prefixUrl}/busStructure`, busStructureRoutes);
         this.app.use(`${prefixUrl}/linkedStations`, stationCooperativesRoutes);
+        this.app.use(`${prefixUrl}/serialNumbers`, serialStationRoutes);
+
     }
 
     middlewares() {
@@ -111,7 +114,7 @@ export default class Server {
                 await Seats.sync(),               
                 await StopOvers.sync(),
                 await Frequencies.sync(),          
-                await SeriesStation.sync(),        
+                await SerialStation.sync(),        
                 await Clients.sync(),              
                 await ClientCooperatives.sync(),   
                 await Tickets.sync(),              

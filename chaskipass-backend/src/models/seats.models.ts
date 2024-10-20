@@ -13,7 +13,7 @@ export class Seats extends Model<
 
 Seats.init({
     id: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(15),
         primaryKey: true,
     },
     bus_id: {

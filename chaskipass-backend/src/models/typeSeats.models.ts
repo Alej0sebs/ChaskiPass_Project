@@ -7,7 +7,7 @@ export class TypeSeats extends Model<
 > {
     declare id: string;
     declare cooperative_id: string;
-    declare name: string;
+    declare name: string; // nombre para reconocer como "Vip" "Economico" "Normal"
     declare description: string;
     declare additional_cost: number;
 }

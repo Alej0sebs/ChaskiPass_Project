@@ -23,7 +23,7 @@ export const createSellerSerialNumberService= async({cooperative_id, station_id,
 }
 
 
-export const getSerialNumbers = async ({page, limit}: DataPaginationT) => {
+export const getSerialNumbersService = async ({page, limit}: DataPaginationT) => {
     const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
 
     const { rows: serialList, count: totalItems } = await SerialStation.findAndCountAll({

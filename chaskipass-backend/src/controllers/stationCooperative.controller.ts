@@ -18,7 +18,7 @@ export const linkCooperativeStation = async (req: Request, res: Response) => {
         if (result.status !== 201) {
             res.status(result.status).json(result.json);
             return;
-        }
+        };
 
         res.status(result.status).json(result.json);
         return;
@@ -37,5 +37,6 @@ export const getStationCooperative = async (req: Request, res: Response) => {
         return;
     }catch(error){
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
     }
 };

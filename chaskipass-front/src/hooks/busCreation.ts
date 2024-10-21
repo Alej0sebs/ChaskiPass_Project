@@ -8,10 +8,10 @@ import { verifyError } from "../helpers/VerifyErrors";
 export default function createBus(){
     const [loading, setLoading] = useState(false);
   
-
-    const bus = async(userData:TypeBusT)=>{
+    
+    const bus = async(creBus:TypeBusT)=>{
         setLoading(true);
-        console.log(userData);
+        console.log(creBus);
         try {
             const response:Response = await fetch(`${API_BASE_URL}/newBus`,{
                 method:'POST',
@@ -19,14 +19,14 @@ export default function createBus(){
                     'Content-Type':'application/json',
                 },
                 credentials:'include',
-                body:JSON.stringify(userData),
+                body:JSON.stringify(creBus),
             });
             const data = await response.json();
             if(data.error){
                 throw new Error(data.error);
             }
-            localStorage.setItem('chaski-log', JSON.stringify(data));
-           
+            
+            toast.success(data.msg);
         } catch (error) {
             toast.error(verifyError(error));
         }finally{

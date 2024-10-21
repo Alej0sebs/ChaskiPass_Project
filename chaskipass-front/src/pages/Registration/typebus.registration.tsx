@@ -3,6 +3,7 @@ import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import useBusLayout from '../../hooks/useBusLayout';
 import { SeatConfigT } from '../../types';
 import toast from 'react-hot-toast';
+import SelectTypesComponent from './selectTypesComponent.registration';
 
 const TypebusRegistration = () => {
     const [busConfigurationName, setBusConfigurationName] = useState(''); // Nuevo estado para el nombre del bus
@@ -186,7 +187,7 @@ const TypebusRegistration = () => {
         <div className="mx-auto max-w-270">
             <Breadcrumb pageName="Registro de buses" />
             <div className="flex flex-col md:flex-row items-start gap-4">
-                <div className="controls mt-4 flex flex-col gap-4">
+                <div className="controls mt-4 flex flex-col gap-4 w-[50%] max-w-lg mx-auto md:mx-0">
                     {/* Input para el nombre del bus */}
                     <input
                         type="text"
@@ -216,13 +217,18 @@ const TypebusRegistration = () => {
                     </div>
 
                     {/* Input para el nombre del asiento */}
-                    <input
-                        type="text"
-                        placeholder="Nombre del asiento (e.g. V1)"
-                        value={seatName}
-                        onChange={(e) => setSeatName(e.target.value)}
-                        className="border border-gray-300 rounded px-2 py-1"
-                    />
+                    <label htmlFor="">Tipo de asiento</label> 
+                    <div className='flex gap-4'>
+                        <SelectTypesComponent />
+                        <input
+                            type="text"
+                            placeholder="Numero de asiento"
+                            value={seatName}
+                            onChange={(e) => setSeatName(e.target.value)}
+                            className="border border-gray-300 rounded px-2 py-1"
+                        />
+
+                    </div>
                     <button
                         onClick={() => addElement('seat')}
                         className="bg-blue-500 text-white px-4 py-2 rounded"

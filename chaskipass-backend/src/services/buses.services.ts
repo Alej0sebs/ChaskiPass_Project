@@ -3,9 +3,10 @@ import Buses from '../models/buses.models';
 import { HandleMessages } from '../error/handleMessages.error';
 import { BusT, DeleteBusT } from '../types/index.types';
 import { createSeatService } from './seats.services';
+import BusStructure from '../models/busStructure.models';
 
 // Servicio para registrar un bus
-export const busRegisterService = async ({ cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture }: BusT) => {
+export const busRegisterService = async ({ cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture, bus_structure_id }: BusT) => {
 
     const busExists = await Buses.findOne({
         where: {
@@ -28,14 +29,22 @@ export const busRegisterService = async ({ cooperative_id, bus_number, license_p
         year,
         capacity,
         picture,
-        bus_structure_id: 0
+        bus_structure_id
     });
 
+    const findLayout = await BusStructure.findOne({ where: { id: bus_structure_id }, attributes: ['layout'] });
+    if(!findLayout) {
+        await deleteBusByIdService({ id:0, license_plate, cooperative_id });
+        return { status: 409, json: { error:`Servicio de asientos error ${'No se pudo gestionar la creación de asientos para este bus'}` } };
+        
+    };
+    const layout:string = findLayout.layout;
+
     //Aqui va el metodo para agregar los asientos del bus
-    const seatsService = await createSeatService({ layout: '', license_plate });
+    const seatsService = await createSeatService({ layout, license_plate });
     if (seatsService.status !== 201) {
         await deleteBusByIdService({ id:0, license_plate, cooperative_id });
-        return { status: 409, json: { error:`seatsService.json.error ${'No se pudo gestionar la creación de asientos para este bus'}` } };
+        return { status: 409, json: { error:`Servicio de asientos error ${'No se pudo gestionar la creación de asientos para este bus'}` } };
     }
     
 
@@ -102,7 +111,11 @@ export const deleteBusByIdService = async ({ id, license_plate, cooperative_id }
 
     await Buses.destroy({
         where: {
-            id
+            [Op.or]: [
+                { id },
+                { license_plate }
+            ],
+            cooperative_id
         }
     });
 

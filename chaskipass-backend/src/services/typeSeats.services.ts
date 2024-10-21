@@ -3,7 +3,7 @@ import { CreateTypeSeatT, TypeSeatT } from '../types/index.types';
 import TypeSeats from '../models/typeSeats.models';
 import { HandleMessages } from '../error/handleMessages.error';
 
-export const createTypeSeatService = async ({ cooperative_id, name, description, additional_cost }:CreateTypeSeatT) => {
+export const createTypeSeatService = async ({ cooperative_id, name, description, additional_cost, special_caracter }:CreateTypeSeatT) => {
     const id= uuidv4();
 
     const typeSeatExist = await TypeSeats.count({
@@ -17,7 +17,8 @@ export const createTypeSeatService = async ({ cooperative_id, name, description,
         cooperative_id,
         name,
         description,
-        additional_cost
+        additional_cost,
+        special_caracter
     });
     return { status: 201, json: { msg: HandleMessages.TYPE_SEAT_CREATED_SUCCESSFULLY } };
 };

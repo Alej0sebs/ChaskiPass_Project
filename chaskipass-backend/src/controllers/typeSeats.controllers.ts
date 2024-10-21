@@ -15,11 +15,12 @@ export const getTypeSeats = async (req: Request, res: Response) => {
 export const createTypeSeat = async (req: Request, res: Response) => {
     try {
         const cooperative_id = req.userReq?.cooperative_id || "";
-        const { name, description, additional_cost } = req.body;
+        const { name, description, additional_cost, special_caracter } = req.body;
         const values: CreateTypeSeatT = {
             cooperative_id,
             name: name as string,
             description: description as string,
+            special_caracter: special_caracter as string,
             additional_cost: additional_cost as number
         };
         const result = await createTypeSeatService(values);

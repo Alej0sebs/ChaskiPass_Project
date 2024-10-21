@@ -7,7 +7,7 @@ import { BusT } from '../types/index.types';
 export const busRegister = async (req: Request, res: Response) => {
     try {
         const { cooperative_id} = req.userReq ?? {};
-        const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture, } = req.body;
+        const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture, bus_structure_id} = req.body;
 
         const busInformation:BusT={
             id: 0,
@@ -20,7 +20,7 @@ export const busRegister = async (req: Request, res: Response) => {
             capacity,
             picture,
             cooperative_id: cooperative_id || '',
-            bus_structure_id: 0 // necesito estructuras de buses antes de guardar
+            bus_structure_id
         }
         const result = await busRegisterService(busInformation);
 
@@ -77,17 +77,17 @@ export const editBusById = async (req: Request, res: Response) => {
 };
 
 // Eliminar un bus por ID
-export const deleteBusById = async (req: Request, res: Response) => {
-    try {
-        const { cooperative_id} = req.userReq ?? {};
-        const { id } = req.params;
+// export const deleteBusById = async (req: Request, res: Response) => {
+//     try {
+//         const { cooperative_id} = req.userReq ?? {};
+//         const { id } = req.params;
 
-        const result = await deleteBusByIdService(id, cooperative_id!);
+//         const result = await deleteBusByIdService(id, cooperative_id!);
 
-        res.status(result.status).json(result.json);
-        return;
-    } catch (error) {
-        res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
-        return;
-    }
-};
+//         res.status(result.status).json(result.json);
+//         return;
+//     } catch (error) {
+//         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+//         return;
+//     }
+// };

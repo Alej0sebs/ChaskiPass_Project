@@ -7,7 +7,7 @@ export class Seats extends Model<
 > {
     declare id: string;
     declare bus_id: number;
-    declare number_seat: number;
+    declare base_seat: string;
     declare type_seat_id: string;
 }
 
@@ -20,8 +20,8 @@ Seats.init({
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    number_seat: {
-        type: DataTypes.INTEGER,
+    base_seat: {
+        type: DataTypes.STRING(20),
         allowNull: false,
     },
     type_seat_id: {

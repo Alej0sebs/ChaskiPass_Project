@@ -1,10 +1,11 @@
 import { Op } from 'sequelize';
 import Buses from '../models/buses.models';
 import { HandleMessages } from '../error/handleMessages.error';
-import { BusT } from '../types/index.types';
+import { BusT, DeleteBusT } from '../types/index.types';
+import { createSeatService } from './seats.services';
 
 // Servicio para registrar un bus
-export const busRegisterService = async ({cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture}: BusT) => {
+export const busRegisterService = async ({ cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture }: BusT) => {
 
     const busExists = await Buses.findOne({
         where: {
@@ -30,6 +31,14 @@ export const busRegisterService = async ({cooperative_id, bus_number, license_pl
         bus_structure_id: 0
     });
 
+    //Aqui va el metodo para agregar los asientos del bus
+    const seatsService = await createSeatService({ layout: '', license_plate });
+    if (seatsService.status !== 201) {
+        await deleteBusByIdService({ id:0, license_plate, cooperative_id });
+        return { status: 409, json: { error:`seatsService.json.error ${'No se pudo gestionar la creación de asientos para este bus'}` } };
+    }
+    
+
     return { status: 201, json: { msg: HandleMessages.BUS_CREATED_SUCCESSFULLY } };
 };
 
@@ -43,10 +52,12 @@ export const getBusesService = async (cooperative_id: string) => {
 };
 
 // Servicio para editar un bus por ID
-export const editBusByIdService = async ({id, cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity,picture, bus_structure_id}: BusT) => {
+export const editBusByIdService = async ({ id, cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture, bus_structure_id }: BusT) => {
     const busExists = await Buses.findOne({
         where: {
-            id,
+            [Op.or]: [{
+                id, license_plate
+            }],
             cooperative_id
         }
     });
@@ -74,10 +85,13 @@ export const editBusByIdService = async ({id, cooperative_id, bus_number, licens
 };
 
 // Servicio para eliminar un bus por ID
-export const deleteBusByIdService = async (id: string, cooperative_id: string) => {
+export const deleteBusByIdService = async ({ id, license_plate, cooperative_id }: DeleteBusT) => {
     const busExists = await Buses.findOne({
         where: {
-            id,
+            [Op.or]: [
+                { id },
+                { license_plate }
+            ],
             cooperative_id
         }
     });
@@ -94,3 +108,7 @@ export const deleteBusByIdService = async (id: string, cooperative_id: string) =
 
     return { status: 201, json: { msg: HandleMessages.BUS_DELETED_SUCCESSFULLY } };
 };
+
+
+
+

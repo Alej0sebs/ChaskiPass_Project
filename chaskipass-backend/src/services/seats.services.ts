@@ -1,72 +1,60 @@
-import { Seats } from '../models/seats.models';
-import { Buses } from '../models/buses.models';
-import TypeSeats from '../models/typeSeats.models';
-import { v4 as uuidv4 } from 'uuid';
 import { HandleMessages } from '../error/handleMessages.error';
-import { DataPaginationT, SeatCreateT } from '../types/index.types';
+import Buses from '../models/buses.models';
+import Seats from '../models/seats.models';
+import { BusT, SeatT } from '../types/index.types';
 
-// Servicio para obtener los asientos de un bus
-export const getSeatsService = async (bus_id: string, {page, limit}:DataPaginationT) => {
-    const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
 
-    const { rows: seatsList, count: totalItems } = await Seats.findAndCountAll({
-        where: { bus_id },
-        include: [{ model: Buses, required: false }],
-        limit: parseInt(limit.toString()),
-        offset
-    });
-
-    const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
-
-    return {
-        totalItems,
-        totalPages,
-        currentPage: parseInt(page.toString()),
-        list: seatsList
+type SeatsLayout = {
+    id: string;
+    type: string;
+    name: string;
+    position: {
+        x: number;
+        y: number;
     };
-};
+}
+interface DataSeat {
+    [key: string]: SeatsLayout[];
+}
 
 // Servicio para crear un nuevo asiento
-export const createSeatService = async ({bus_id, number_seat, type_seat_id}:SeatCreateT) => {
-    // Verificar si el tipo de asiento existe
-    const typeSeat = await TypeSeats.findOne({ where: { id: type_seat_id } });
-    if (!typeSeat) {
-        return { status: 400, json: { message: HandleMessages.TYPE_SEATID_NOT_FOUND } };
+export const createSeatService = async ({ layout, license_plate }: SeatT) => {
+    try {
+        const parsedSeatsLayout: DataSeat = JSON.parse(layout);
+
+        const getIDsByKey = (jsonParsed: DataSeat): string[] => {
+            let seatIDs: string[] = [];
+
+            for (const key in jsonParsed) {
+                if (jsonParsed.hasOwnProperty(key)) {
+                    // Concatenamos los IDs de los asientos a seatIDs
+                    seatIDs = seatIDs.concat(jsonParsed[key].map(seat => seat.id));
+                }
+            }
+            return seatIDs;
+        }
+
+        const idsList = getIDsByKey(parsedSeatsLayout);
+        //Creo claves primarias para los asientos usando la placa del bus
+        const bus = await Buses.findOne({ where: { license_plate } });
+        if (bus === null) return { status: 404, json: { error: `HandleMessages.BUS_NOT_FOUND ${'En la asignacion de asientos'}` } };
+
+        //({}) -> return implicito
+        const bulkSeats = idsList.map((seat) => {
+            const parts = seat.split('-');
+            const typeSeatId = parts[1];
+
+            return {
+                id: `${license_plate}-${seat}`,
+                bus_id: bus.id,
+                type_seat_id: typeSeatId,
+                base_seat: seat,
+            }
+        });
+        //insertar varios registros, enviarlo como objetos
+        await Seats.bulkCreate(bulkSeats);
+        return { status: 201, json: { message: `${HandleMessages.SEAT_CREATED_SUCCESSFULLY} del bus ${license_plate}` } };
+    } catch (error) {
+        return { status: 500, json: { error: `${HandleMessages.INTERNAL_SERVER_ERROR} ${error}` } };
     }
-
-    // Crear nuevo asiento
-    const newSeat = await Seats.create({
-        id: uuidv4(),
-        bus_id,
-        number_seat,
-        type_seat_id
-    });
-
-    return { status: 201, json: { message: HandleMessages.SEAT_CREATED_SUCCESSFULLY, seat: newSeat } };
-};
-
-// Servicio para actualizar un asiento
-export const updateSeatService = async (id: string, number_seat: number, type_seat_id: string) => {
-    const seat = await Seats.findOne({ where: { id } });
-    if (!seat) {
-        return { status: 404, json: { error: HandleMessages.SEAT_NOT_FOUND } };
-    }
-
-    // Actualizar asiento
-    await seat.update({ number_seat, type_seat_id });
-
-    return { status: 200, json: { message: HandleMessages.SEAT_UPDATED_SUCCESSFULLY, seat } };
-};
-
-// Servicio para eliminar un asiento
-export const deleteSeatService = async (id: string) => {
-    const seat = await Seats.findOne({ where: { id } });
-    if (!seat) {
-        return { status: 404, json: { error: HandleMessages.SEAT_NOT_FOUND } };
-    }
-
-    // Eliminar asiento
-    await seat.destroy();
-
-    return { status: 200, json: { message: HandleMessages.SEAT_DELETED_SUCCESSFULLY } };
 };

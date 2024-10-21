@@ -12,4 +12,5 @@ export const createBusStructure=async(req:Request, res:Response)=>{
         res.status(500).json({msg:HandleMessages.INTERNAL_SERVER_ERROR});
         return;
     }
-} 
+}
+

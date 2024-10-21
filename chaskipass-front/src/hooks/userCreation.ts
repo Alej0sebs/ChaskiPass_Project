@@ -1,20 +1,19 @@
 import { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
+import { CreateUserT} from "../types";
 import { API_BASE_URL } from "../helpers/Constants";
 import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
-import { UserSignUpT } from "../types";
 
-
-export default function useSignup(){
+export default function createUser(){
     const [loading, setLoading] = useState(false);
     const {setAuthUser} = useAuthContext();
 
-    const login = async(userData:UserSignUpT)=>{
+    const login = async(userData:CreateUserT)=>{
         setLoading(true);
         console.log(userData);
         try {
-            const response:Response = await fetch(`${API_BASE_URL}auth/login`,{
+            const response:Response = await fetch(`${API_BASE_URL}users/signUp`,{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -36,4 +35,3 @@ export default function useSignup(){
     }
     return {loading, login};
 }
-

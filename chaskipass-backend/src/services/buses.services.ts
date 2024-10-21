@@ -30,6 +30,8 @@ export const busRegisterService = async ({cooperative_id, bus_number, license_pl
         bus_structure_id: 0
     });
 
+    //Aqui va el metodo para agregar los asientos del bus
+
     return { status: 201, json: { msg: HandleMessages.BUS_CREATED_SUCCESSFULLY } };
 };
 

@@ -30,7 +30,7 @@ export type UserLoginT = Pick<Users, 'user_name' | 'email' | 'password'>;
 
 export type UserT = InferAttributes<Users>;
 
-export type UpdateUserT = Pick<Users, 'dni'|'name' | 'last_name'| 'user_name' | 'phone' | 'address' |  'password'>;
+export type UpdateUserT = Pick<Users, 'dni' | 'name' | 'last_name' | 'user_name' | 'phone' | 'address' | 'password'>;
 
 export type ClientsT = InferAttributes<Clients>;
 
@@ -39,7 +39,7 @@ export type RolesT = InferAttributes<Roles>;
 
 export type CooperativesT = InferAttributes<Cooperatives>;
 
-export type FrequencyT= Omit<InferAttributes<Frequencies>, 'trip_type'> ;
+export type FrequencyT = Omit<InferAttributes<Frequencies>, 'trip_type'>;
 
 export type RoutesT = InferAttributes<Routes> & {
     stopOverList?: string[],
@@ -52,22 +52,22 @@ export type DataPaginationT = {
     pattern?: string
 }
 
-export type TicketInformationT=InferAttributes<Tickets> & {
+export type TicketInformationT = InferAttributes<Tickets> & {
 }
 
-export type BusStructureT=InferAttributes<BusStructure>
+export type BusStructureT = InferAttributes<BusStructure>
 
-export type BusStationT=InferAttributes<BusStations>
+export type BusStationT = InferAttributes<BusStations>
 
-export type SeatT=InferAttributes<Seats>;
-
-export type SeatCreateT=Pick<Seats, 'bus_id' | 'number_seat' | 'type_seat_id'>;
+export type SeatT = Pick<BusT, 'license_plate'> &{
+    layout: string
+}
 
 export type StationCooperativeT = InferAttributes<StationCooperative>
 
-export type NewStationT= InferAttributes<BusStations>;
+export type NewStationT = InferAttributes<BusStations>;
 
-export type SerialNumberT= InferAttributes<SerialStation>
+export type SerialNumberT = InferAttributes<SerialStation>
 
-export type TypeSeatT=InferAttributes<TypeSeats>
-export type CreateTypeSeatT=Omit<TypeSeatT, 'id'>
+export type TypeSeatT = InferAttributes<TypeSeats>
+export type CreateTypeSeatT = Omit<TypeSeatT, 'id'>

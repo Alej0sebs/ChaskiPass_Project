@@ -13,6 +13,7 @@ import BusStations from "../models/busStations.models";
 import Seats from "../models/seats.models";
 import { StationCooperative } from "../models/stationCooperative.models";
 import { SerialStation } from "../models/serialStation.model";
+import TypeSeats from "../models/typeSeats.models";
 
 // export type UserT=InferAttributes<Users>
 // export type UserLoginT=Pick<UserT, 'user_name' | 'email' | 'password' | 'dni' | 'cooperative_id'>
@@ -67,3 +68,6 @@ export type StationCooperativeT = InferAttributes<StationCooperative>
 export type NewStationT= InferAttributes<BusStations>;
 
 export type SerialNumberT= InferAttributes<SerialStation>
+
+export type TypeSeatT=InferAttributes<TypeSeats>
+export type CreateTypeSeatT=Omit<TypeSeatT, 'id'>

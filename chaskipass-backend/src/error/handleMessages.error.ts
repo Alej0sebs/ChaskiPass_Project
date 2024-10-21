@@ -40,5 +40,7 @@ export enum HandleMessages{
     STATION_CREATED_SUCCESSFULLY='Estación creada con éxito',
     USER_UPDATED_SUCCESSFULLY='Usuario actualizado con éxito',
     EXISTING_SERIAL_NUMBER='El número de serie ya existe',
-    SERIAL_NUMBER_CREATED_SUCCESSFULLY='El número de serie ha sido creado con éxito'
+    SERIAL_NUMBER_CREATED_SUCCESSFULLY='El número de serie ha sido creado con éxito',
+    TYPE_SEAT_CREATED_SUCCESSFULLY='Tipo de asiento creado con éxito',
+    EXISTING_TYPE_SEAT='Upss!, por favor vuelve a intentarlo parece que este tipo de asiento ya existe',
 }

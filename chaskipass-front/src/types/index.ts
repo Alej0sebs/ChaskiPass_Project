@@ -29,4 +29,4 @@ export type UserSignUpT=Pick<UserT,'email' | 'user_name' | 'password'>
 
 
 export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperative_id'>
- 
+

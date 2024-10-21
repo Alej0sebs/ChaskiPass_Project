@@ -12,6 +12,7 @@ import seatsRoutes from '../routes/seats.routes';
 import busStructureRoutes from '../routes/busStructure.routes';
 import stationCooperativesRoutes from '../routes/stationCooperative.routes';
 import serialStationRoutes from '../routes/serialStation.routes';
+import typeSeatsRoutes from '../routes/typeSeats.routes';
 
 import {
     Roles,
@@ -68,6 +69,7 @@ export default class Server {
         this.app.use(`${prefixUrl}/busStructure`, busStructureRoutes);
         this.app.use(`${prefixUrl}/linkedStations`, stationCooperativesRoutes);
         this.app.use(`${prefixUrl}/serialNumbers`, serialStationRoutes);
+        this.app.use(`${prefixUrl}/typeSeats`, typeSeatsRoutes);
 
     }
 

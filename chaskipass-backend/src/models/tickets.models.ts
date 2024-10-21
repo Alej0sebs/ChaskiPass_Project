@@ -32,7 +32,7 @@ Tickets.init({
         allowNull: false,
     },
     seat_id: {
-        type: DataTypes.STRING(),
+        type: DataTypes.STRING(20),
         allowNull: false,
     },
     serial_station_id:{

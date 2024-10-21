@@ -1,5 +1,5 @@
+import { HandleMessages } from './../error/handleMessages.error';
 import { Request, Response } from 'express';
-import { HandleMessages } from '../error/handleMessages.error';
 import { createUserService, getUserByIdService, getUsersService, searchUserByFilterService, updateUserService } from '../services/users.services';
 import { sendEmail } from '../services/mail.services';
 import { getPaginationData } from '../utils/helpers.utils';
@@ -62,12 +62,15 @@ export const registerAndSendEmail = async (req: Request, res: Response) => {
         // Crear el usuario llamando a la lógica de negocio
         const result = await createUserService({
             dni, name, last_name, user_name, email, phone, password, address, role_id, cooperative_id
+            
         });
 
+
         if (result.status !== 201) {
-            res.status(result.status).json(result.json);
+            res.status(result.status).json({msg:HandleMessages.USER_CREATED_SUCCESSFULLY});
             return;
         }
+
 
         // Enviar el correo si el usuario se creó
         await sendEmail(email, generateMailMessage(password, name));

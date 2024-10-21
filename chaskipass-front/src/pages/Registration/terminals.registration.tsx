@@ -3,6 +3,7 @@ import { MdLocationOn, MdAccessTime } from "react-icons/md";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 
 const TerminalRegistration = () => {
+    
     return (
         <>
             <div className="mx-auto max-w-270">
@@ -114,6 +115,7 @@ const TerminalRegistration = () => {
                                             </label>
                                             <div className="relative">
                                                 <span className="absolute left-4.5 top-4">
+                                                    
                                                     <MdAccessTime />
                                                 </span>
                                                 <input

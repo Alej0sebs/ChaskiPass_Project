@@ -1,20 +1,14 @@
-import { useState } from 'react';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import userThree from '../../images/user/user-03.png';
-import { FaBus, FaRegRegistered, FaPalette } from 'react-icons/fa';
+import { FaBus, FaRegRegistered } from 'react-icons/fa';
 import { TbLicense } from 'react-icons/tb';
 import { IoCalendarNumberSharp } from 'react-icons/io5';
 import { MdOutlineReduceCapacity } from 'react-icons/md';
 import { IoLogoModelS } from 'react-icons/io';
 
 const BusRegistration = () => {
-  const [busColor, setBusColor] = useState<string>('#000000'); // Tipo explícito para TypeScript
 
-  // Especificar el tipo del evento
-  const handleColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBusColor(event.target.value); // Actualiza el estado con el color seleccionado
-  };
-
+  
   return (
     <>
       <div className="mx-auto max-w-270">
@@ -151,13 +145,23 @@ const BusRegistration = () => {
                         <span className="absolute left-4.5 top-4">
                           <IoCalendarNumberSharp />
                         </span>
-                        <input
-                          className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="text"
+                        <select
+                          className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary appearance-none"
                           name="year"
                           id="year"
-                          placeholder="2024"
-                        />
+                        >
+                          <option value="" disabled selected>
+                            Selecciona un año
+                          </option>
+                          {Array.from({ length: 50 }, (_, i) => {
+                            const year = new Date().getFullYear() - i;
+                            return (
+                              <option key={year} value={year}>
+                                {year}
+                              </option>
+                            );
+                          })}
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -183,48 +187,9 @@ const BusRegistration = () => {
                         />
                       </div>
                     </div>
-                    </div>
-
-                    <div className="mb- flex flex-col gap-5.5 sm:flex-row"> 
-                    <div className="w-full sm:w-1/2">
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="bus_color"
-                      >
-                        Color del bus
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-4.5 top-4">
-                          <FaPalette />
-                        </span>
-                        <input
-                          className="w-full rounded border border-stroke bg-gray py-6 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="color"
-                          name="bus_color"
-                          id="bus_color"
-                          placeholder="36"
-                          value={busColor} // Muestra el color seleccionado
-                          onChange={handleColorChange} // Cambia el color
-                        />
-                      </div>
-                    </div>
                   </div>
 
-                  <div className="mt-4">
-                    <p className="text-black dark:text-white">
-                      
-                      <span
-                        style={{
-                          backgroundColor: busColor,
-                          padding: '3px',
-                          borderRadius: '3px',
-                          color: '#ffffff', // Cambiar el color del texto si es necesario
-                        }}
-                      >
-                        {busColor}
-                      </span>
-                    </p>
-                  </div>
+                  <div className="mb- flex flex-col gap-5.5 sm:flex-row"></div>
 
                   <div className="mt-6 flex justify-between">
                     <button

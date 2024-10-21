@@ -13,7 +13,7 @@ export default function createBus(){
         setLoading(true);
         console.log(creBus);
         try {
-            const response:Response = await fetch(`${API_BASE_URL}/newBus`,{
+            const response:Response = await fetch(`${API_BASE_URL}buses/newBus`,{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',

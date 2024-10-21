@@ -35,6 +35,8 @@ export type UpdateUserT = Pick<Users, 'dni' | 'name' | 'last_name' | 'user_name'
 export type ClientsT = InferAttributes<Clients>;
 
 export type BusT = InferAttributes<Buses>;
+export type DeleteBusT = Pick<BusT, 'id' | 'license_plate'| 'cooperative_id'>;
+
 export type RolesT = InferAttributes<Roles>;
 
 export type CooperativesT = InferAttributes<Cooperatives>;

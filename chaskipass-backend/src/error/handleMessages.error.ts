@@ -24,7 +24,7 @@ export enum HandleMessages{
     CLIENT_NOT_FOUND= 'Cliente no encontrado',
     CLIENT_DELTETE_SUCESSFULLY='Cliente eliminado con éxito',
     CLIENT_EXIST_DNI='El cliente con este DNI ya existe',
-    SEAT_CREATED_SUCCESSFULLY='Asiento creado con éxito',
+    SEAT_CREATED_SUCCESSFULLY='Asientos creados con éxito',
     SEAT_NOT_FOUND='Asiento no encontrado',
     SEAT_UPDATED_SUCCESSFULLY='Asiento actualizado con éxito',
     SEAT_DELETED_SUCCESSFULLY='Asiento eliminado con éxito',

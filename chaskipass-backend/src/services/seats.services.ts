@@ -1,7 +1,10 @@
+import { Transaction } from 'sequelize';
+import connectionDb from '../db/connection.db';
 import { HandleMessages } from '../error/handleMessages.error';
 import Buses from '../models/buses.models';
 import Seats from '../models/seats.models';
-import { BusT, SeatT } from '../types/index.types';
+import { SeatT } from '../types/index.types';
+import { getTypeSeatsService } from './typeSeats.services';
 
 
 type SeatsLayout = {
@@ -17,44 +20,56 @@ interface DataSeat {
     [key: string]: SeatsLayout[];
 }
 
+interface keyValue {
+    [keyValue: string]: string;
+}
+
 // Servicio para crear un nuevo asiento
-export const createSeatService = async ({ layout, license_plate }: SeatT) => {
+export const createSeatService = async ({ layout, license_plate }: SeatT, transaction?:Transaction) => {
     try {
-        const parsedSeatsLayout: DataSeat = JSON.parse(layout);
+        //transactions, permite ingreso atomico de datos y hace rollback automatico si algo falla
+            const parsedSeatsLayout: DataSeat = JSON.parse(layout);
 
-        const getIDsByKey = (jsonParsed: DataSeat): string[] => {
-            let seatIDs: string[] = [];
+            const getIDsByKey = (jsonParsed: DataSeat): string[] => {
+                return Object.values(jsonParsed).flat().map(seat => seat.id);
+            };
 
-            for (const key in jsonParsed) {
-                if (jsonParsed.hasOwnProperty(key)) {
-                    // Concatenamos los IDs de los asientos a seatIDs
-                    seatIDs = seatIDs.concat(jsonParsed[key].map(seat => seat.id));
-                }
+            const idsList = getIDsByKey(parsedSeatsLayout);
+
+            // Buscar el bus dentro de la transacción
+            const bus = await Buses.findOne({ where: { license_plate }, transaction });
+            if (bus === null) {
+                // Lanzar una excepción para que Sequelize haga rollback
+                throw new Error(`HandleMessages.BUS_NOT_FOUND en la asignación de asientos`);
             }
-            return seatIDs;
-        }
 
-        const idsList = getIDsByKey(parsedSeatsLayout);
-        //Creo claves primarias para los asientos usando la placa del bus
-        const bus = await Buses.findOne({ where: { license_plate } });
-        if (bus === null) return { status: 404, json: { error: `HandleMessages.BUS_NOT_FOUND ${'En la asignacion de asientos'}` } };
+            // Obtener los tipos de asientos disponibles
+            const typeSeatsQuery = await getTypeSeatsService(bus.cooperative_id, transaction);
+            const listTypeSeats: keyValue = {};
+            typeSeatsQuery.forEach((e) => {
+                listTypeSeats[e.special_caracter] = e.id;
+            });
 
-        //({}) -> return implicito
-        const bulkSeats = idsList.map((seat) => {
-            const parts = seat.split('-');
-            const typeSeatId = parts[1];
+            const bulkSeats = idsList.map((seat) => {
+                const parts = seat.split('-');
+                const typeSeatCaracter = parts[1];
+                const typeSeatId = listTypeSeats[typeSeatCaracter];
 
-            return {
-                id: `${license_plate}-${seat}`,
-                bus_id: bus.id,
-                type_seat_id: typeSeatId,
-                base_seat: seat,
-            }
-        });
-        //insertar varios registros, enviarlo como objetos
-        await Seats.bulkCreate(bulkSeats);
+                return {
+                    id: `${license_plate}-${seat}`,
+                    bus_id: bus.id,
+                    type_seat_id: typeSeatId,
+                    base_seat: seat,
+                };
+            });
+
+            // Insertar los asientos
+            await Seats.bulkCreate(bulkSeats, { transaction });
+
         return { status: 201, json: { message: `${HandleMessages.SEAT_CREATED_SUCCESSFULLY} del bus ${license_plate}` } };
     } catch (error) {
-        return { status: 500, json: { error: `${HandleMessages.INTERNAL_SERVER_ERROR} ${error}` } };
+        //Lanzo error para que se haga el rollback
+        console.log(error);
+        throw error;
     }
 };

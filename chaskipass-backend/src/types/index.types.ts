@@ -61,7 +61,9 @@ export type BusStructureT = InferAttributes<BusStructure>
 
 export type BusStationT = InferAttributes<BusStations>
 
-export type SeatT = Pick<BusT, 'license_plate'> &{
+export type SeatT = InferAttributes<Seats>
+
+export type SeatBusT = Pick<BusT, 'license_plate'> &{
     layout: string
 }
 

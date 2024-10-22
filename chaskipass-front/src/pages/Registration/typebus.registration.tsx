@@ -3,6 +3,10 @@ import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import useBusLayout from '../../hooks/useBusLayout';
 import { SeatConfigT } from '../../types';
 import toast from 'react-hot-toast';
+import SelectTypesComponent from './selectTypesComponent.registration';
+import SvgSeatComponent from '../../components/busElements/svgSeats.components';
+import SvgBathroomComponent from '../../components/busElements/svgBathroom.components';
+import SvgStairsComponent from '../../components/busElements/svgStairs.components';
 
 const TypebusRegistration = () => {
     const [busConfigurationName, setBusConfigurationName] = useState(''); // Nuevo estado para el nombre del bus
@@ -14,6 +18,11 @@ const TypebusRegistration = () => {
     const [stairsCounter, setStairsCounter] = useState(1); // Contador para las escaleras
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado
     const { loading, sendBusLayout } = useBusLayout();
+    //Select
+    const [selectedSeatType, setSelectedSeatType] = useState<string>('');
+    const handleSelectChange = (selectedvalue: string) => {
+        setSelectedSeatType(selectedvalue);
+    }
 
     // Función para verificar si el nombre del asiento ya existe en cualquier piso
     const seatNameExists = (name: string) => {
@@ -45,8 +54,10 @@ const TypebusRegistration = () => {
         };
 
         if (type === 'seat' && seatName) {
-            newElement.id = `seat-${seatName.toLowerCase()}`;
-            newElement.name = seatName;
+            if (selectedSeatType === '') return toast.error('Debes seleccionar un tipo de asiento');
+
+            newElement.id = `seat-${selectedSeatType}-${seatName.toLowerCase()}`;
+            newElement.name = selectedSeatType + seatName;
             setSeatName('');
         } else if (type === 'bathroom') {
             newElement.id = `bath-${bathCounter}`;
@@ -186,7 +197,7 @@ const TypebusRegistration = () => {
         <div className="mx-auto max-w-270">
             <Breadcrumb pageName="Registro de buses" />
             <div className="flex flex-col md:flex-row items-start gap-4">
-                <div className="controls mt-4 flex flex-col gap-4">
+                <div className="controls mt-4 flex flex-col gap-4 w-[50%] max-w-lg mx-auto md:mx-0">
                     {/* Input para el nombre del bus */}
                     <input
                         type="text"
@@ -216,13 +227,18 @@ const TypebusRegistration = () => {
                     </div>
 
                     {/* Input para el nombre del asiento */}
-                    <input
-                        type="text"
-                        placeholder="Nombre del asiento (e.g. V1)"
-                        value={seatName}
-                        onChange={(e) => setSeatName(e.target.value)}
-                        className="border border-gray-300 rounded px-2 py-1"
-                    />
+                    <label htmlFor="">Tipo de asiento</label>
+                    <div className='flex gap-4'>
+                        <SelectTypesComponent onSelectChange={handleSelectChange} />
+                        <input
+                            type="text"
+                            placeholder="Numero de asiento"
+                            value={seatName}
+                            onChange={(e) => setSeatName(e.target.value)}
+                            className="border border-gray-300 rounded px-2 py-1"
+                        />
+
+                    </div>
                     <button
                         onClick={() => addElement('seat')}
                         className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -281,37 +297,9 @@ const TypebusRegistration = () => {
                                         top: `${absoluteTop}px`,
                                     }}
                                 >
-                                    {element.type === 'seat' && (
-                                        <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="reserved">
-                                            <rect x="8.75" y="2.75" width="22.5" height="26.5" rx="2.25" fill="#FFF" stroke="#B8B8B8" strokeWidth="1.5"
-                                                strokeLinejoin="round"></rect>
-                                            <rect x="10.25" y="11.75" width="14.5" height="5.5" rx="2.25" transform="rotate(90 10.25 11.75)" fill="#FFF"
-                                                stroke="#B8B8B8" strokeWidth="1.5" strokeLinejoin="round"></rect>
-                                            <rect x="35.25" y="11.75" width="14.5" height="5.5" rx="2.25" transform="rotate(90 35.25 11.75)" fill="#FFF"
-                                                stroke="#B8B8B8" strokeWidth="1.5" strokeLinejoin="round"></rect>
-                                            <rect x="8.75" y="22.75" width="22.5" height="6.5" rx="2.25" fill="#FFF" stroke="#B8B8B8" strokeWidth="1.5"
-                                                strokeLinejoin="round"></rect>
-                                            {/* Texto dinámico que muestra el nombre del asiento */}
-                                            <text width="20" height="20" x="20" y="18" fill="#000" fontSize="10" textAnchor="middle">{element.name}</text>
-                                        </svg>
-                                    )}
-                                    {element.type === 'bathroom' && (
-                                        <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            {/* Bathroom SVG */}
-                                            <rect x="10" y="2" width="20" height="28" rx="3" fill="#FFF" stroke="#000" strokeWidth="1.5" />
-                                            <circle cx="20" cy="12" r="4" fill="#000" />
-                                            <rect x="15" y="18" width="10" height="8" fill="#000" />
-                                        </svg>
-                                    )}
-                                    {element.type === 'stairs' && (
-                                        <svg width="60" height="52" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            {/* Stairs SVG */}
-                                            <rect x="5" y="5" width="30" height="22" fill="#FFF" stroke="#000" strokeWidth="1.5" />
-                                            <line x1="10" y1="20" x2="30" y2="20" stroke="#000" strokeWidth="1.5" />
-                                            <line x1="10" y1="15" x2="30" y2="15" stroke="#000" strokeWidth="1.5" />
-                                            <line x1="10" y1="10" x2="30" y2="10" stroke="#000" strokeWidth="1.5" />
-                                        </svg>
-                                    )}
+                                    {element.type === 'seat' && <SvgSeatComponent name={element.name}  isSelected={selectedElement === element.id} />}
+                                    {element.type === 'bathroom' && <SvgBathroomComponent />}
+                                    {element.type === 'stairs' && <SvgStairsComponent />}
                                 </div>
                             );
                         })}

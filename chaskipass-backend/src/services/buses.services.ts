@@ -1,46 +1,100 @@
-import { Op } from 'sequelize';
+import { Op, Transaction } from 'sequelize';
 import Buses from '../models/buses.models';
 import { HandleMessages } from '../error/handleMessages.error';
 import { BusT, DeleteBusT } from '../types/index.types';
 import { createSeatService } from './seats.services';
+import BusStructure from '../models/busStructure.models';
+import connectionDb from '../db/connection.db';
 
 // Servicio para registrar un bus
-export const busRegisterService = async ({ cooperative_id, bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture }: BusT) => {
+export const busRegisterService = async (busData: BusT) => {
+    try {
+        await connectionDb.transaction(async (transaction) => {
+            const {
+                cooperative_id,
+                bus_number,
+                license_plate,
+                chassis_vin,
+                bus_manufacturer,
+                model,
+                year,
+                capacity,
+                picture,
+                bus_structure_id,
+            } = busData;
 
-    const busExists = await Buses.findOne({
-        where: {
-            [Op.or]: [{ license_plate }]
-        }
-    });
+            // Verificar si el bus ya existe
+            const busExists = await Buses.findOne({
+                where: {
+                    [Op.or]: [{ license_plate }],
+                },
+                transaction, // Incluir la transacción
+            });
 
-    if (busExists) {
-        return { status: 400, json: { error: HandleMessages.EXISTING_BUS } };
+            if (busExists) {
+                throw new Error(HandleMessages.EXISTING_BUS);
+            }
+
+            // Crear el bus
+            const newBus = await Buses.create(
+                {
+                    id: 0,
+                    cooperative_id,
+                    bus_number,
+                    license_plate,
+                    chassis_vin,
+                    bus_manufacturer,
+                    model,
+                    year,
+                    capacity,
+                    picture,
+                    bus_structure_id,
+                },
+                { transaction } // Incluir la transacción
+            );
+
+            // Obtener el layout del bus
+            const findLayout = await BusStructure.findOne({
+                where: { id: bus_structure_id },
+                attributes: ['layout'],
+                transaction, // Incluir la transacción
+            });
+
+            if (!findLayout) {
+                throw new Error(
+                    `Servicio de asientos error: No se pudo gestionar la creación de asientos para este bus`
+                );
+            }
+
+            const layout: string = findLayout.layout;
+
+            // Crear los asientos del bus
+            const seatsService = await createSeatService(
+                { layout, license_plate },
+                transaction // Pasar la transacción
+            );
+
+            if (seatsService.status !== 201) {
+                throw new Error(
+                    `Servicio de asientos error: No se pudo gestionar la creación de asientos para este bus`
+                );
+            }
+        });
+
+        // Si todo sale bien, devolver éxito
+        return {
+            status: 201,
+            json: { msg: HandleMessages.BUS_CREATED_SUCCESSFULLY },
+        };
+    } catch (error) {
+        // Manejar los errores
+        return {
+            status: 500,
+            json: { error: HandleMessages.INTERNAL_SERVER_ERROR },
+        };
     }
-
-    await Buses.create({
-        id: 0,
-        cooperative_id,
-        bus_number,
-        license_plate,
-        chassis_vin,
-        bus_manufacturer,
-        model,
-        year,
-        capacity,
-        picture,
-        bus_structure_id: 0
-    });
-
-    //Aqui va el metodo para agregar los asientos del bus
-    const seatsService = await createSeatService({ layout: '', license_plate });
-    if (seatsService.status !== 201) {
-        await deleteBusByIdService({ id:0, license_plate, cooperative_id });
-        return { status: 409, json: { error:`seatsService.json.error ${'No se pudo gestionar la creación de asientos para este bus'}` } };
-    }
-    
-
-    return { status: 201, json: { msg: HandleMessages.BUS_CREATED_SUCCESSFULLY } };
 };
+
 
 // Servicio para obtener la lista de buses
 export const getBusesService = async (cooperative_id: string) => {
@@ -85,7 +139,7 @@ export const editBusByIdService = async ({ id, cooperative_id, bus_number, licen
 };
 
 // Servicio para eliminar un bus por ID
-export const deleteBusByIdService = async ({ id, license_plate, cooperative_id }: DeleteBusT) => {
+export const deleteBusByIdService = async ({ id, license_plate, cooperative_id }: DeleteBusT , transaction:Transaction) => {
     const busExists = await Buses.findOne({
         where: {
             [Op.or]: [
@@ -93,7 +147,8 @@ export const deleteBusByIdService = async ({ id, license_plate, cooperative_id }
                 { license_plate }
             ],
             cooperative_id
-        }
+        },
+        transaction
     });
 
     if (!busExists) {
@@ -102,7 +157,11 @@ export const deleteBusByIdService = async ({ id, license_plate, cooperative_id }
 
     await Buses.destroy({
         where: {
-            id
+            [Op.or]: [
+                { id },
+                { license_plate }
+            ],
+            cooperative_id
         }
     });
 

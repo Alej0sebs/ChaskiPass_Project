@@ -5,6 +5,7 @@ import generateTokenAndSetCookie from "../utils/generateToken.utils";
 import { HandleMessages } from "../error/handleMessages.error";
 import { Response } from "express";
 import { UserLoginT } from "../types/index.types";
+import { handleSequelizeError } from "../utils/helpers.utils";
 
 // Servicio para iniciar sesión
 export const loginUserService = async (
@@ -38,10 +39,7 @@ export const loginUserService = async (
             }
         };
     } catch (error) {
-        return {
-            status: 500,
-            json: { error: HandleMessages.INTERNAL_SERVER_ERROR }
-        };
+        return handleSequelizeError(error);
     }
 };
 
@@ -54,10 +52,6 @@ export const logoutUserService = async (res: Response) => {
             json: { message: HandleMessages.SUCCESSFULLY_LOGGED_OUT }
         };
     } catch (error) {
-        console.error(error);
-        return {
-            status: 500,
-            json: { error: HandleMessages.INTERNAL_SERVER_ERROR }
-        };
+        return handleSequelizeError(error);
     }
 };

@@ -3,78 +3,102 @@ import { ClientCooperatives } from '../models/clientCooperatives';
 import { HandleMessages } from '../error/handleMessages.error';
 import { Op } from 'sequelize';
 import { ClientsT, DataPaginationT } from '../types/index.types';
+import { handleSequelizeError } from '../utils/helpers.utils';
 
 // Servicio para obtener clientes con paginación
-export const getClientsService = async (dni: string, {page, limit}: DataPaginationT) => {
-    const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+export const getClientsService = async (dni: string, { page, limit }: DataPaginationT) => {
+    try {
+        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
 
-    const { rows: clientsList, count: totalItems } = await Clients.findAndCountAll({
-        where: { dni: { [Op.ne]: dni } },
-        include: [{ model: ClientCooperatives, required: false, attributes: ['cooperative_id'] }],
-        limit: parseInt(limit.toString()),
-        offset: offset
-    });
+        const { rows: clientsList, count: totalItems } = await Clients.findAndCountAll({
+            where: { dni: { [Op.ne]: dni } },
+            include: [{ model: ClientCooperatives, required: false, attributes: ['cooperative_id'] }],
+            limit: parseInt(limit.toString()),
+            offset: offset
+        });
 
-    const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
+        const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
 
-    return {
-        totalItems,
-        totalPages,
-        currentPage: parseInt(page.toString()),
-        list: clientsList
-    };
+        return {
+            status: 200,
+            json: {
+                totalItems,
+                totalPages,
+                currentPage: parseInt(page.toString()),
+                list: clientsList
+            }
+        };
+    } catch (error) {
+        return handleSequelizeError(error);
+    }
 };
+
 
 // Servicio para crear un nuevo cliente
-export const createClientService = async ({dni, name, last_name, email, phone, address}: ClientsT) => {
-    const clientExists = await Clients.findOne({ where: { dni } });
+export const createClientService = async ({ dni, name, last_name, email, phone, address }: ClientsT) => {
+    try {
+        const clientExists = await Clients.findOne({ where: { dni } });
 
-    if (clientExists) {
-        return { status: 400, json: { error: HandleMessages.CLIENT_EXIST_DNI } };
+        if (clientExists) {
+            return { status: 400, json: { error: HandleMessages.CLIENT_EXIST_DNI } };
+        }
+
+        const newClient = await Clients.create({
+            dni,
+            name,
+            last_name,
+            email,
+            phone,
+            address
+        });
+
+        return { status: 201, json: { message: HandleMessages.CLIENT_CRTEATED_SUCESSFULLY, client: newClient } };
+    } catch (error) {
+        return handleSequelizeError(error);
     }
-
-    const newClient = await Clients.create({
-        dni,
-        name,
-        last_name,
-        email,
-        phone,
-        address
-    });
-
-    return { status: 201, json: { message: HandleMessages.CLIENT_CRTEATED_SUCESSFULLY, client: newClient } };
 };
+
 
 // Servicio para actualizar un cliente
-export const updateClientService = async ({dni, name, last_name, email, phone, address}: ClientsT) => {
-    const client = await Clients.findOne({ where: { dni } });
+export const updateClientService = async ({ dni, name, last_name, email, phone, address }: ClientsT) => {
+    try {
+        const client = await Clients.findOne({ where: { dni } });
 
-    if (!client) {
-        return { status: 404, json: { error: HandleMessages.CLIENT_NOT_FOUND } };
+        if (!client) {
+            return { status: 404, json: { error: HandleMessages.CLIENT_NOT_FOUND } };
+        }
+
+        // Actualizar cliente
+        await client.update({
+            name,
+            last_name,
+            email,
+            phone,
+            address
+        });
+
+        return { status: 200, json: { message: HandleMessages.CLIENT_UPDATE_SUCESSFULLY, client } };
+    } catch (error) {
+        return handleSequelizeError(error);
     }
-
-    // Actualizar cliente
-    await client.update({
-        name,
-        last_name,
-        email,
-        phone,
-        address
-    });
-
-    return { status: 200, json: { message: HandleMessages.CLIENT_UPDATE_SUCESSFULLY, client } };
 };
+
 
 // Servicio para eliminar un cliente
 export const deleteClientService = async (dni: string) => {
-    const client = await Clients.findOne({ where: { dni } });
+    try {
+        const client = await Clients.findOne({ where: { dni } });
 
-    if (!client) {
-        return { status: 404, json: { error: HandleMessages.CLIENT_NOT_FOUND } };
+        if (!client) {
+            return { status: 404, json: { error: HandleMessages.CLIENT_NOT_FOUND } };
+        }
+
+        // Eliminar cliente
+        await client.destroy();
+
+        return { status: 200, json: { message: HandleMessages.CLIENT_DELTETE_SUCESSFULLY } };
+    } catch (error) {
+        return handleSequelizeError(error);
     }
-
-    // Eliminar cliente
-    await client.destroy();
-
-    return { status: 200, json: { message: HandleMessages.CLIENT_DELTETE_SUCESSFULLY } };
 };
+

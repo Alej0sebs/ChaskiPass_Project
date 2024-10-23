@@ -43,4 +43,9 @@ export enum HandleMessages{
     SERIAL_NUMBER_CREATED_SUCCESSFULLY='El número de serie ha sido creado con éxito',
     TYPE_SEAT_CREATED_SUCCESSFULLY='Tipo de asiento creado con éxito',
     EXISTING_TYPE_SEAT='Upss!, por favor vuelve a intentarlo parece que este tipo de asiento ya existe',
+    STATION_ALREADY_EXISTS='La estación ya existe',
+    BUS_STRUCTURE_ALREADY_EXISTS='La estructura del bus ya existe',
+    DEFAULT_INSTANCE_EXIST='La siguiente información ya existe',
+    DATABASE_ERROR = 'Error en la base de datos, Por favor intente más tarde',
+    UNEXPECTED_ERROR = 'Error inesperado, Por favor intente más tarde',
 }

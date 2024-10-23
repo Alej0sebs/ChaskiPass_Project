@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-export const createPayment= (req:Request, res:Response) => {
-    const body = {
+export const createPayment= async (req:Request, res:Response) => {
+    const productSelling = {
         intent: 'CAPTURE',
         purchase_units: [{
             amount: {
@@ -18,19 +18,35 @@ export const createPayment= (req:Request, res:Response) => {
             cancel_url: 'http://localhost:3001/chaski/api/paypal/cancel-payment' //Pago cancelado o fallido
         }
     };
+
     //https://developer.paypal.com/docs/api/orders/v2/#orders_create
-    const auth={user:process.env.PAYPAL_CLIENT_ID, password:process.env.PAYPAL_SECRET}
-    const base64Auth = Buffer.from(`${auth.user}:${auth.password}`).toString('base64');
-    fetch(`${process.env.PAYPAL_API}/v2/checkout/orders`, {
+    // const response =await fetch(`${process.env.PAYPAL_BASE_URL}/v2/checkout/orders`, {
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //         'Paypal-Request-Id': '7b92603e-77ed-4896-8e78-5dea2050476a',
+    //         'Authorization': `Bearer ${auth}`  
+    //     },
+    //     body: JSON.stringify(productSelling)
+    // });
+    
+    // return response.json();
+}
+
+export const generateToken= async()=>{
+    const auth = `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`;
+    const base64Auth = Buffer.from(auth).toString('base64');
+    const response =await fetch(`${process.env.PAYPAL_BASE_URL}/v1/oauth2/token`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Basic ${base64Auth}`
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': `Basic ${base64Auth}`  
         },
-        body: JSON.stringify(body)
-    })
-
-}
+        body: 'grant_type=client_credentials' //Cuerpo de la solicitud
+    });
+    console.log(response);
+    return response.json();
+};
 
 export const executePayment= (req:Request, res:Response) => {
 

@@ -20,7 +20,6 @@ export const filterFrequenciesService = async ({ cooperative_id, date, departure
     const whereConditions: filterConditionsT = {};
     try {
         const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
-
         //Construccion de filtros de la tabla propia
         if (cooperative_id) whereConditions.cooperative_id = cooperative_id;
         if (date) whereConditions.date = date;
@@ -35,9 +34,11 @@ export const filterFrequenciesService = async ({ cooperative_id, date, departure
                 include: [
                     {
                         model: BusStations,
+                        as: 'departure_station_route',
                         include: [
                             {
                                 model: Cities,
+                                as: 'city_bus_station',
                                 where: city_origin ? { name: { [Op.eq]: city_origin } } : undefined,  
                                 attributes:['id','name'],
                                 required: true
@@ -49,9 +50,11 @@ export const filterFrequenciesService = async ({ cooperative_id, date, departure
                     },
                     {
                         model: BusStations,
+                        as: 'arrival_station_route',
                         include: [
                             {
                                 model: Cities,
+                                as: 'city_bus_station',
                                 where: city_destination ? { name: { [Op.eq]: city_destination } } : undefined,
                                 attributes:['id','name'],
                                 required: true
@@ -64,6 +67,7 @@ export const filterFrequenciesService = async ({ cooperative_id, date, departure
             },
             {
                 model: Cooperatives,
+                as: 'cooperative_route',
                 attributes:['name'],
                 required: true
             }

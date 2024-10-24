@@ -28,7 +28,7 @@ export default function useTypeSeats() {
                 throw new Error('Error al obtener los tipos de asientos');
             }
             const data = await response.json();
-            const formattedData= data.map((seat:SeatType)=>({
+            const formattedData= data.json.map((seat:SeatType)=>({
                 id:seat.id,
                 name:seat.name,
                 special_caracter:seat.special_caracter

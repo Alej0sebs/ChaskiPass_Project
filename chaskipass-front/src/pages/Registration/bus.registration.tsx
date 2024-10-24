@@ -1,12 +1,16 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import userThree from '../../images/user/user-03.png';
-import { FaBus } from 'react-icons/fa';
-import { IoCalendarNumberSharp, IoLogoModelS } from 'react-icons/io5';
+import { FaBus, FaCar } from 'react-icons/fa';
+import { IoCalendarNumberSharp } from 'react-icons/io5';
 import { MdOutlineReduceCapacity } from 'react-icons/md';
 import { CreateBusT } from '../../types';
 import createBus from '../../hooks/busCreation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ObtainBusStructure } from '../../hooks/ObtainBusStructure'; // Importar el hook
+
+interface BusStructure {
+  id: number;
+  name: string;
+}
 
 const initialStateBus: CreateBusT = {
   id: 0,
@@ -23,20 +27,29 @@ const initialStateBus: CreateBusT = {
 };
 
 const BusRegistration: React.FC = () => {
+  const { loading: loadingStructures, fetchBusStructures } = ObtainBusStructure();
+  const { loading: loadingBus, bus } = createBus(); // Cambiado aquí
+  const [busStructures, setBusStructures] = useState<BusStructure[]>([]);
   const [inputBus, setInputBus] = useState<CreateBusT>(initialStateBus);
-  const { loading: loadingBus, bus } = createBus();
-  const { fetchBusStructures, loading: loadingStructures } = ObtainBusStructure(); // Usar el hook para obtener las estructuras de bus
+
+  useEffect(() => {
+    const getBusStructures = async () => {
+      const structures = await fetchBusStructures();
+      setBusStructures(structures);
+    };
+    getBusStructures();
+  }, [fetchBusStructures]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setInputBus({
       ...inputBus,
-      [e.target.id]: e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    bus(inputBus);
+    await bus(inputBus); // Cambiado aquí
   };
 
   return (
@@ -50,6 +63,7 @@ const BusRegistration: React.FC = () => {
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">Información del bus</h3>
               </div>
+
               <div className="p-7">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
@@ -76,7 +90,7 @@ const BusRegistration: React.FC = () => {
                         Número de Placa
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><IoLogoModelS /></span>
+                        <span className="absolute left-4.5 top-4"><FaCar /></span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
@@ -114,7 +128,7 @@ const BusRegistration: React.FC = () => {
                         Marca
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><IoLogoModelS /></span>
+                        <span className="absolute left-4.5 top-4"><FaCar /></span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
@@ -134,7 +148,7 @@ const BusRegistration: React.FC = () => {
                         Modelo
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><IoLogoModelS /></span>
+                        <span className="absolute left-4.5 top-4"><FaCar/></span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
@@ -202,7 +216,7 @@ const BusRegistration: React.FC = () => {
                         disabled={loadingStructures}
                       >
                         <option value="">Seleccione una estructura</option>
-                        {fetchBusStructures.map((structure: any) => (
+                        {busStructures.map((structure: any) => (
                           <option key={structure.id} value={structure.id}>{structure.name}</option>
                         ))}
                       </select>

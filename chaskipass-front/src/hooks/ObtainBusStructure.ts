@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState} from "react";
 import { API_BASE_URL } from "../helpers/Constants";
 import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
 
 export const ObtainBusStructure = () => {
     const [loading, setLoading] = useState(false);
-  
+
     const fetchBusStructures = async () => {
       setLoading(true);
       try {
@@ -16,17 +16,19 @@ export const ObtainBusStructure = () => {
           },
         });
         const data = await response.json();
-        if (data.error) {
-          throw new Error(data.error);
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Error al obtener las estructuras de buses');
         }
-        return data;  
+
+        return Array.isArray(data) ? data : [];  // Verifica que `data` sea un array
       } catch (error) {
         toast.error(verifyError(error));
-        return [];
+        return [];  // Retorna un array vacío en caso de error
       } finally {
         setLoading(false);
       }
     };
-  
+
     return { loading, fetchBusStructures };
-  };
+};

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HandleMessages } from "../error/handleMessages.error";
-import { createBusStructureService } from "../services/busStructure.services";
+import { createBusStructureService, getBusStructureService } from "../services/busStructure.services";
 
 export const createBusStructure=async(req:Request, res:Response)=>{
     try{
@@ -13,4 +13,16 @@ export const createBusStructure=async(req:Request, res:Response)=>{
         return;
     }
 }
+
+export const getBusStructure= async (req:Request, res:Response) => {
+    try{
+        const {cooperative_id} = req.params;
+        const result = await getBusStructureService(cooperative_id);
+        res.status(result.status).json(result.json);
+        return;
+    }catch(error){
+        res.status(500).json({msg:HandleMessages.INTERNAL_SERVER_ERROR});
+        return
+    }
+};
 

@@ -4,7 +4,7 @@ import BusStructure from "../models/busStructure.models";
 import { BusStructureT } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
 
-export const getBusStructureService = async () => {
+export const getBusStructureService = async (cooperative_id:string) => {
     try {
         const busStructures = await BusStructure.findAll();
         return { status: 200, json: busStructures };

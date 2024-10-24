@@ -12,19 +12,7 @@ export type LayoutBusT = {
     layout: {},
 };
 
-export type TypeBusT={
-id: number,
-cooperative_id: string,
-bus_number:string,
-licence_plate:string,
-chassis_vin:string,
-bus_manufacture:string,
-model:string,
-year:number,
-capacity:number,
-picture:string,
-bus_structure_id:string
-};
+
 
 export type UserT={
     dni: string,
@@ -39,6 +27,25 @@ export type UserT={
     cooperative_id: string
 };
 
+export type TypeBusT={
+    id: number,
+    cooperative_id: string,
+    bus_number:string,
+    licence_plate:string,
+    chassis_vin:string,
+    bus_manufacture:string,
+    model:string,
+    year:number,
+    capacity:number,
+    picture:string,
+    bus_structure_id:string
+    };
+
+export type BusStructureT={
+    id: string;
+    name: string;
+}
+
 export type UserSignUpT=Pick<UserT,'email' | 'user_name' | 'password'>
 
 
@@ -48,4 +55,6 @@ export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperati
 
 export type CreateUserT=Omit<UserT,'password'>
 
-export type CreateBusT=Omit<TypeBusT,'id'>
+export type CreateBusT= Pick<TypeBusT,'id'|'cooperative_id'|'bus_number'|'licence_plate'|'chassis_vin'|'bus_manufacture'|
+'model'|'year'|'capacity'|'picture'|'bus_structure_id'>
+

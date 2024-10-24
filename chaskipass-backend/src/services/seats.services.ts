@@ -1,5 +1,4 @@
 import { Transaction } from 'sequelize';
-import connectionDb from '../db/connection.db';
 import { HandleMessages } from '../error/handleMessages.error';
 import Buses from '../models/buses.models';
 import Seats from '../models/seats.models';

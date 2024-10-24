@@ -33,10 +33,10 @@ Seats.belongsTo(Buses, {foreignKey: 'bus_id', targetKey: 'id'});
 Buses.hasMany(Frequencies, {foreignKey: 'bus_id', sourceKey: 'id'});
 Frequencies.belongsTo(Buses, {foreignKey: 'bus_id', targetKey: 'id'});
 
-BusStations.hasMany(Routes, {foreignKey: 'departure_station', sourceKey: 'id'});
-Routes.belongsTo(BusStations, {foreignKey: 'departure_station', targetKey: 'id'});
-BusStations.hasMany(Routes, {foreignKey: 'arrival_station', sourceKey: 'id'});
-Routes.belongsTo(BusStations, {foreignKey: 'arrival_station', targetKey: 'id'});
+BusStations.hasMany(Routes, {foreignKey: 'departure_station', sourceKey: 'id', as: 'routes_departure_stations'});
+Routes.belongsTo(BusStations, {foreignKey: 'departure_station', targetKey: 'id', as:'departure_station_route'});
+BusStations.hasMany(Routes, {foreignKey: 'arrival_station', sourceKey: 'id', as: 'routes_arrival_stations'});
+Routes.belongsTo(BusStations, {foreignKey: 'arrival_station', targetKey: 'id', as:'arrival_station_route'});
 BusStations.hasMany(StopOvers, {foreignKey: 'station_id', sourceKey: 'id'});
 StopOvers.belongsTo(BusStations, {foreignKey: 'station_id', targetKey: 'id'});
 BusStations.hasMany(Tickets, {foreignKey: 'departure_station', sourceKey: 'id'});
@@ -58,8 +58,8 @@ Cooperatives.hasMany(BusStructure, {foreignKey: 'cooperative_id', sourceKey: 'id
 BusStructure.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
 Cooperatives.hasMany(Frequencies, {foreignKey: 'cooperative_id', sourceKey: 'id'});
 Frequencies.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
-Cooperatives.hasMany(Routes, {foreignKey: 'cooperative_id', sourceKey: 'id'});
-Routes.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
+Cooperatives.hasMany(Routes, {foreignKey: 'cooperative_id', sourceKey: 'id', as: 'routes_cooperatives' });
+Routes.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id', as: 'cooperative_route'});
 Cooperatives.hasMany(ClientCooperatives, {foreignKey: 'cooperative_id', sourceKey: 'id'});
 ClientCooperatives.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
 Cooperatives.hasMany(Payments, {foreignKey: 'cooperative_id', sourceKey: 'id'});
@@ -67,8 +67,8 @@ Payments.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'}
 Cooperatives.hasMany(SerialStation, {foreignKey: 'cooperative_id', sourceKey: 'id'});
 SerialStation.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
 
-Cities.hasMany(BusStations, {foreignKey: 'city_id', sourceKey: 'id'});
-BusStations.belongsTo(Cities, {foreignKey: 'city_id', targetKey: 'id'});
+Cities.hasMany(BusStations, {foreignKey: 'city_id', sourceKey: 'id', as:'Bus_stations_city'});
+BusStations.belongsTo(Cities, {foreignKey: 'city_id', targetKey: 'id', as:'city_bus_station'});
 
 Clients.hasMany(ClientCooperatives, {foreignKey: 'client_dni', sourceKey: 'dni'});
 ClientCooperatives.belongsTo(Clients, {foreignKey: 'client_dni', targetKey: 'dni'});
@@ -80,8 +80,8 @@ Tickets.belongsTo(Seats, {foreignKey: 'seat_id', targetKey: 'id'});
 Seats.hasMany(Tickets, {foreignKey: 'seat_id', sourceKey: 'id'});
 
 
-Tickets.hasMany(Payments, {foreignKey: 'ticket_id', sourceKey: 'id'});
-Payments.belongsTo(Tickets, {foreignKey: 'ticket_id', targetKey: 'id'});
+Tickets.hasMany(Payments, {foreignKey: 'ticket_id', sourceKey: 'id' , as: 'payments_ticket'});
+Payments.belongsTo(Tickets, {foreignKey: 'ticket_id', targetKey: 'id', as: 'ticket_payment'});
 SerialStation.hasMany(Tickets, {foreignKey: 'serial_station_id', sourceKey: 'id'});
 Tickets.belongsTo(SerialStation, {foreignKey: 'serial_station_id', targetKey: 'id'});
 

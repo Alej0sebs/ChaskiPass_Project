@@ -7,6 +7,7 @@ import SelectTypesComponent from './selectTypesComponent.registration';
 import SvgSeatComponent from '../../components/busElements/svgSeats.components';
 import SvgBathroomComponent from '../../components/busElements/svgBathroom.components';
 import SvgStairsComponent from '../../components/busElements/svgStairs.components';
+import BusTemplate from '../../components/Bus';
 
 const TypebusRegistration = () => {
     const [busConfigurationName, setBusConfigurationName] = useState(''); // Nuevo estado para el nombre del bus
@@ -204,26 +205,57 @@ const TypebusRegistration = () => {
                         placeholder="Nombre del bus"
                         value={busConfigurationName}
                         onChange={(e) => setBusConfigurationName(e.target.value)}
-                        className="border border-gray-300 rounded px-2 py-1"
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-white py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
                     {/* Selector para el número de pisos */}
-                    <label>Número de pisos:</label>
-                    <select value={numFloors} onChange={handleFloorChange} className="border border-gray-300 rounded px-2 py-1">
-                        <option value={1}>1 Piso</option>
-                        <option value={2}>2 Pisos</option>
-                    </select>
+                    <div className='relative z-5'>
+                        <label>Número de pisos:</label>
+                        <select value={numFloors} onChange={handleFloorChange}
+                            className={`relative z-5 w-full appearance-none rounded-lg border border-stroke bg-white py-3 pl-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input ${numFloors ? 'text-black dark:text-white' : 'text-gray-400'
+                                }`}>
+                            <option value={1}>1 Piso</option>
+                            <option value={2}>2 Pisos</option>
+                        </select>
+                        <span className="absolute top-1/2 right-4 z-10">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <g opacity="0.8">
+                                    <path
+                                        fillRule="evenodd"
+                                        clipRule="evenodd"
+                                        d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                        fill="#637381"
+                                    ></path>
+                                </g>
+                            </svg>
+                        </span>
+                    </div>
                     <div>
                         {/* Selección de piso actual para edición */}
-                        <label>Piso actual: </label>
-                        <select
-                            value={selectedFloor}
-                            onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
-                            className="border border-gray-300 rounded px-2 py-1"
-                        >
-                            {Array.from({ length: numFloors }, (_, i) => i + 1).map(floor => (
-                                <option key={floor} value={floor}>Piso {floor}</option>
-                            ))}
-                        </select>
+                        <div className='relative z-5'>
+                            <label>Piso actual: </label>
+                            <select
+                                value={selectedFloor}
+                                onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
+                                className={`relative z-5  appearance-none rounded-lg border border-stroke bg-white py-3 pl-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input ${numFloors ? 'text-black dark:text-white' : 'text-gray-400'
+                                    }`}
+                            >
+                                {Array.from({ length: numFloors }, (_, i) => i + 1).map(floor => (
+                                    <option key={floor} value={floor}>Piso {floor}</option>
+                                ))}
+                            </select>
+                            <span className="absolute top-1/2 right-[65%] z-10 -translate-y-1/2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <g opacity="0.8">
+                                        <path
+                                            fillRule="evenodd"
+                                            clipRule="evenodd"
+                                            d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                            fill="#637381"
+                                        ></path>
+                                    </g>
+                                </svg>
+                            </span>
+                        </div>
                     </div>
 
                     {/* Input para el nombre del asiento */}
@@ -235,39 +267,39 @@ const TypebusRegistration = () => {
                             placeholder="Numero de asiento"
                             value={seatName}
                             onChange={(e) => setSeatName(e.target.value)}
-                            className="border border-gray-300 rounded px-2 py-1"
+                            className="rounded-lg border-[1.5px] border-stroke bg-white py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
 
                     </div>
                     <button
                         onClick={() => addElement('seat')}
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                        className="bg-blue-500 text-white px-4 py-2 rounded-lg"
                     >
                         Agregar Asiento
                     </button>
                     <button
                         onClick={() => addElement('bathroom')}
-                        className="bg-purple-400 text-white px-4 py-2 rounded"
+                        className="bg-purple-400 text-white px-4 py-2 rounded-lg"
                     >
                         Agregar Baño
                     </button>
                     <button
                         onClick={() => addElement('stairs')}
-                        className="bg-orange-400 text-white px-4 py-2 rounded"
+                        className="bg-orange-400 text-white px-4 py-2 rounded-lg"
                     >
                         Agregar Escalera
                     </button>
                     {/* Botón para eliminar el elemento seleccionado */}
                     <button
                         onClick={removeSelectedElement}
-                        className={`bg-red-500 text-white px-4 py-2 rounded ${selectedElement === null ? 'opacity-50' : ''}`}
+                        className={`bg-red-500 text-white px-4 py-2 rounded-lg ${selectedElement === null ? 'opacity-50' : ''}`}
                         disabled={selectedElement === null}
                     >
                         Eliminar Elemento Seleccionado
                     </button>
                     <button
                         onClick={saveSeatsConfiguration}
-                        className='bg-green-500 text-white px-4 py-2 rounded'
+                        className='bg-green-500 text-white px-4 py-2 rounded-lg'
                         disabled={loading}
                     >
                         {loading ? <span className="loading loading-spinner"></span> : "Guardar"}
@@ -281,28 +313,30 @@ const TypebusRegistration = () => {
                         id={`bus-container-${floor}`}
                         className={`relative h-[600px] w-[350px] border-4 border-gray-700 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-100 shadow-lg ${selectedFloor === floor ? 'block' : 'hidden'}`}
                     >
-                        {floorElements[floor]?.map((element) => {
-                            const busContainer = document.getElementById(`bus-container-${floor}`);
-                            const busRect = busContainer!.getBoundingClientRect();
-                            const absoluteLeft = (element.position.x / 100) * busRect.width;
-                            const absoluteTop = (element.position.y / 100) * busRect.height;
+                        <BusTemplate floorNumber={floor}>
+                            {floorElements[floor]?.map((element) => {
+                                const busContainer = document.getElementById(`bus-container-${floor}`);
+                                const busRect = busContainer!.getBoundingClientRect();
+                                const absoluteLeft = (element.position.x / 100) * busRect.width;
+                                const absoluteTop = (element.position.y / 100) * busRect.height;
 
-                            return (
-                                <div
-                                    key={element.id}
-                                    id={element.id}
-                                    className={`absolute cursor-grab ${selectedElement === element.id ? 'border border-blue-500' : ''}`}
-                                    style={{
-                                        left: `${absoluteLeft}px`,
-                                        top: `${absoluteTop}px`,
-                                    }}
-                                >
-                                    {element.type === 'seat' && <SvgSeatComponent name={element.name}  isSelected={selectedElement === element.id} />}
-                                    {element.type === 'bathroom' && <SvgBathroomComponent />}
-                                    {element.type === 'stairs' && <SvgStairsComponent />}
-                                </div>
-                            );
-                        })}
+                                return (
+                                    <div
+                                        key={element.id}
+                                        id={element.id}
+                                        className={`absolute cursor-grab ${selectedElement === element.id ? 'border border-blue-500' : ''}`}
+                                        style={{
+                                            left: `${absoluteLeft}px`,
+                                            top: `${absoluteTop}px`,
+                                        }}
+                                    >
+                                        {element.type === 'seat' && <SvgSeatComponent name={element.name} isSelected={selectedElement === element.id} />}
+                                        {element.type === 'bathroom' && <SvgBathroomComponent />}
+                                        {element.type === 'stairs' && <SvgStairsComponent />}
+                                    </div>
+                                );
+                            })}
+                        </BusTemplate>
                     </div>
                 ))}
             </div>

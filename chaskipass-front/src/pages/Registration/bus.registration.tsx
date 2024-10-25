@@ -4,13 +4,9 @@ import { IoCalendarNumberSharp } from 'react-icons/io5';
 import { MdOutlineReduceCapacity } from 'react-icons/md';
 import { CreateBusT } from '../../types';
 import createBus from '../../hooks/busCreation';
-import { useEffect, useState } from 'react';
 import { ObtainBusStructure } from '../../hooks/ObtainBusStructure'; // Importar el hook
+import { useState } from 'react';
 
-interface BusStructure {
-  id: number;
-  name: string;
-}
 
 const initialStateBus: CreateBusT = {
   id: 0,
@@ -27,20 +23,18 @@ const initialStateBus: CreateBusT = {
 };
 
 const BusRegistration: React.FC = () => {
-  const { loading: loadingStructures, fetchBusStructures } = ObtainBusStructure();
+  const { selectBusStructures } = ObtainBusStructure();
+  const [selectedBusStructure, setSelectedBusStructure] = useState<string>('');
   const { loading: loadingBus, bus } = createBus(); // Cambiado aquí
-  const [busStructures, setBusStructures] = useState<BusStructure[]>([]);
   const [inputBus, setInputBus] = useState<CreateBusT>(initialStateBus);
 
-  useEffect(() => {
-    const getBusStructures = async () => {
-      const structures = await fetchBusStructures();
-      setBusStructures(structures);
-    };
-    getBusStructures();
-  }, [fetchBusStructures]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+
+    // Actualiza el estado seleccionado del bus si es el select de buses
+    if (e.target.name === 'bus_structure_id') {
+      setSelectedBusStructure(e.target.value);
+    };
+
     setInputBus({
       ...inputBus,
       [e.target.name]: e.target.value,
@@ -148,7 +142,7 @@ const BusRegistration: React.FC = () => {
                         Modelo
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><FaCar/></span>
+                        <span className="absolute left-4.5 top-4"><FaCar /></span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
@@ -211,14 +205,15 @@ const BusRegistration: React.FC = () => {
                         className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                         name="bus_structure_id"
                         id="bus_structure_id"
-                        value={inputBus.bus_structure_id}
+                        value={selectedBusStructure}
                         onChange={handleChange}
-                        disabled={loadingStructures}
                       >
-                        <option value="">Seleccione una estructura</option>
-                        {busStructures.map((structure: any) => (
-                          <option key={structure.id} value={structure.id}>{structure.name}</option>
-                        ))}
+                        {!selectBusStructures && <option value="">Tipo de estructura</option>}
+                        {selectBusStructures.map((bus) => (
+                          <option key={bus.id} value={bus.id}>
+                            {bus.name}
+                          </option>
+                        ))};
                       </select>
                     </div>
                   </div>

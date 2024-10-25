@@ -17,7 +17,7 @@ export default function useBusLayout(){
                 body: JSON.stringify(layoutBus),
             });
             const data = await res.json();
-            if(data.error){
+            if(!res.ok){
                 throw new Error(data.error);
             }
             toast.success(data.msg);

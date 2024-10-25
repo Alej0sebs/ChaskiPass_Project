@@ -23,11 +23,10 @@ export default function useTypeSeats() {
                 },
                 credentials: 'include',
             });
-
-            if (!response.ok) {
-                throw new Error('Error al obtener los tipos de asientos');
-            }
             const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error);
+            }
             const formattedData= data.json.map((seat:SeatType)=>({
                 id:seat.id,
                 name:seat.name,

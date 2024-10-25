@@ -6,6 +6,7 @@ import { HandleMessages } from '../error/handleMessages.error';
 import { RoleEnum } from '../utils/enums.utils';
 import { FrequencyT, RoutesT, ValidateRoleAndRouteId } from '../types/index.types';
 import { handleSequelizeError } from '../utils/helpers.utils';
+import { v4 as uuidv4 } from 'uuid';
 
 
 // Servicio para crear una nueva ruta
@@ -47,7 +48,7 @@ export const createRouteService = async ({ dni, arrival_station_id, departure_st
 
 
 // Servicio para crear una nueva frecuencia
-export const createFrequencyService = async ({ cooperative_id, id, bus_id, route_id, date, departure_time, arrival_time, price, status }: FrequencyT) => {
+export const createFrequencyService = async ({ cooperative_id, bus_id, route_id, date, departure_time, arrival_time, price, status }: FrequencyT) => {
     try {
         const routeExists = await Routes.findOne({ where: { id: route_id } });
         if (!routeExists) {
@@ -57,7 +58,7 @@ export const createFrequencyService = async ({ cooperative_id, id, bus_id, route
         // Verificar si la ruta tiene paradas intermedias
         const stopOversAmount = await StopOvers.count({ where: { route_id } });
         const stopOverExists = stopOversAmount > 0;
-
+        const id= uuidv4();
         // Crear la frecuencia
         await Frequencies.create({
             id,

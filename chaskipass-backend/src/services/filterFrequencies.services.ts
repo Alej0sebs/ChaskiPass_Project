@@ -23,53 +23,54 @@ export const filterFrequenciesService = async ({ cooperative_id, date, departure
         //Construccion de filtros de la tabla propia
         if (cooperative_id) whereConditions.cooperative_id = cooperative_id;
         if (date) whereConditions.date = date;
-        if (departure_time) whereConditions.departure_time = departure_time;
-        if (arrival_time) whereConditions.arrival_time = arrival_time;
-        if (price) whereConditions.price = price;
+        if (departure_time && departure_time!=='') whereConditions.departure_time = departure_time;
+        if (arrival_time && arrival_time !=='') whereConditions.arrival_time = arrival_time;
+        if (price && price !==0) whereConditions.price = price;
         if (trip_type) whereConditions.trip_type = trip_type;
         //Construccion de filtros de la tabla relacionada
         const includeConditions = [
             {
                 model: Routes,
+                required: true,
                 include: [
                     {
                         model: BusStations,
                         as: 'departure_station_route',
+                        required: false,
                         include: [
                             {
                                 model: Cities,
                                 as: 'city_bus_station',
                                 where: city_origin ? { name: { [Op.eq]: city_origin } } : undefined,  
                                 attributes:['id','name'],
-                                required: true
+                                required: false
                             },
                         ],
-                        attributes:['id','name'],
-                        required: true
+                        attributes:['id','name']
 
                     },
                     {
                         model: BusStations,
                         as: 'arrival_station_route',
+                        required: false,
                         include: [
                             {
                                 model: Cities,
                                 as: 'city_bus_station',
                                 where: city_destination ? { name: { [Op.eq]: city_destination } } : undefined,
                                 attributes:['id','name'],
-                                required: true
+                                required: false
                             }
                         ],
                         attributes:['id','name'],
-                        required: true
                     }
                 ]
             },
             {
                 model: Cooperatives,
-                as: 'cooperative_route',
+                as: 'cooperative_frequency',
                 attributes:['name'],
-                required: true
+                required: false
             }
         ];
 

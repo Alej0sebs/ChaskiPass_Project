@@ -42,7 +42,7 @@ export type RolesT = InferAttributes<Roles>;
 export type CooperativesT = InferAttributes<Cooperatives>;
 
 export type FrequencyModelT = InferAttributes<Frequencies>;
-export type FrequencyT = Omit<InferAttributes<Frequencies>, 'trip_type'>;
+export type FrequencyT = Omit<InferAttributes<Frequencies>, 'trip_type'| 'id'>;
 
 export type RoutesT = InferAttributes<Routes> & {
     stopOverList?: string[],

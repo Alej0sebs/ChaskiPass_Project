@@ -9,8 +9,6 @@ import { useState } from 'react';
 
 
 const initialStateBus: CreateBusT = {
-  id: 0,
-  cooperative_id: "",
   bus_number: "",
   licence_plate: "",
   chassis_vin: "",
@@ -18,8 +16,7 @@ const initialStateBus: CreateBusT = {
   model: "",
   year: 0,
   capacity: 0,
-  picture: "",
-  bus_structure_id: ""
+  bus_structure_id: 0
 };
 
 const BusRegistration: React.FC = () => {
@@ -168,6 +165,7 @@ const BusRegistration: React.FC = () => {
                           value={inputBus.year}
                           onChange={handleChange}
                         >
+                          
                           <option value="" disabled>Selecciona un año</option>
                           {Array.from({ length: 50 }, (_, i) => {
                             const year = new Date().getFullYear() - i;
@@ -208,6 +206,9 @@ const BusRegistration: React.FC = () => {
                         value={selectedBusStructure}
                         onChange={handleChange}
                       >
+                          <option value="" disabled>
+                        Seleccione la estructura
+                      </option>
                         {!selectBusStructures && <option value="">Tipo de estructura</option>}
                         {selectBusStructures.map((bus) => (
                           <option key={bus.id} value={bus.id}>

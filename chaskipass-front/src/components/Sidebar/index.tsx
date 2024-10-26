@@ -289,7 +289,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Creación de Frecuencias
+                              Frecuencias
                             </NavLink>
                           </li>
                           <li>

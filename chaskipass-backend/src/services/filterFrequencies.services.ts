@@ -73,7 +73,7 @@ export const filterFrequenciesService = async (conditions: FilterFrequenciesT, {
 
         // Ejecutar la consulta de conteo para obtener totalItems
         const [countResult] = await connectionDb.query(countQuery, { replacements });
-        const totalItems = countResult[0].total;
+        const totalItems = (countResult as any)[0].total;
 
         const sqlQuery = `
             SELECT 
@@ -117,11 +117,11 @@ export const filterFrequenciesService = async (conditions: FilterFrequenciesT, {
         };
 
         // Ejecutar la consulta
-        const [frequencyList]= await connectionDb.query(sqlQuery, {
-            replacements: params,
+        const [frequencyList] = await connectionDb.query(sqlQuery, {
+            replacements: params
         });
 
-        const totalPages = Math.ceil(totalItems/ parseInt(limit.toString()));
+        const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
 
         return {
             status: 200,
@@ -132,6 +132,7 @@ export const filterFrequenciesService = async (conditions: FilterFrequenciesT, {
                 list: frequencyList,
             }
         };
+
     } catch (error) {
         // Manejo de errores según tu lógica
         console.error('Error al filtrar frecuencias:', error);

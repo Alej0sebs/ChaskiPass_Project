@@ -70,6 +70,7 @@ export const getBusStationService = async () => {
             attributes: ['id', 'name'],
             include: [{
                 model: Cities,
+                as: 'city_bus_station',
                 attributes: ['id', 'name'],
                 required: true
             }]

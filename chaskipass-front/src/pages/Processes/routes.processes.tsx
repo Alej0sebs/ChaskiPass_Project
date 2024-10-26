@@ -1,17 +1,42 @@
 import { TbBusStop } from "react-icons/tb";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import { useState } from "react";
-import TableRoutesComponent from "./tableRoutesComponent.processes";
-
+import React, { useState } from "react";
+import TableThree from "../../components/Tables/TableThree";
+import DataList from "../../components/DataList/datalist.component";
+import useBusStations from "../../hooks/useBusStations";
+import { BusStationT } from "../../types";
 
 const RoutesRegistration = () => {
 
     const [isStopsEnabled, setIsStopsEnabled] = useState(false);
-    const [stopOvers, setStopOvers] = useState([]); //tiene que ser del tipo de dato que se va a guardar id parada - nombre parada
+    const [stopOvers, setStopOvers] = useState<BusStationT[]>([]); //tiene que ser del tipo de dato que se va a guardar id parada - nombre parada
+    const {dataListBusStations} = useBusStations(); //hook para obtener las paradas
+    const [selectedDepartureStation, setSelectedDepartureStation] = useState(""); //estado para guardar la parada de salida
+    const [selectedArrivalStation, setSelectedArrivalStation] = useState(""); //estado para guardar la parada de llegada
+    const [selectedStopOver, setSelectedStopOver] = useState("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsStopsEnabled(e.target.checked); //actualizo el estado con el valor del checkbox
     };
+
+    const handleSubmit = (e:React.ChangeEvent<HTMLFormElement>)=>{
+        e.preventDefault();
+    }
+
+    const handleAddStopOver = (e:React.MouseEvent<HTMLButtonElement>)=>{
+        e.preventDefault();
+        const stopOver = stopOversOptions.find((station) => station.id === selectedStopOver);
+        if(stopOver){
+            setStopOvers([...stopOvers, stopOver]);
+            setSelectedStopOver("");
+        }
+        console.log(stopOvers);
+    }
+
+    //Filtros para que no aparezcan las paradas de salida y llegada en las opciones de paradas
+    const departureOptions = dataListBusStations.filter((station) => station.id !== selectedArrivalStation);
+    const arrivalOptions = dataListBusStations.filter((station) => station.id !== selectedDepartureStation);
+    const stopOversOptions = dataListBusStations.filter((station) => station.id !== selectedDepartureStation && station.id !== selectedArrivalStation);
 
     return (
         <>
@@ -27,48 +52,29 @@ const RoutesRegistration = () => {
                                 </h3>
                             </div>
                             <div className="p-7">
-                                <form action="#">
+                                <form onSubmit={handleSubmit}>
                                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                                         <div className="w-full sm:w-[33.33%]">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="departure_station"
-                                            >
-                                                Estación de salida
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <TbBusStop />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="departure_station"
-                                                    id="departure_station"
-                                                    placeholder="Estación A"
-                                                />
-                                            </div>
+                                            <DataList
+                                                id="departure_station"
+                                                label="Estación de salida"
+                                                options={departureOptions}
+                                                placeholder="Estación A"
+                                                onSelect={(value) => setSelectedDepartureStation(value)}
+                                                value={selectedDepartureStation}
+                                                iconP={TbBusStop}/>
                                         </div>
 
                                         <div className="w-full sm:w-[33.33%]">
-                                            <label
-                                                className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="arrival_station"
-                                            >
-                                                Estación de llegada
-                                            </label>
-                                            <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <TbBusStop />
-                                                </span>
-                                                <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
-                                                    name="arrival_station"
-                                                    id="arrival_station"
-                                                    placeholder="Estación B"
-                                                />
-                                            </div>
+                                            <DataList
+                                                id="arrival_station"
+                                                label="Estación de llegada"
+                                                options={arrivalOptions}
+                                                placeholder="Estación B"
+                                                onSelect={(value) => setSelectedArrivalStation(value)}
+                                                value={selectedArrivalStation}
+                                                iconP={TbBusStop}
+                                            />
                                         </div>
 
                                         <div className="w-full sm:w-[33.33%]">
@@ -91,38 +97,24 @@ const RoutesRegistration = () => {
                                         <div className="mb-5.5 flex flex-col gap-5.5">
                                             {/* Contenedor para el input y el botón */}
                                             <div className="w-full">
-                                                <label
-                                                    className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                    htmlFor="bus_company"
-                                                >
-                                                    Agregar Paradas
-                                                </label>
-
                                                 {/* Flex para alinear input y botón */}
                                                 <div className="relative flex items-center gap-3">
                                                     {/* Input */}
-                                                    <div className="relative w-full sm:w-[50%]">
-                                                        <span className="absolute left-4.5 top-4">
-                                                            <TbBusStop />
-                                                        </span>
-                                                        <input
-                                                            className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                            list="roleOptions"
-                                                            id="roleDataList"
-                                                            placeholder="Busca o Selecciona la parada"
+                                                        <DataList
+                                                            id="stop_over"
+                                                            label="Agregar Paradas"
+                                                            options={stopOversOptions}
+                                                            placeholder="Parada"
+                                                            onSelect={(value) => setSelectedStopOver(value)}
+                                                            value={selectedStopOver}
+                                                            iconP={TbBusStop}
+                                                            className="w-full sm:w-[50%]"
                                                         />
-                                                        <datalist id="roleOptions">
-                                                            <option value="Parada 1" />
-                                                            <option value="Parada 2" />
-                                                            <option value="Parada 3" />
-                                                            <option value="Parada 4" />
-                                                        </datalist>
-                                                    </div>
-
                                                     {/* Botón */}
                                                     <button
-                                                        className="rounded bg-green-700 py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                                        type="submit"
+                                                        className="mt-8 rounded bg-green-700 py-2 px-6 font-medium text-gray hover:bg-opacity-90"
+                                                        type="button"
+                                                        onClick={handleAddStopOver}
                                                     >
                                                         Agregar
                                                     </button>
@@ -131,7 +123,10 @@ const RoutesRegistration = () => {
 
                                             {/* Colocar TableRoutesComponent debajo del input y botón */}
                                             <div className="mt-5">
-                                                <TableRoutesComponent />
+                                                <TableThree 
+                                                    headerTable={['id','Estacion de bus', 'Ciudad', 'Acciones']}
+                                                    data={stopOvers}
+                                                />
                                             </div>
                                         </div>
                                     )}

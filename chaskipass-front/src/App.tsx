@@ -25,6 +25,10 @@ import { Toaster } from 'react-hot-toast';
 import { useAuthContext } from './context/AuthContext';
 import FrequencyRegistration from './pages/Processes/frequency.processes';
 
+import { TicketsPlaneIcon } from 'lucide-react';
+import TicketSeriesRegistration from './pages/Registration/tickets.registration';
+
+
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
@@ -217,12 +221,23 @@ function App() {
               }
             />
             <Route
+              path="/register/tickets"
+              element={
+                authUser ?
+                  <>
+                    <PageTitle title="Tickets| ChaskiPass" />
+                    <TicketSeriesRegistration/>
+                  </> : <Navigate to='/auth/signin' />
+              }
+            />
+
+            <Route
               path="/processes/ticketsales"
               element={
                 authUser ?
                   <>
                     <PageTitle title="Ticketsales| ChaskiPass" />
-                    <TicketsalesRegistration />
+                    <TicketsalesRegistration/>
                   </> : <Navigate to='/auth/signin' />
               }
             />

@@ -43,6 +43,11 @@ export type BusStructureT={
     id: string;
     name: string;
 }
+export type TypeBusStationT={
+
+
+}
+
 
 export type UserSignUpT=Pick<UserT,'email' | 'user_name' | 'password'>
 

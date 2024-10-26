@@ -48,4 +48,5 @@ export enum HandleMessages{
     DEFAULT_INSTANCE_EXIST='La siguiente información ya existe',
     DATABASE_ERROR = 'Error en la base de datos, Por favor intente más tarde',
     UNEXPECTED_ERROR = 'Error inesperado, Por favor intente más tarde',
+    FREQUENCY_ALREADY_EXISTS='La frecuencia ya existe',
 }

@@ -23,8 +23,8 @@ import { StationCooperative } from "./stationCooperative.models";
 Roles.hasMany(Users, {foreignKey: 'role_id', sourceKey: 'id'});
 Users.belongsTo(Roles, {foreignKey: 'role_id', targetKey: 'id'});
 
-Routes.hasMany(Frequencies, {foreignKey: 'route_id', sourceKey: 'id'});
-Frequencies.belongsTo(Routes, {foreignKey: 'route_id', targetKey: 'id'});
+Routes.hasMany(Frequencies, {foreignKey: 'route_id', sourceKey: 'id', as: 'frequencies_route'});
+Frequencies.belongsTo(Routes, {foreignKey: 'route_id', targetKey: 'id', as: 'route_frequency'});
 Routes.hasMany(StopOvers, {foreignKey: 'route_id', sourceKey: 'id'});
 StopOvers.belongsTo(Routes, {foreignKey: 'route_id', targetKey: 'id'});
 
@@ -56,8 +56,8 @@ Cooperatives.hasMany(TypeSeats, {foreignKey: 'cooperative_id', sourceKey: 'id'})
 TypeSeats.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
 Cooperatives.hasMany(BusStructure, {foreignKey: 'cooperative_id', sourceKey: 'id'});
 BusStructure.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
-Cooperatives.hasMany(Frequencies, {foreignKey: 'cooperative_id', sourceKey: 'id'});
-Frequencies.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id'});
+Cooperatives.hasMany(Frequencies, {foreignKey: 'cooperative_id', sourceKey: 'id', as: 'frequencies_cooperatives' });
+Frequencies.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id', as: 'cooperative_frequency'});
 Cooperatives.hasMany(Routes, {foreignKey: 'cooperative_id', sourceKey: 'id', as: 'routes_cooperatives' });
 Routes.belongsTo(Cooperatives, {foreignKey: 'cooperative_id', targetKey: 'id', as: 'cooperative_route'});
 Cooperatives.hasMany(ClientCooperatives, {foreignKey: 'cooperative_id', sourceKey: 'id'});

@@ -1,97 +1,140 @@
-import { Op, where } from "sequelize";
-import BusStations from "../models/busStations.models";
 import { DataPaginationT, FilterFrequenciesT } from "../types/index.types";
-import Routes from "../models/routes.models";
-import Cities from "../models/cities.models";
-import Frequencies from "../models/frequencies.models";
-import { handleSequelizeError } from "../utils/helpers.utils";
-import Cooperatives from "../models/cooperatives.models";
+import connectionDb from '../db/connection.db';
 
-type filterConditionsT = {
-    cooperative_id?: string;
-    date?: Date;
-    departure_time?: string;
-    arrival_time?: string;
-    price?: number;
-    trip_type?: boolean;
-}
+type filterConditionsT = Partial<FilterFrequenciesT>;
 
-export const filterFrequenciesService = async ({ cooperative_id, date, departure_time, arrival_time, price, trip_type, city_destination, city_origin}: FilterFrequenciesT, { page, limit, pattern }: DataPaginationT) => {
-    const whereConditions: filterConditionsT = {};
+const buildDynamicWhereClause = (filters: filterConditionsT) => {
+    const conditions = [];
+    const replacements: filterConditionsT = {};
+
+    if (filters.cooperative_id) {
+        conditions.push('fr.cooperative_id = :cooperative_id');
+        replacements.cooperative_id = filters.cooperative_id;
+    }
+
+    if (filters.date) {
+        conditions.push('fr.date = :date');
+        replacements.date = filters.date;
+    }
+
+    if (filters.departure_time) {
+        conditions.push('fr.departure_time = :departure_time');
+        replacements.departure_time = filters.departure_time;
+    }
+
+    if (filters.arrival_time) {
+        conditions.push('fr.arrival_time = :arrival_time');
+        replacements.arrival_time = filters.arrival_time;
+    }
+
+    if (filters.price !== undefined && filters.price !== null && filters.price > 0) {
+        conditions.push('fr.price = :price');
+        replacements.price = filters.price;
+    }
+
+    if (filters.trip_type !== undefined) {
+        conditions.push('fr.trip_type = :trip_type');
+        replacements.trip_type = filters.trip_type;
+    }
+
+    if (filters.departure_city) {
+        conditions.push('cit1.name = :departure_city');
+        replacements.departure_city = filters.departure_city;
+    }
+
+    if (filters.arrival_city) {
+        conditions.push('cit2.name = :arrival_city');
+        replacements.arrival_city = filters.arrival_city;
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    return { whereClause, replacements };
+};
+
+export const filterFrequenciesService = async (conditions: FilterFrequenciesT, { page, limit, pattern }: DataPaginationT) => {
     try {
         const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
-        //Construccion de filtros de la tabla propia
-        if (cooperative_id) whereConditions.cooperative_id = cooperative_id;
-        if (date) whereConditions.date = date;
-        if (departure_time) whereConditions.departure_time = departure_time;
-        if (arrival_time) whereConditions.arrival_time = arrival_time;
-        if (price) whereConditions.price = price;
-        if (trip_type) whereConditions.trip_type = trip_type;
-        //Construccion de filtros de la tabla relacionada
-        const includeConditions = [
-            {
-                model: Routes,
-                include: [
-                    {
-                        model: BusStations,
-                        as: 'departure_station_route',
-                        include: [
-                            {
-                                model: Cities,
-                                as: 'city_bus_station',
-                                where: city_origin ? { name: { [Op.eq]: city_origin } } : undefined,  
-                                attributes:['id','name'],
-                                required: true
-                            },
-                        ],
-                        attributes:['id','name'],
-                        required: true
+        // Construir la cláusula WHERE y los reemplazos
+        const { whereClause, replacements } = buildDynamicWhereClause(conditions);
 
-                    },
-                    {
-                        model: BusStations,
-                        as: 'arrival_station_route',
-                        include: [
-                            {
-                                model: Cities,
-                                as: 'city_bus_station',
-                                where: city_destination ? { name: { [Op.eq]: city_destination } } : undefined,
-                                attributes:['id','name'],
-                                required: true
-                            }
-                        ],
-                        attributes:['id','name'],
-                        required: true
-                    }
-                ]
-            },
-            {
-                model: Cooperatives,
-                as: 'cooperative_route',
-                attributes:['name'],
-                required: true
-            }
-        ];
+        // Consulta para contar el total de registros sin limit y offset
+        const countQuery = `
+                SELECT COUNT(*) AS total
+                FROM frequencies AS fr
+                INNER JOIN routes AS r ON r.id = fr.route_id
+                INNER JOIN bus_stations AS bs1 ON bs1.id = r.departure_station_id
+                INNER JOIN cities AS cit1 ON cit1.id = bs1.city_id
+                INNER JOIN bus_stations AS bs2 ON bs2.id = r.arrival_station_id
+                INNER JOIN cities AS cit2 ON cit2.id = bs2.city_id
+                LEFT JOIN cooperatives AS c ON c.id = fr.cooperative_id
+                ${whereClause};
+            `;
 
-        const { rows: frequencyList, count: totalItems } = await Frequencies.findAndCountAll({
-            where: whereConditions,
-            include: includeConditions,
-            attributes:['date', 'departure_time', 'arrival_time', 'price'],
+        // Ejecutar la consulta de conteo para obtener totalItems
+        const [countResult] = await connectionDb.query(countQuery, { replacements });
+        const totalItems = countResult[0].total;
+
+        const sqlQuery = `
+            SELECT 
+                fr.id AS frequency_id,
+                fr.date,
+                fr.departure_time,
+                fr.arrival_time,
+                fr.price,
+                bs1.id AS departure_station_id,
+                bs1.name AS departure_station_name,
+                cit1.id AS departure_city_id,
+                cit1.name AS departure_city_name,
+                bs2.id AS arrival_station_id,
+                bs2.name AS arrival_station_name,
+                cit2.id AS arrival_city_id,
+                cit2.name AS arrival_city_name,
+                c.name AS cooperative_name
+            FROM 
+                frequencies AS fr
+            INNER JOIN 
+                routes AS r ON r.id = fr.route_id
+            INNER JOIN 
+                bus_stations AS bs1 ON bs1.id = r.departure_station_id
+            INNER JOIN 
+                cities AS cit1 ON cit1.id = bs1.city_id
+            INNER JOIN 
+                bus_stations AS bs2 ON bs2.id = r.arrival_station_id
+            INNER JOIN 
+                cities AS cit2 ON cit2.id = bs2.city_id
+            LEFT JOIN 
+                cooperatives AS c ON c.id = fr.cooperative_id
+            ${whereClause}
+            LIMIT :limit OFFSET :offset;
+        `;
+
+        // Agregar limit y offset a los reemplazos
+        const params = {
+            ...replacements,
             limit: parseInt(limit.toString()),
-            offset
+            offset,
+        };
+
+        // Ejecutar la consulta
+        const [frequencyList]= await connectionDb.query(sqlQuery, {
+            replacements: params,
         });
 
-        const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
+        const totalPages = Math.ceil(totalItems/ parseInt(limit.toString()));
+
         return {
             status: 200,
             json: {
                 totalItems,
                 totalPages,
                 currentPage: parseInt(page.toString()),
-                list: frequencyList
+                list: frequencyList,
             }
         };
     } catch (error) {
-        return handleSequelizeError(error);
+        // Manejo de errores según tu lógica
+        console.error('Error al filtrar frecuencias:', error);
+        return { status: 500, message: 'Error en el servicio' };
     }
 };

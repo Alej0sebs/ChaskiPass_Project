@@ -58,6 +58,11 @@ export const createFrequencyService = async ({ cooperative_id, bus_id, route_id,
         // Verificar si la ruta tiene paradas intermedias
         const stopOversAmount = await StopOvers.count({ where: { route_id } });
         const stopOverExists = stopOversAmount > 0;
+
+        //verificar si la ruta ya existe 
+        const frequencyExists = await Frequencies.findOne({ where: { route_id, date, departure_time, arrival_time } });
+        if(frequencyExists) return { status: 400, json: { msg: HandleMessages.FREQUENCY_ALREADY_EXISTS } };
+
         const id= uuidv4();
         // Crear la frecuencia
         await Frequencies.create({

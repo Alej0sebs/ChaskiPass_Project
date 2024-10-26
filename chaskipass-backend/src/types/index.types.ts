@@ -78,6 +78,6 @@ export type TypeSeatT = InferAttributes<TypeSeats>
 export type CreateTypeSeatT = Omit<TypeSeatT, 'id'>
 
 export type FilterFrequenciesT = Omit<FrequencyModelT, 'id' | 'status' | 'bus_id' | 'route_id'> &{
-    city_origin: string,
-    city_destination: string
+    departure_city: string,
+    arrival_city: string
 };

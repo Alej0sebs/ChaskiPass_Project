@@ -44,7 +44,13 @@ export type BusStructureT={
     name: string;
 }
 export type TypeBusStationT={
-
+id:number,    
+city_id:string,
+name:string,
+address:string,
+phone: string,
+open_time:string,
+close_time:string
 
 }
 
@@ -61,3 +67,4 @@ export type CreateUserT=Omit<UserT,'password'>
 export type CreateBusT= Pick<TypeBusT,'bus_number'|'license_plate'|'chassis_vin'|'bus_manufacturer'|
 'model'|'year'|'capacity'|'bus_structure_id'>
 
+export type createBusStationT=Omit<TypeBusStationT,'id'>

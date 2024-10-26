@@ -1,12 +1,12 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { FaBus, FaCar } from 'react-icons/fa';
 import { IoCalendarNumberSharp } from 'react-icons/io5';
-import { MdOutlineReduceCapacity, MdPreview } from 'react-icons/md';
+import { MdOutlineReduceCapacity} from 'react-icons/md';
 import { CreateBusT } from '../../types';
 import createBus from '../../hooks/busCreation';
 import { ObtainBusStructure } from '../../hooks/ObtainBusStructure'; // Importar el hook
 import { useState } from 'react';
-import { StylesheetMap } from '@angular/flex-layout';
+// import { StylesheetMap } from '@angular/flex-layout';
 
 const initialStateBus: CreateBusT = {
   bus_number: '',
@@ -278,25 +278,19 @@ const BusRegistration: React.FC = () => {
                     </div>
                   </div>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                    <div>
+                      <h2>Subir Imagen</h2>
+                      <form onSubmit={handleSubmit}>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          // onChange={handleImageChange}
+                        />
 
-                  <div>
-                  <h2>Subir Imagen</h2>
-                  <form onSubmit={handleSubmit}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      // onChange={handleImageChange}
-                    />
-
-                    {/* <button type="submit">Subir Imagen</button> */}
-                  </form>
-
-                </div>
-                    
+                        {/* <button type="submit">Subir Imagen</button> */}
+                      </form>
                     </div>
-
-
-
+                  </div>
 
                   <div className="mt-6 flex justify-between">
                     <div className="mb-5">
@@ -324,26 +318,11 @@ const BusRegistration: React.FC = () => {
                     </div>
                   </div>
                 </form>
-
-                
               </div>
-
-
-             
-
-
-
             </div>
           </div>
-         
-             
-                
-
         </div>
       </div>
-
-  
-
     </>
   );
 };

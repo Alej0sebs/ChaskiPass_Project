@@ -2,7 +2,13 @@ import { FaCity, FaPhoneAlt } from "react-icons/fa";
 import { MdLocationOn, MdAccessTime } from "react-icons/md";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 
-const TerminalRegistration = () => {
+const BusStationRegistration = () => {
+    
+
+
+
+
+
     
     return (
         <>
@@ -176,4 +182,4 @@ const TerminalRegistration = () => {
     );
 };
 
-export default TerminalRegistration;
+export default BusStationRegistration;

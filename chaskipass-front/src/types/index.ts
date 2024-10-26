@@ -28,17 +28,15 @@ export type UserT={
 };
 
 export type TypeBusT={
-    id: number,
-    cooperative_id: string,
+   
     bus_number:string,
-    licence_plate:string,
+    license_plate:string,
     chassis_vin:string,
-    bus_manufacture:string,
+    bus_manufacturer:string,
     model:string,
     year:number,
     capacity:number,
-    picture:string,
-    bus_structure_id:string
+    bus_structure_id:number
     };
 
 export type BusStructureT={
@@ -55,6 +53,6 @@ export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperati
 
 export type CreateUserT=Omit<UserT,'password'>
 
-export type CreateBusT= Pick<TypeBusT,'id'|'cooperative_id'|'bus_number'|'licence_plate'|'chassis_vin'|'bus_manufacture'|
-'model'|'year'|'capacity'|'picture'|'bus_structure_id'>
+export type CreateBusT= Pick<TypeBusT,'bus_number'|'license_plate'|'chassis_vin'|'bus_manufacturer'|
+'model'|'year'|'capacity'|'bus_structure_id'>
 

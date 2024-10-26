@@ -7,37 +7,40 @@ import createBus from '../../hooks/busCreation';
 import { ObtainBusStructure } from '../../hooks/ObtainBusStructure'; // Importar el hook
 import { useState } from 'react';
 
-
 const initialStateBus: CreateBusT = {
-  id: 0,
-  cooperative_id: "",
-  bus_number: "",
-  licence_plate: "",
-  chassis_vin: "",
-  bus_manufacture: "",
-  model: "",
+  bus_number: '',
+  license_plate: '', 
+  chassis_vin: '',
+  bus_manufacturer: '', 
+  model: '',
   year: 0,
   capacity: 0,
-  picture: "",
-  bus_structure_id: ""
+  bus_structure_id: 0,
 };
 
 const BusRegistration: React.FC = () => {
   const { selectBusStructures } = ObtainBusStructure();
-  const [selectedBusStructure, setSelectedBusStructure] = useState<string>('');
+  const [selectedBusStructure, setSelectedBusStructure] = useState<string>("");
   const { loading: loadingBus, bus } = createBus(); // Cambiado aquí
   const [inputBus, setInputBus] = useState<CreateBusT>(initialStateBus);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+  
     // Actualiza el estado seleccionado del bus si es el select de buses
-    if (e.target.name === 'bus_structure_id') {
-      setSelectedBusStructure(e.target.value);
-    };
-
+    if (name === 'bus_structure_id') {
+      setSelectedBusStructure(value);
+    }
+  
     setInputBus({
       ...inputBus,
-      [e.target.name]: e.target.value,
+      [name]: 
+        // Convertimos a número para campos específicos
+        name === 'year' || name === 'capacity' || name === 'bus_structure_id' 
+          ? Number(value)
+          : value,
     });
   };
 
@@ -46,6 +49,10 @@ const BusRegistration: React.FC = () => {
     await bus(inputBus); // Cambiado aquí
   };
 
+  const handleCancel = () => {
+    setInputBus(initialStateBus);
+    setSelectedBusStructure("");
+  };
   return (
     <>
       <div className="mx-auto max-w-270">
@@ -55,18 +62,25 @@ const BusRegistration: React.FC = () => {
           <div className="col-span-5 xl:col-span-3">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">Información del bus</h3>
+                <h3 className="font-medium text-black dark:text-white">
+                  Información del bus
+                </h3>
               </div>
 
               <div className="p-7">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="bus_number">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="bus_number"
+                      >
                         Número de la unidad
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><FaBus /></span>
+                        <span className="absolute left-4.5 top-4">
+                          <FaBus />
+                        </span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
@@ -80,18 +94,23 @@ const BusRegistration: React.FC = () => {
                     </div>
 
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="licence_plate">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="licence_plate"
+                      >
                         Número de Placa
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><FaCar /></span>
+                        <span className="absolute left-4.5 top-4">
+                          <FaCar />
+                        </span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
-                          name="licence_plate"
-                          id="licence_plate"
+                          name="license_plate"
+                          id="license_plate"
                           placeholder="ABC-123"
-                          value={inputBus.licence_plate}
+                          value={inputBus.license_plate}
                           onChange={handleChange}
                         />
                       </div>
@@ -100,11 +119,16 @@ const BusRegistration: React.FC = () => {
 
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="chassis_vin">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="chassis_vin"
+                      >
                         Número de chasis
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><FaBus /></span>
+                        <span className="absolute left-4.5 top-4">
+                          <FaBus />
+                        </span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
@@ -118,18 +142,23 @@ const BusRegistration: React.FC = () => {
                     </div>
 
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="bus_manufacture">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="bus_manufacture"
+                      >
                         Marca
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><FaCar /></span>
+                        <span className="absolute left-4.5 top-4">
+                          <FaCar />
+                        </span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
-                          name="bus_manufacture"
-                          id="bus_manufacture"
+                          name="bus_manufacturer"
+                          id="bus_manufacturer"
                           placeholder="Mercedes"
-                          value={inputBus.bus_manufacture}
+                          value={inputBus.bus_manufacturer}
                           onChange={handleChange}
                         />
                       </div>
@@ -138,11 +167,16 @@ const BusRegistration: React.FC = () => {
 
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="model">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="model"
+                      >
                         Modelo
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><FaCar /></span>
+                        <span className="absolute left-4.5 top-4">
+                          <FaCar />
+                        </span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="text"
@@ -156,22 +190,33 @@ const BusRegistration: React.FC = () => {
                     </div>
 
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="year">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="year"
+                      >
                         Año de fabricación
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><IoCalendarNumberSharp /></span>
+                        <span className="absolute left-4.5 top-4">
+                          <IoCalendarNumberSharp />
+                        </span>
                         <select
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary appearance-none"
                           name="year"
                           id="year"
-                          value={inputBus.year}
+                          value={inputBus.year || ''}
                           onChange={handleChange}
                         >
-                          <option value="" disabled>Selecciona un año</option>
+                          <option value="" disabled>
+                            Seleccione un año
+                          </option>
                           {Array.from({ length: 50 }, (_, i) => {
                             const year = new Date().getFullYear() - i;
-                            return <option key={year} value={year}>{year}</option>;
+                            return (
+                              <option key={year} value={year}>
+                                {year}
+                              </option>
+                            );
                           })}
                         </select>
                       </div>
@@ -180,11 +225,16 @@ const BusRegistration: React.FC = () => {
 
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="capacity">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="capacity"
+                      >
                         Capacidad
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4.5 top-4"><MdOutlineReduceCapacity /></span>
+                        <span className="absolute left-4.5 top-4">
+                          <MdOutlineReduceCapacity />
+                        </span>
                         <input
                           className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                           type="number"
@@ -198,7 +248,10 @@ const BusRegistration: React.FC = () => {
                     </div>
 
                     <div className="w-full sm:w-1/2">
-                      <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="bus_structure_id">
+                      <label
+                        className="mb-3 block text-sm font-medium text-black dark:text-white"
+                        htmlFor="bus_structure_id"
+                      >
                         Estructura del Bus
                       </label>
                       <select
@@ -208,23 +261,32 @@ const BusRegistration: React.FC = () => {
                         value={selectedBusStructure}
                         onChange={handleChange}
                       >
-                        {!selectBusStructures && <option value="">Tipo de estructura</option>}
+                        <option value="" disabled>
+                          Seleccione la estructura
+                        </option>
+                        {!selectBusStructures && (
+                          <option value="">Tipo de estructura</option>
+                        )}
                         {selectBusStructures.map((bus) => (
                           <option key={bus.id} value={bus.id}>
                             {bus.name}
                           </option>
-                        ))};
+                        ))}
+                        ;
                       </select>
                     </div>
                   </div>
 
                   <div className="mt-6 flex justify-between">
-                    <button
-                      className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                      type="button"
-                    >
-                      Cancelar
-                    </button>
+                    <div className="mb-5">
+                      <button
+                        className="w-full cursor-pointer rounded-lg border border-gray-300 bg-white p-4 text-black transition hover:bg-gray-100 dark:border-strokedark dark:text-white dark:bg-meta-4"
+                        type="button"
+                        onClick={handleCancel}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
 
                     <div className="mb-5">
                       <button
@@ -232,7 +294,11 @@ const BusRegistration: React.FC = () => {
                         disabled={loadingBus}
                         className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                       >
-                        {loadingBus ? <span className="loading loading-spinner"></span> : 'Guardar'}
+                        {loadingBus ? (
+                          <span className="loading loading-spinner"></span>
+                        ) : (
+                          'Guardar'
+                        )}
                       </button>
                     </div>
                   </div>

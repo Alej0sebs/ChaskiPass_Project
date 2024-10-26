@@ -1,17 +1,18 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { FaBus, FaCar } from 'react-icons/fa';
 import { IoCalendarNumberSharp } from 'react-icons/io5';
-import { MdOutlineReduceCapacity } from 'react-icons/md';
+import { MdOutlineReduceCapacity, MdPreview } from 'react-icons/md';
 import { CreateBusT } from '../../types';
 import createBus from '../../hooks/busCreation';
 import { ObtainBusStructure } from '../../hooks/ObtainBusStructure'; // Importar el hook
 import { useState } from 'react';
+import { StylesheetMap } from '@angular/flex-layout';
 
 const initialStateBus: CreateBusT = {
   bus_number: '',
-  license_plate: '', 
+  license_plate: '',
   chassis_vin: '',
-  bus_manufacturer: '', 
+  bus_manufacturer: '',
   model: '',
   year: 0,
   capacity: 0,
@@ -20,7 +21,7 @@ const initialStateBus: CreateBusT = {
 
 const BusRegistration: React.FC = () => {
   const { selectBusStructures } = ObtainBusStructure();
-  const [selectedBusStructure, setSelectedBusStructure] = useState<string>("");
+  const [selectedBusStructure, setSelectedBusStructure] = useState<string>('');
   const { loading: loadingBus, bus } = createBus(); // Cambiado aquí
   const [inputBus, setInputBus] = useState<CreateBusT>(initialStateBus);
 
@@ -28,17 +29,17 @@ const BusRegistration: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-  
+
     // Actualiza el estado seleccionado del bus si es el select de buses
     if (name === 'bus_structure_id') {
       setSelectedBusStructure(value);
     }
-  
+
     setInputBus({
       ...inputBus,
-      [name]: 
+      [name]:
         // Convertimos a número para campos específicos
-        name === 'year' || name === 'capacity' || name === 'bus_structure_id' 
+        name === 'year' || name === 'capacity' || name === 'bus_structure_id'
           ? Number(value)
           : value,
     });
@@ -51,7 +52,7 @@ const BusRegistration: React.FC = () => {
 
   const handleCancel = () => {
     setInputBus(initialStateBus);
-    setSelectedBusStructure("");
+    setSelectedBusStructure('');
   };
   return (
     <>
@@ -276,6 +277,26 @@ const BusRegistration: React.FC = () => {
                       </select>
                     </div>
                   </div>
+                  <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+
+                  <div>
+                  <h2>Subir Imagen</h2>
+                  <form onSubmit={handleSubmit}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      // onChange={handleImageChange}
+                    />
+
+                    {/* <button type="submit">Subir Imagen</button> */}
+                  </form>
+
+                </div>
+                    
+                    </div>
+
+
+
 
                   <div className="mt-6 flex justify-between">
                     <div className="mb-5">
@@ -303,11 +324,26 @@ const BusRegistration: React.FC = () => {
                     </div>
                   </div>
                 </form>
+
+                
               </div>
+
+
+             
+
+
+
             </div>
           </div>
+         
+             
+                
+
         </div>
       </div>
+
+  
+
     </>
   );
 };

@@ -23,16 +23,22 @@ const RoutesRegistration = () => {
         setIsStopsEnabled(e.target.checked); //actualizo el estado con el valor del checkbox
     };
 
-    const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+    const handleSubmit =async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if(!selectedDepartureStation || !selectedArrivalStation) return toast.error("Debe seleccionar una estación de salida y una estación de llegada");
         const departure_station_id:number= parseInt(selectedDepartureStation);
         const arrival_station_id:number= parseInt(selectedArrivalStation);
         const stopOverList:number[] = stopOvers.map((station) => Number(station.id));
-        createRoute({departure_station_id, arrival_station_id, stopOverList});
+        const wasCreated = await createRoute({departure_station_id, arrival_station_id, stopOverList});
+        if(wasCreated) cleanData();
     }
 
     const handleCancelBtn= (e:React.MouseEvent<HTMLButtonElement>)=>{
         e.preventDefault();
+        cleanData();
+    };
+
+    const cleanData= () => {
         setSelectedDepartureStation("");
         setSelectedArrivalStation("");
         setSelectedStopOver("");

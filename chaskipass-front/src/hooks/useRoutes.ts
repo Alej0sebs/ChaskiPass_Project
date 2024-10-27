@@ -28,8 +28,10 @@ export default function useRoutes() {
                 throw new Error(data.json.error);
             }
             toast.success(data.json.msg);
+            return true;
         } catch (error) {
             toast.error(verifyError(error));
+            return false;
         }finally{
             setLoading(false);
         }

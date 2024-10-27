@@ -88,9 +88,6 @@ export const createSeatService = async ({ layout, license_plate }: SeatBusT, tra
             await transaction.rollback();
         }
 
-        // Registrar el error para depuración
-        console.error('Error en la creación de asientos:', error);
-
         // Lanzar el error para que sea manejado por el controlador o la función superior
         throw handleSequelizeError(error);
     }

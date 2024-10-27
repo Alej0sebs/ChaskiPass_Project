@@ -75,7 +75,7 @@ const TicketsalesRegistration = () => {
 
     const tabsData = [
         { title: 'Ventas', content: <SalesForm origin="Baños" destination="Quito" seat={5} /> },
-        { title: 'Reservados', content: <TableThree /> },
+        { title: 'Reservados', content: <TableOne/> },
         { title: 'Pasajeros', content: <TableOne/> }
     ];
 

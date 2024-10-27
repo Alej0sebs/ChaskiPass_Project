@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createRouteService, createFrequencyService } from '../services/routes.services';
+import { createRouteService, createFrequencyService, getRoutesService } from '../services/routes.services';
 import { HandleMessages } from '../error/handleMessages.error';
 import { FrequencyT, RoutesT } from '../types/index.types';
 
@@ -51,5 +51,17 @@ export const createFrequency = async (req: Request, res: Response) => {
         return;
     }
 };
+
+export const getRoutes = async (req: Request, res: Response) => {
+    try{
+        const {cooperative_id} = req.userReq ?? {};
+        const result= await getRoutesService(cooperative_id as string);
+        res.status(200).json(result);
+        return
+    }catch(error){
+        res.status(500).json({msg: HandleMessages.INTERNAL_SERVER_ERROR});
+        return;
+    }
+}
 
 

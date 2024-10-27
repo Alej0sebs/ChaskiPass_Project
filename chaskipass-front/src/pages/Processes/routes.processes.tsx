@@ -1,36 +1,56 @@
 import { TbBusStop } from "react-icons/tb";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import React, { useState } from "react";
-import TableThree from "../../components/Tables/TableThree";
+import TableRoutes from "../../components/Tables/TableRoutes";
 import DataList from "../../components/DataList/datalist.component";
 import useBusStations from "../../hooks/useBusStations";
 import { BusStationT } from "../../types";
+import toast from "react-hot-toast";
+import useRoutes from "../../hooks/useRoutes";
 
 const RoutesRegistration = () => {
 
     const [isStopsEnabled, setIsStopsEnabled] = useState(false);
     const [stopOvers, setStopOvers] = useState<BusStationT[]>([]); //tiene que ser del tipo de dato que se va a guardar id parada - nombre parada
-    const {dataListBusStations} = useBusStations(); //hook para obtener las paradas
+    const { dataListBusStations } = useBusStations(); //hook para obtener las paradas
     const [selectedDepartureStation, setSelectedDepartureStation] = useState(""); //estado para guardar la parada de salida
     const [selectedArrivalStation, setSelectedArrivalStation] = useState(""); //estado para guardar la parada de llegada
     const [selectedStopOver, setSelectedStopOver] = useState("");
+    //Hook
+    const {createRoute} = useRoutes();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setIsStopsEnabled(e.target.checked); //actualizo el estado con el valor del checkbox
     };
 
-    const handleSubmit = (e:React.ChangeEvent<HTMLFormElement>)=>{
+    const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const departure_station_id:number= parseInt(selectedDepartureStation);
+        const arrival_station_id:number= parseInt(selectedArrivalStation);
+        const stopOverList:number[] = stopOvers.map((station) => Number(station.id));
+        createRoute({departure_station_id, arrival_station_id, stopOverList});
     }
 
-    const handleAddStopOver = (e:React.MouseEvent<HTMLButtonElement>)=>{
+    const handleCancelBtn= (e:React.MouseEvent<HTMLButtonElement>)=>{
+        e.preventDefault();
+        setSelectedDepartureStation("");
+        setSelectedArrivalStation("");
+        setSelectedStopOver("");
+        setStopOvers([]);
+    };
+
+    const handleAddStopOver = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         const stopOver = stopOversOptions.find((station) => station.id === selectedStopOver);
-        if(stopOver){
+        const stopOverExists = stopOvers.find((station) => station.id === stopOver?.id);
+        if (stopOverExists) {
+            toast.error("La parada ya ha sido agregada");
+            setSelectedStopOver("");
+        } else if (stopOver) {
             setStopOvers([...stopOvers, stopOver]);
             setSelectedStopOver("");
         }
-        console.log(stopOvers);
+
     }
 
     //Filtros para que no aparezcan las paradas de salida y llegada en las opciones de paradas
@@ -62,7 +82,7 @@ const RoutesRegistration = () => {
                                                 placeholder="Estación A"
                                                 onSelect={(value) => setSelectedDepartureStation(value)}
                                                 value={selectedDepartureStation}
-                                                iconP={TbBusStop}/>
+                                                iconP={TbBusStop} />
                                         </div>
 
                                         <div className="w-full sm:w-[33.33%]">
@@ -100,16 +120,16 @@ const RoutesRegistration = () => {
                                                 {/* Flex para alinear input y botón */}
                                                 <div className="relative flex items-center gap-3">
                                                     {/* Input */}
-                                                        <DataList
-                                                            id="stop_over"
-                                                            label="Agregar Paradas"
-                                                            options={stopOversOptions}
-                                                            placeholder="Parada"
-                                                            onSelect={(value) => setSelectedStopOver(value)}
-                                                            value={selectedStopOver}
-                                                            iconP={TbBusStop}
-                                                            className="w-full sm:w-[50%]"
-                                                        />
+                                                    <DataList
+                                                        id="stop_over"
+                                                        label="Agregar Paradas"
+                                                        options={stopOversOptions}
+                                                        placeholder="Parada"
+                                                        onSelect={(value) => setSelectedStopOver(value)}
+                                                        value={selectedStopOver}
+                                                        iconP={TbBusStop}
+                                                        className="w-full sm:w-[50%]"
+                                                    />
                                                     {/* Botón */}
                                                     <button
                                                         className="mt-8 rounded bg-green-700 py-2 px-6 font-medium text-gray hover:bg-opacity-90"
@@ -123,9 +143,10 @@ const RoutesRegistration = () => {
 
                                             {/* Colocar TableRoutesComponent debajo del input y botón */}
                                             <div className="mt-5">
-                                                <TableThree 
-                                                    headerTable={['id','Estacion de bus', 'Ciudad', 'Acciones']}
+                                                <TableRoutes
+                                                    headerTable={['id', 'Estacion de bus', 'Ciudad', 'Acciones']}
                                                     data={stopOvers}
+                                                    onClick={(id) => { setStopOvers(stopOvers.filter((station) => station.id !== id)) }}
                                                 />
                                             </div>
                                         </div>
@@ -136,7 +157,8 @@ const RoutesRegistration = () => {
                                     <div className="flex justify-end gap-4.5">
                                         <button
                                             className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                                            type="submit"
+                                            type="button"
+                                            onClick={handleCancelBtn}
                                         >
                                             Cancelar
                                         </button>

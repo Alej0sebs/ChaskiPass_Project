@@ -3,8 +3,8 @@ import { FaBus, FaCar } from 'react-icons/fa';
 import { IoCalendarNumberSharp } from 'react-icons/io5';
 import { MdOutlineReduceCapacity } from 'react-icons/md';
 import { CreateBusT } from '../../types';
-import createBus from '../../hooks/busCreation';
-import { ObtainBusStructure } from '../../hooks/ObtainBusStructure'; // Importar el hook
+import createBus from '../../hooks/useBusCreation';
+import { useBusStructure } from '../../hooks/useBusStructure'; // Importar el hook
 import { useState } from 'react';
 
 const initialStateBus: CreateBusT = {
@@ -19,7 +19,7 @@ const initialStateBus: CreateBusT = {
 };
 
 const BusRegistration: React.FC = () => {
-  const { selectBusStructures } = ObtainBusStructure();
+  const { selectBusStructures } = useBusStructure();
   const [selectedBusStructure, setSelectedBusStructure] = useState<string>("");
   const { loading: loadingBus, bus } = createBus(); // Cambiado aquí
   const [inputBus, setInputBus] = useState<CreateBusT>(initialStateBus);

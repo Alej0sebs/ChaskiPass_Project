@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
 import { LayoutBusT } from "../types";
 
-export const ObtainBusStructure = () => {
+export const useBusStructure = () => {
     const [loading, setLoading] = useState(false);
     const [selectBusStructures, setSelectBusStructures] = useState<LayoutBusT[]>([]); // Cambiar a array
 

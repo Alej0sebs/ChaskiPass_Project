@@ -129,7 +129,7 @@ const TicketsalesRegistration = () => {
                         <select
                             value={selectedFloor}
                             onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
-                            className="border border-gray-300 rounded px-2 py-1 rounded border border-stroke bg-transparent transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                            className="border border-gray-300 rounded px-2 py-1   bg-transparent transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
                         >
                             {Array.from({ length: numFloors }, (_, i) => i + 1).map((floor) => (
                                 <option key={floor} value={floor}>

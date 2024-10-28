@@ -8,6 +8,7 @@ import { FrequencyT, RoutesT, ValidateRoleAndRouteId } from '../types/index.type
 import { handleSequelizeError } from '../utils/helpers.utils';
 import { v4 as uuidv4 } from 'uuid';
 import { Op, Transaction } from 'sequelize';
+import { parse } from 'dotenv';
 
 
 // Servicio para crear una nueva ruta
@@ -114,7 +115,7 @@ export const createFrequencyService = async ({ cooperative_id, bus_id, route_id,
                 date,
                 [Op.or]: [
                     { departure_time: { [Op.lt]: arrival_time }, arrival_time: { [Op.gt]: departure_time } },
-                    // {arrival_time:{[Op.gt]:} departure_time - 8} 8 horas para el descanso
+                    {arrival_time:{[Op.gt]: calculateWorkHours(departure_time, 8)} } //8 horas para el descanso
                 ]
             },
             attributes: ["id"]
@@ -147,6 +148,10 @@ export const createFrequencyService = async ({ cooperative_id, bus_id, route_id,
 };
 
 
+const calculateWorkHours= (time:string, breakHours:number) => {
+    const timeToNumber:number = parseInt(time);
+    return timeToNumber - breakHours
+}
 
 
 // Función auxiliar para verificar la ruta y crear el ID único

@@ -1,4 +1,3 @@
-import { FaBus } from "react-icons/fa";
 import { TbBusStop } from "react-icons/tb";
 import { MdOutlinePriceChange } from "react-icons/md";
 import { CiCalendarDate } from "react-icons/ci";
@@ -6,6 +5,8 @@ import { IoMdTime } from "react-icons/io";
 import { FaRoute } from "react-icons/fa";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import PaginationDataTable from "../../components/Tables/PaginationDataTable";
+import Switcher from "../../components/Switchers/switcher.components";
+import { useState } from "react";
 
 
 // DATOS DE PRUEBA RENDERIZADO
@@ -39,13 +40,18 @@ const data = [
 // DATOS DE PRUEBA RENDERIZADO
 
 const FrequencyRegistration = () => {
+    const [frequencyStatus, setFrequencyStatus] = useState(false);
+
+    const handleChange = (checked: boolean) => {
+        setFrequencyStatus(checked); //actualizo el estado con el valor del checkbox
+    };
     return (
         <>
             <div className="mx-auto ">
                 <Breadcrumb pageName="Registro de Frecuencias" />
                 <div className="grid grid-cols-8 gap-8">
                     <div className="col-span-8 xl:col-span-5">
-                        <PaginationDataTable titles={titles} rowsPerPage={5}>
+                        <PaginationDataTable titles={titles} rowsPerPage={5} tableName="Seleccion de rutas">
                             {data}
                         </PaginationDataTable>
                     </div>
@@ -132,15 +138,18 @@ const FrequencyRegistration = () => {
                                                 Estado
                                             </label>
                                             <div className="relative">
-                                                
+                                                <Switcher
+                                                    onChange={handleChange}
+                                                    checked={frequencyStatus}
+                                                />
                                             </div>
                                         </div>
                                     </div>
                                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-[50%]">
+                                        <div className="w-full sm:w-[75%]">
                                             <label
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="bus_company"
+                                                htmlFor="route_id"
                                             >
                                                 Ruta
                                             </label>
@@ -151,9 +160,9 @@ const FrequencyRegistration = () => {
                                                 <input
                                                     className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                                     type="text"
-                                                    name="bus_company"
-                                                    id="bus_company"
-                                                    placeholder="Cooperativa X"
+                                                    name="route_id"
+                                                    id="route_id"
+                                                    placeholder="Jer2-1622-4"
                                                 />
                                             </div>
                                         </div>

@@ -33,6 +33,9 @@ Seats.belongsTo(Buses, {foreignKey: 'bus_id', targetKey: 'id'});
 Buses.hasMany(Frequencies, {foreignKey: 'bus_id', sourceKey: 'id'});
 Frequencies.belongsTo(Buses, {foreignKey: 'bus_id', targetKey: 'id'});
 
+Users.hasMany(Frequencies, {foreignKey: 'driver_id', sourceKey: 'dni'});
+Frequencies.belongsTo(Users, {foreignKey: 'driver_id', targetKey: 'dni'});
+
 BusStations.hasMany(Routes, {foreignKey: 'departure_station', sourceKey: 'id', as: 'routes_departure_stations'});
 Routes.belongsTo(BusStations, {foreignKey: 'departure_station', targetKey: 'id', as:'departure_station_route'});
 BusStations.hasMany(Routes, {foreignKey: 'arrival_station', sourceKey: 'id', as: 'routes_arrival_stations'});

@@ -86,7 +86,7 @@ export const createRouteService = async ({ dni, arrival_station_id, departure_st
 
 
 // Servicio para crear una nueva frecuencia
-export const createFrequencyService = async ({ cooperative_id, bus_id, route_id, date, departure_time, arrival_time, price, status }: FrequencyT) => {
+export const createFrequencyService = async ({ cooperative_id, bus_id, route_id, driver_id , date, departure_time, arrival_time, price, status }: FrequencyT) => {
     try {
         const routeExists = await Routes.findOne({ where: { id: route_id } });
         if (!routeExists) {
@@ -109,6 +109,7 @@ export const createFrequencyService = async ({ cooperative_id, bus_id, route_id,
             bus_id,
             route_id,
             date,
+            driver_id,
             departure_time,
             arrival_time,
             status, // true: activo, false: inactivo

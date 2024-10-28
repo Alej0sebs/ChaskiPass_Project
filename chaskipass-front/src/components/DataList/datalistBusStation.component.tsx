@@ -15,7 +15,7 @@ interface DataListProps {
     className?: string
 }
 
-const DataList = ({ id, label, options, placeholder, onSelect, value, iconP: Icon, className }: DataListProps) => {
+const DataListBusStation = ({ id, label, options, placeholder, onSelect, value, iconP: Icon, className }: DataListProps) => {
     const [inputValue, setInputValue] = useState(value);
 
     // Sincronizar inputValue con value cada vez que value cambia
@@ -66,4 +66,4 @@ const DataList = ({ id, label, options, placeholder, onSelect, value, iconP: Ico
     );
 };
 
-export default DataList;
+export default DataListBusStation;

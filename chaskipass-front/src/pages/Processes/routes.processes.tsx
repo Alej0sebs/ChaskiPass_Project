@@ -2,11 +2,12 @@ import { TbBusStop } from "react-icons/tb";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import React, { useState } from "react";
 import TableRoutes from "../../components/Tables/TableRoutes";
-import DataList from "../../components/DataList/datalist.component";
+import DataListBusStation from "../../components/DataList/datalistBusStation.component";
 import useBusStations from "../../hooks/useBusStations";
 import { BusStationT } from "../../types";
 import toast from "react-hot-toast";
 import useRoutes from "../../hooks/useRoutes";
+import Switcher from "../../components/Switchers/switcher.components";
 
 const RoutesRegistration = () => {
 
@@ -19,8 +20,8 @@ const RoutesRegistration = () => {
     //Hook
     const {createRoute} = useRoutes();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setIsStopsEnabled(e.target.checked); //actualizo el estado con el valor del checkbox
+    const handleChange = (checked:boolean) => {
+        setIsStopsEnabled(checked); //actualizo el estado con el valor del checkbox
     };
 
     const handleSubmit =async (e: React.ChangeEvent<HTMLFormElement>) => {
@@ -81,7 +82,7 @@ const RoutesRegistration = () => {
                                 <form onSubmit={handleSubmit}>
                                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                                         <div className="w-full sm:w-[33.33%]">
-                                            <DataList
+                                            <DataListBusStation
                                                 id="departure_station"
                                                 label="Estación de salida"
                                                 options={departureOptions}
@@ -92,7 +93,7 @@ const RoutesRegistration = () => {
                                         </div>
 
                                         <div className="w-full sm:w-[33.33%]">
-                                            <DataList
+                                            <DataListBusStation
                                                 id="arrival_station"
                                                 label="Estación de llegada"
                                                 options={arrivalOptions}
@@ -110,11 +111,10 @@ const RoutesRegistration = () => {
                                                 Asignar Paradas
                                             </label>
                                             <div className="relative">
-                                                <input
-                                                    type="checkbox"
-                                                    value="synthwave"
-                                                    className="toggle theme-controller col-span-2 col-start-1 row-start-1 bg-blue-300 [--tglbg:theme(colors.blue.900)] checked:border-blue-800 checked:bg-blue-50 checked:[--tglbg:theme(colors.green.500)]"
-                                                    onChange={handleChange} />
+                                                <Switcher
+                                                    checked={isStopsEnabled}
+                                                    onChange={handleChange}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -126,7 +126,7 @@ const RoutesRegistration = () => {
                                                 {/* Flex para alinear input y botón */}
                                                 <div className="relative flex items-center gap-3">
                                                     {/* Input */}
-                                                    <DataList
+                                                    <DataListBusStation
                                                         id="stop_over"
                                                         label="Agregar Paradas"
                                                         options={stopOversOptions}
@@ -150,10 +150,12 @@ const RoutesRegistration = () => {
                                             {/* Colocar TableRoutesComponent debajo del input y botón */}
                                             <div className="mt-5">
                                                 <TableRoutes
-                                                    headerTable={['id', 'Estacion de bus', 'Ciudad', 'Acciones']}
-                                                    data={stopOvers}
+                                                    headerTable={['id', 'name', 'city_bus_station.name']}
+                                                    displayHeader={['id', 'Estacion de bus', 'Ciudad', 'Acciones']}
                                                     onClick={(id) => { setStopOvers(stopOvers.filter((station) => station.id !== id)) }}
-                                                />
+                                                > 
+                                                    {stopOvers}
+                                                </TableRoutes>
                                             </div>
                                         </div>
                                     )}

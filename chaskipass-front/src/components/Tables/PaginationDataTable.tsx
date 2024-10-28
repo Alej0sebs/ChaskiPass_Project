@@ -3,10 +3,11 @@ import React, { useState } from 'react';
 interface PaginationDataTableProps {
   titles: string[];
   rowsPerPage: number;
+  tableName?:string;
   children: Array<{ [key: string]: any }>;
 }
 
-const PaginationDataTable: React.FC<PaginationDataTableProps> = ({ titles, rowsPerPage, children }) => {
+const PaginationDataTable: React.FC<PaginationDataTableProps> = ({ titles, rowsPerPage, tableName, children }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const totalRows = children.length;
   const totalPages = Math.ceil(totalRows / rowsPerPage);
@@ -28,7 +29,7 @@ const PaginationDataTable: React.FC<PaginationDataTableProps> = ({ titles, rowsP
 
   return (
     <div className="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">Tabla con Paginación GOD :3</h4>
+      <h4 className="mb-6 text-xl font-semibold text-black dark:text-white">{tableName}</h4>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

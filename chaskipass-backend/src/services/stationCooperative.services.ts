@@ -1,5 +1,6 @@
 import { HandleMessages } from "../error/handleMessages.error";
 import BusStations from "../models/busStations.models";
+import Cities from "../models/cities.models";
 import { StationCooperative } from "../models/stationCooperative.models";
 import { DataPaginationT, StationCooperativeT } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
@@ -46,6 +47,12 @@ export const getStationCooperativeService = async (cooperative_id: string, { pag
                     attributes: [],
                     where: { cooperative_id },
                     required: true
+                },
+                {
+                    model:Cities,
+                    as:'city_bus_station',
+                    attributes:['id','name'],
+                    required:true
                 }
             ],
             limit: parseInt(limit.toString()),

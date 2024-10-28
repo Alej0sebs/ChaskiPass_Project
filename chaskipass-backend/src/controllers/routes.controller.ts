@@ -30,13 +30,14 @@ export const createRoute = async (req: Request, res: Response) => {
 export const createFrequency = async (req: Request, res: Response) => {
     try {
         const { cooperative_id } = req.userReq ?? {};
-        const { bus_id, route_id, departure_time, arrival_time, price, status } = req.body;
+        const { bus_id, route_id, departure_time, arrival_time, price, status, driver_id, date } = req.body;
 
         const frequencyInformation: FrequencyT = {
             cooperative_id: cooperative_id || '',
             bus_id,
             route_id,
-            date: new Date(),
+            driver_id,
+            date,
             departure_time,
             arrival_time,
             price,

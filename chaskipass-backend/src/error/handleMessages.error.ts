@@ -49,4 +49,6 @@ export enum HandleMessages{
     DATABASE_ERROR = 'Error en la base de datos, Por favor intente más tarde',
     UNEXPECTED_ERROR = 'Error inesperado, Por favor intente más tarde',
     FREQUENCY_ALREADY_EXISTS='La frecuencia ya existe',
+    DRIVER_NOT_FOUND='Conductor no encontrado',
+    DRIVER_HAS_CONFLICTING_FREQUENCY='El conductor tiene frecuencias conflictivas, posible solapamiento de horarios',
 }

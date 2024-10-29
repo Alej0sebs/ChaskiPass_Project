@@ -7,8 +7,8 @@ import { RoleEnum } from '../utils/enums.utils';
 import { FrequencyT, RoutesT, ValidateRoleAndRouteId } from '../types/index.types';
 import { handleSequelizeError } from '../utils/helpers.utils';
 import { v4 as uuidv4 } from 'uuid';
-import connectionDb from '../db/connection.db';
 import { Op, Transaction } from 'sequelize';
+import { parse } from 'dotenv';
 
 
 // Servicio para crear una nueva ruta
@@ -85,34 +85,59 @@ export const createRouteService = async ({ dni, arrival_station_id, departure_st
 };
 
 
-// Servicio para crear una nueva frecuencia
-export const createFrequencyService = async ({ cooperative_id, bus_id, route_id, date, departure_time, arrival_time, price, status }: FrequencyT) => {
+export const createFrequencyService = async ({ cooperative_id, bus_id, route_id, driver_id , date, departure_time, arrival_time, price, status }: FrequencyT) => {
     try {
+        // Verificar si la ruta existe
         const routeExists = await Routes.findOne({ where: { id: route_id } });
         if (!routeExists) {
             return { status: 400, json: { msg: HandleMessages.ROUTE_NOT_FOUND } };
         }
 
         // Verificar si la ruta tiene paradas intermedias
-        const stopOversAmount = await StopOvers.count({ where: { route_id } });
-        const stopOverExists = stopOversAmount > 0;
+        const stopOverExists = await StopOvers.count({ where: { route_id } }) > 0;
 
-        //verificar si la ruta ya existe 
+        // Verificar si ya existe una frecuencia en el mismo horario y fecha para esta ruta
         const frequencyExists = await Frequencies.findOne({ where: { route_id, date, departure_time, arrival_time } });
-        if (frequencyExists) return { status: 400, json: { msg: HandleMessages.FREQUENCY_ALREADY_EXISTS } };
+        if (frequencyExists) {
+            return { status: 400, json: { msg: HandleMessages.FREQUENCY_ALREADY_EXISTS } };
+        }
 
+        // Verificar que el conductor exista, sea de rol chofer y no tenga frecuencias activas en el mismo rango de tiempo
+        const driver = await Users.findOne({ where: { dni: driver_id, role_id: RoleEnum.driver }, attributes: ['dni'] });
+        if (!driver) {
+            return { status: 400, json: { msg: HandleMessages.DRIVER_NOT_FOUND } };
+        }
+
+        // Verificar superposición de horarios de frecuencias del conductor para la misma fecha
+        const isOverlapping = await Frequencies.findOne({
+            where: {
+                driver_id,
+                date,
+                [Op.or]: [
+                    { departure_time: { [Op.lt]: arrival_time }, arrival_time: { [Op.gt]: departure_time } },
+                    {arrival_time:{[Op.gt]: calculateWorkHours(departure_time, 8)} } //8 horas para el descanso
+                ]
+            },
+            attributes: ["id"]
+        });
+        
+        if (isOverlapping) {
+            return { status: 400, json: { msg: HandleMessages.DRIVER_HAS_CONFLICTING_FREQUENCY } };
+        }
+
+        // Generar el ID de la frecuencia y crear la frecuencia
         const id = uuidv4();
-        // Crear la frecuencia
         await Frequencies.create({
             id,
             cooperative_id: cooperative_id || '',
             bus_id,
             route_id,
             date,
+            driver_id,
             departure_time,
             arrival_time,
             status, // true: activo, false: inactivo
-            trip_type: stopOverExists ? true : false, // true: con paradas, false: directo
+            trip_type: stopOverExists, // true: con paradas, false: directo
             price
         });
 
@@ -122,6 +147,11 @@ export const createFrequencyService = async ({ cooperative_id, bus_id, route_id,
     }
 };
 
+
+const calculateWorkHours= (time:string, breakHours:number) => {
+    const timeToNumber:number = parseInt(time);
+    return timeToNumber - breakHours
+}
 
 
 // Función auxiliar para verificar la ruta y crear el ID único

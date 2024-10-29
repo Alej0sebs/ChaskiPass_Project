@@ -9,6 +9,7 @@ export class Frequencies extends Model<
     declare cooperative_id: string;
     declare bus_id: number;
     declare route_id: string;
+    declare driver_id: string;
     declare date: Date;
     declare departure_time: string;
     declare arrival_time: string;
@@ -32,6 +33,10 @@ Frequencies.init({
     },
     route_id: {
         type: DataTypes.STRING(20),
+        allowNull: false,
+    },
+    driver_id: {
+        type: DataTypes.STRING(10),
         allowNull: false,
     },
     date: {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getStationCooperativeService, linkCooperativeStationService } from "../services/stationCooperative.services";
+import { getAllStationCooperativeService, getStationCooperativeService, linkCooperativeStationService } from "../services/stationCooperative.services";
 import { StationCooperativeT } from "../types/index.types";
 import { getPaginationData } from "../utils/helpers.utils";
 import { HandleMessages } from "../error/handleMessages.error";
@@ -40,3 +40,16 @@ export const getStationCooperative = async (req: Request, res: Response) => {
         return;
     }
 };
+
+export const getAllStationCooperative = async (req: Request, res: Response) => {
+    try{
+        const { cooperative_id } = req.userReq ?? {};
+        const result = await getAllStationCooperativeService(cooperative_id!);
+        res.status(201).json(result);
+        return;
+    }catch(error){
+        res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
+    }
+};
+

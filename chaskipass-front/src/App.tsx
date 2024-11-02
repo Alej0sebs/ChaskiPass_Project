@@ -18,12 +18,15 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import BusRegistration from './pages/Registration/bus.registration';
 import RoutesRegistration from './pages/Processes/routes.processes';
-import TerminalsRegistration from './pages/Registration/terminals.registration';
 import TypebusRegistration from './pages/Registration/typebus.registration';
 import TicketsalesRegistration from './pages/Processes/ticketsales.processes';
 import { Toaster } from 'react-hot-toast';
 import { useAuthContext } from './context/AuthContext';
 import FrequencyRegistration from './pages/Processes/frequency.processes';
+
+import TicketSeriesRegistration from './pages/Registration/tickets.registration';
+import BusStationRegistration from './pages/Registration/busStation.registration';
+
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -197,12 +200,12 @@ function App() {
               }
             />
             <Route
-              path="/register/terminals"
+              path="/register/busStations"
               element={
                 authUser ?
                   <>
-                    <PageTitle title="Terminals| ChaskiPass" />
-                    <TerminalsRegistration />
+                    <PageTitle title="BusStations| ChaskiPass" />
+                    <BusStationRegistration />
                   </> : <Navigate to='/auth/signin' />
               }
             />
@@ -217,12 +220,23 @@ function App() {
               }
             />
             <Route
+              path="/register/tickets"
+              element={
+                authUser ?
+                  <>
+                    <PageTitle title="Tickets| ChaskiPass" />
+                    <TicketSeriesRegistration/>
+                  </> : <Navigate to='/auth/signin' />
+              }
+            />
+
+            <Route
               path="/processes/ticketsales"
               element={
                 authUser ?
                   <>
                     <PageTitle title="Ticketsales| ChaskiPass" />
-                    <TicketsalesRegistration />
+                    <TicketsalesRegistration/>
                   </> : <Navigate to='/auth/signin' />
               }
             />

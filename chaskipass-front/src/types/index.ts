@@ -12,7 +12,11 @@ export type LayoutBusT = {
     layout: {},
 };
 
-
+export type CitiesT={
+id:string,
+name:string,
+province_id:string
+}
 
 export type UserT = {
     dni: string,
@@ -42,6 +46,17 @@ export type BusStructureT = {
     id: string;
     name: string;
 }
+export type TypeBusStationT={
+
+city_id:string,
+name:string,
+address:string,
+phone: string,
+open_time:string,
+close_time:string
+
+}
+
 
 type CityBusStationT = {
     id:string,
@@ -66,3 +81,4 @@ export type CreateUserT = Omit<UserT, 'password'>
 export type CreateBusT = Pick<TypeBusT, 'bus_number' | 'license_plate' | 'chassis_vin' | 'bus_manufacturer' |
     'model' | 'year' | 'capacity' | 'bus_structure_id'>
 
+export type createBusStationT=Omit<TypeBusStationT,'id'>

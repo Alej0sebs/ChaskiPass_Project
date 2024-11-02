@@ -25,8 +25,8 @@ Users.belongsTo(Roles, {foreignKey: 'role_id', targetKey: 'id'});
 
 Routes.hasMany(Frequencies, {foreignKey: 'route_id', sourceKey: 'id', as: 'frequencies_route'});
 Frequencies.belongsTo(Routes, {foreignKey: 'route_id', targetKey: 'id', as: 'route_frequency'});
-Routes.hasMany(StopOvers, {foreignKey: 'route_id', sourceKey: 'id'});
-StopOvers.belongsTo(Routes, {foreignKey: 'route_id', targetKey: 'id'});
+Routes.hasMany(StopOvers, {foreignKey: 'route_id', sourceKey: 'id', as: 'stopovers_route'});
+StopOvers.belongsTo(Routes, {foreignKey: 'route_id', targetKey: 'id', as: 'route_stopover'});
 
 Buses.hasMany(Seats, {foreignKey: 'bus_id', sourceKey: 'id'});
 Seats.belongsTo(Buses, {foreignKey: 'bus_id', targetKey: 'id'});

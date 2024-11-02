@@ -181,57 +181,38 @@ export const verifyRoute = async ({ dni, cooperative_id, departure_station_id, a
     }
 };
 
-// export const getRoutesService = async (cooperative_id: string, { page, limit, pattern }: DataPaginationT) => {
+// export const getRoutesService = async (cooperative_id: string) => {
 //     try {
-//         const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
-
-//         const { rows: listRoutes, count: totalItems } = await Routes.findAndCountAll({
+//         const routes = await Routes.findAll({
 //             include: [
-//                 {
-//                     model: BusStations,
-//                     as: 'departure_station_route',
-//                     attributes: ['name'],
-//                     include: [{ model: Cities, as: 'city_bus_station', attributes: ['name'] }]
-//                 },
-//                 {
-//                     model: BusStations,
-//                     as: 'arrival_station_route',
-//                     attributes: ['name'],
-//                     include: [{ model: Cities, as: 'city_bus_station', attributes: ['name'] }]
-//                 },
 //                 {
 //                     model: StopOvers,
 //                     as: 'stopovers_route',
-//                     attributes: ['station_id', 'order'],
-//                     include: [{
-//                         model: BusStations,
-//                         as: 'bus_station_stops',
-//                         attributes: ['name'],
-//                         include: [{ model: Cities, as:'city_bus_station', attributes: ['name'] }]
-//                     }]
+//                     attributes: ['station_id'],
 //                 }
 //             ],
 //             where: { cooperative_id },
-//             limit: parseInt(limit.toString()),
-//             offset: offset,
-//             logging: console.log
+//             attributes: { exclude: ['departure_station', 'arrival_station'] }
 //         });
 
-//         const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
-//         return {
-//             status: 200,
-//             json: {
-//                 totalItems,
-//                 totalPages,
-//                 currentPage: parseInt(page.toString()),
-//                 list: listRoutes
-//             }
-//         };
+//         // routes.forEach((route) => {
+//         //     const stopOvers = route.stopovers_route; // Accedemos directamente a StopOvers
+//         //     if (stopOvers && stopOvers.length > 0) {
+//         //         stopOvers.forEach((stopovers_route) => {
+//         //             console.log(`ID de Estación en StopOver: ${stopovers_route.station_id}`);
+//         //         });
+//         //     } else {
+//         //         console.log('Esta ruta no tiene StopOvers.');
+//         //     }
+//         // });
+//         const nameStations= routes.map((route) => {
 
+//         });
+
+//         return { status: 200, json: routes };
 //     } catch (error) {
 //         return handleSequelizeError(error);
 //     }
-
 // };
 
 export const getRoutesService = async (cooperative_id: string, { page, limit, pattern }: DataPaginationT) => {
@@ -258,16 +239,14 @@ export const getRoutesService = async (cooperative_id: string, { page, limit, pa
                     attributes: ['station_id', 'order'],
                     include: [{
                         model: BusStations,
-                        as: 'bus_station_stops',
                         attributes: ['name'],
                         include: [{ model: Cities, as:'city_bus_station', attributes: ['name'] }]
                     }]
                 }
             ],
             where: { cooperative_id },
-            limit: parseInt(limit.toString()),
-            offset: offset,
-            logging: console.log
+            limit,
+            offset: offset
         });
 
         const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));

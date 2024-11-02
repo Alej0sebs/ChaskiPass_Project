@@ -41,7 +41,7 @@ Routes.belongsTo(BusStations, {foreignKey: 'departure_station', targetKey: 'id',
 BusStations.hasMany(Routes, {foreignKey: 'arrival_station', sourceKey: 'id', as: 'routes_arrival_stations'});
 Routes.belongsTo(BusStations, {foreignKey: 'arrival_station', targetKey: 'id', as:'arrival_station_route'});
 BusStations.hasMany(StopOvers, {foreignKey: 'station_id', sourceKey: 'id'});
-StopOvers.belongsTo(BusStations, {foreignKey: 'station_id', targetKey: 'id'});
+StopOvers.belongsTo(BusStations, {foreignKey: 'station_id', targetKey: 'id', as:"bus_station_stops"});
 BusStations.hasMany(Tickets, {foreignKey: 'departure_station', sourceKey: 'id'});
 Tickets.belongsTo(BusStations, {foreignKey: 'departure_station', targetKey: 'id'});
 BusStations.hasMany(Tickets, {foreignKey: 'arrival_station', sourceKey: 'id'});

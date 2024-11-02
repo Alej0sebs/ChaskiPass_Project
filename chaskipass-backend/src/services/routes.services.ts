@@ -181,38 +181,57 @@ export const verifyRoute = async ({ dni, cooperative_id, departure_station_id, a
     }
 };
 
-// export const getRoutesService = async (cooperative_id: string) => {
+// export const getRoutesService = async (cooperative_id: string, { page, limit, pattern }: DataPaginationT) => {
 //     try {
-//         const routes = await Routes.findAll({
+//         const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+
+//         const { rows: listRoutes, count: totalItems } = await Routes.findAndCountAll({
 //             include: [
+//                 {
+//                     model: BusStations,
+//                     as: 'departure_station_route',
+//                     attributes: ['name'],
+//                     include: [{ model: Cities, as: 'city_bus_station', attributes: ['name'] }]
+//                 },
+//                 {
+//                     model: BusStations,
+//                     as: 'arrival_station_route',
+//                     attributes: ['name'],
+//                     include: [{ model: Cities, as: 'city_bus_station', attributes: ['name'] }]
+//                 },
 //                 {
 //                     model: StopOvers,
 //                     as: 'stopovers_route',
-//                     attributes: ['station_id'],
+//                     attributes: ['station_id', 'order'],
+//                     include: [{
+//                         model: BusStations,
+//                         as: 'bus_station_stops',
+//                         attributes: ['name'],
+//                         include: [{ model: Cities, as:'city_bus_station', attributes: ['name'] }]
+//                     }]
 //                 }
 //             ],
 //             where: { cooperative_id },
-//             attributes: { exclude: ['departure_station', 'arrival_station'] }
+//             limit: parseInt(limit.toString()),
+//             offset: offset,
+//             logging: console.log
 //         });
 
-//         // routes.forEach((route) => {
-//         //     const stopOvers = route.stopovers_route; // Accedemos directamente a StopOvers
-//         //     if (stopOvers && stopOvers.length > 0) {
-//         //         stopOvers.forEach((stopovers_route) => {
-//         //             console.log(`ID de Estación en StopOver: ${stopovers_route.station_id}`);
-//         //         });
-//         //     } else {
-//         //         console.log('Esta ruta no tiene StopOvers.');
-//         //     }
-//         // });
-//         const nameStations= routes.map((route) => {
+//         const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
+//         return {
+//             status: 200,
+//             json: {
+//                 totalItems,
+//                 totalPages,
+//                 currentPage: parseInt(page.toString()),
+//                 list: listRoutes
+//             }
+//         };
 
-//         });
-
-//         return { status: 200, json: routes };
 //     } catch (error) {
 //         return handleSequelizeError(error);
 //     }
+
 // };
 
 export const getRoutesService = async (cooperative_id: string, { page, limit, pattern }: DataPaginationT) => {
@@ -239,14 +258,16 @@ export const getRoutesService = async (cooperative_id: string, { page, limit, pa
                     attributes: ['station_id', 'order'],
                     include: [{
                         model: BusStations,
+                        as: 'bus_station_stops',
                         attributes: ['name'],
                         include: [{ model: Cities, as:'city_bus_station', attributes: ['name'] }]
                     }]
                 }
             ],
             where: { cooperative_id },
-            limit,
-            offset: offset
+            limit: parseInt(limit.toString()),
+            offset: offset,
+            logging: console.log
         });
 
         const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));

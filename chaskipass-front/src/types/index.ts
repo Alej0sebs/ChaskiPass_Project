@@ -12,7 +12,11 @@ export type LayoutBusT = {
     layout: {},
 };
 
-
+export type CitiesT={
+id:string,
+name:string,
+province_id:string
+}
 
 export type UserT = {
     dni: string,
@@ -43,7 +47,7 @@ export type BusStructureT = {
     name: string;
 }
 export type TypeBusStationT={
-id:number,    
+
 city_id:string,
 name:string,
 address:string,

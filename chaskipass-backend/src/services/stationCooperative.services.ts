@@ -75,3 +75,34 @@ export const getStationCooperativeService = async (cooperative_id: string, { pag
     }
 };
 
+export const getAllStationCooperativeService = async (cooperative_id: string) => {
+    try {
+        const linkedCooperativesList = await BusStations.findAll({
+            attributes: ['id', 'name'],
+            include: [
+                {
+                    model: StationCooperative,
+                    attributes: [],
+                    where: { cooperative_id },
+                    required: true
+                },
+                {
+                    model:Cities,
+                    as:'city_bus_station',
+                    attributes:['id','name'],
+                    required:true
+                }
+            ],
+        });
+
+        return {
+            status: 200,
+            json: {
+                list: linkedCooperativesList
+            }
+        };
+    } catch (error) {
+        return handleSequelizeError(error);
+    }
+};
+

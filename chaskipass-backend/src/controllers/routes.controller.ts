@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { createRouteService, createFrequencyService, getRoutesService } from '../services/routes.services';
 import { HandleMessages } from '../error/handleMessages.error';
 import { FrequencyT, RoutesT } from '../types/index.types';
+import { getPaginationData } from '../utils/helpers.utils';
 
 // Crear una nueva ruta
 export const createRoute = async (req: Request, res: Response) => {
@@ -56,7 +57,8 @@ export const createFrequency = async (req: Request, res: Response) => {
 export const getRoutes = async (req: Request, res: Response) => {
     try{
         const {cooperative_id} = req.userReq ?? {};
-        const result= await getRoutesService(cooperative_id as string);
+        const paginationData = getPaginationData(req.query, req.query.pattern as string);
+        const result= await getRoutesService(cooperative_id as string, paginationData);
         res.status(200).json(result);
         return
     }catch(error){

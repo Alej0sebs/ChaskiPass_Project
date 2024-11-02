@@ -4,11 +4,12 @@ import StopOvers from '../models/stopOvers.models';
 import Frequencies from '../models/frequencies.models';
 import { HandleMessages } from '../error/handleMessages.error';
 import { RoleEnum } from '../utils/enums.utils';
-import { FrequencyT, RoutesT, ValidateRoleAndRouteId } from '../types/index.types';
+import { DataPaginationT, FrequencyT, RoutesT, ValidateRoleAndRouteId } from '../types/index.types';
 import { handleSequelizeError } from '../utils/helpers.utils';
 import { v4 as uuidv4 } from 'uuid';
 import { Op, Transaction } from 'sequelize';
-import { parse } from 'dotenv';
+import BusStations from '../models/busStations.models';
+import Cities from '../models/cities.models';
 
 
 // Servicio para crear una nueva ruta
@@ -85,7 +86,7 @@ export const createRouteService = async ({ dni, arrival_station_id, departure_st
 };
 
 
-export const createFrequencyService = async ({ cooperative_id, bus_id, route_id, driver_id , date, departure_time, arrival_time, price, status }: FrequencyT) => {
+export const createFrequencyService = async ({ cooperative_id, bus_id, route_id, driver_id, date, departure_time, arrival_time, price, status }: FrequencyT) => {
     try {
         // Verificar si la ruta existe
         const routeExists = await Routes.findOne({ where: { id: route_id } });
@@ -115,12 +116,12 @@ export const createFrequencyService = async ({ cooperative_id, bus_id, route_id,
                 date,
                 [Op.or]: [
                     { departure_time: { [Op.lt]: arrival_time }, arrival_time: { [Op.gt]: departure_time } },
-                    {arrival_time:{[Op.gt]: calculateWorkHours(departure_time, 8)} } //8 horas para el descanso
+                    { arrival_time: { [Op.gt]: calculateWorkHours(departure_time, 8) } } //8 horas para el descanso
                 ]
             },
             attributes: ["id"]
         });
-        
+
         if (isOverlapping) {
             return { status: 400, json: { msg: HandleMessages.DRIVER_HAS_CONFLICTING_FREQUENCY } };
         }
@@ -148,8 +149,8 @@ export const createFrequencyService = async ({ cooperative_id, bus_id, route_id,
 };
 
 
-const calculateWorkHours= (time:string, breakHours:number) => {
-    const timeToNumber:number = parseInt(time);
+const calculateWorkHours = (time: string, breakHours: number) => {
+    const timeToNumber: number = parseInt(time);
     return timeToNumber - breakHours
 }
 
@@ -180,21 +181,88 @@ export const verifyRoute = async ({ dni, cooperative_id, departure_station_id, a
     }
 };
 
-export const getRoutesService = async (cooperative_id: string) => {
+// export const getRoutesService = async (cooperative_id: string) => {
+//     try {
+//         const routes = await Routes.findAll({
+//             include: [
+//                 {
+//                     model: StopOvers,
+//                     as: 'stopovers_route',
+//                     attributes: ['station_id'],
+//                 }
+//             ],
+//             where: { cooperative_id },
+//             attributes: { exclude: ['departure_station', 'arrival_station'] }
+//         });
+
+//         // routes.forEach((route) => {
+//         //     const stopOvers = route.stopovers_route; // Accedemos directamente a StopOvers
+//         //     if (stopOvers && stopOvers.length > 0) {
+//         //         stopOvers.forEach((stopovers_route) => {
+//         //             console.log(`ID de Estación en StopOver: ${stopovers_route.station_id}`);
+//         //         });
+//         //     } else {
+//         //         console.log('Esta ruta no tiene StopOvers.');
+//         //     }
+//         // });
+//         const nameStations= routes.map((route) => {
+
+//         });
+
+//         return { status: 200, json: routes };
+//     } catch (error) {
+//         return handleSequelizeError(error);
+//     }
+// };
+
+export const getRoutesService = async (cooperative_id: string, { page, limit, pattern }: DataPaginationT) => {
     try {
-        const routes = await Routes.findAll({
+        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+
+        const { rows: listRoutes, count: totalItems } = await Routes.findAndCountAll({
             include: [
                 {
+                    model: BusStations,
+                    as: 'departure_station_route',
+                    attributes: ['name'],
+                    include: [{ model: Cities, as: 'city_bus_station', attributes: ['name'] }]
+                },
+                {
+                    model: BusStations,
+                    as: 'arrival_station_route',
+                    attributes: ['name'],
+                    include: [{ model: Cities, as: 'city_bus_station', attributes: ['name'] }]
+                },
+                {
                     model: StopOvers,
-                    attributes: ['id'],
+                    as: 'stopovers_route',
+                    attributes: ['station_id', 'order'],
+                    include: [{
+                        model: BusStations,
+                        attributes: ['name'],
+                        include: [{ model: Cities, as:'city_bus_station', attributes: ['name'] }]
+                    }]
                 }
             ],
-            where: { cooperative_id }
+            where: { cooperative_id },
+            limit,
+            offset: offset
         });
-        return { status: 200, json: routes };
+
+        const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
+        return {
+            status: 200,
+            json: {
+                totalItems,
+                totalPages,
+                currentPage: parseInt(page.toString()),
+                list: listRoutes
+            }
+        };
+
     } catch (error) {
         return handleSequelizeError(error);
     }
-};
 
+};
 

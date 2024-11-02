@@ -13,7 +13,7 @@ export default function useBusStations() {
     const getBusStations = async()=>{
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}ubi/busStations`, {
+            const response = await fetch(`${API_BASE_URL}linkedStations/allLinkedCooperatives/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ export default function useBusStations() {
             if (!response.ok) {
                 throw new Error(data.error);
             }
-            const formattedData= data.map((station:BusStationT)=>({
+            const formattedData= data.json.list.map((station:BusStationT)=>({
                 id:station.id,
                 name:station.name,
                 city_bus_station:{

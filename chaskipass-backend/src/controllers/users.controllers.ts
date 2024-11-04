@@ -1,6 +1,6 @@
 import { HandleMessages } from './../error/handleMessages.error';
 import { Request, Response } from 'express';
-import { createUserService, getUserByIdService, getUsersService, searchUserByFilterService, updateUserService } from '../services/users.services';
+import { createUserService, getDriversService, getUserByIdService, getUsersService, searchUserByFilterService, updateUserService } from '../services/users.services';
 import { sendEmail } from '../services/mail.services';
 import { getPaginationData } from '../utils/helpers.utils';
 
@@ -48,6 +48,19 @@ export const searchUserByFilter = async (req: Request, res: Response) => {
         return;
     }
 };
+
+
+export const getDrivers = async (req:Request, res:Response) => {
+    try{
+        const { cooperative_id} = req.userReq ?? {};
+        const result = await getDriversService(cooperative_id!);
+        res.status(201).json(result);
+        return;
+    }catch(error){
+        res.status(500).json({msg:HandleMessages.INTERNAL_SERVER_ERROR});
+        return;
+    }
+}
 
 // Registrar usuario y enviar correo
 export const registerAndSendEmail = async (req: Request, res: Response) => {

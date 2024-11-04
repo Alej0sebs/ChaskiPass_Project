@@ -171,3 +171,16 @@ export const updateUserService = async (userData: UpdateUserT) => {
     }
 };
 
+
+export const getDriversService = async (cooperative_id:string) => {
+    try{
+        const drivers = await Users.findAll({
+            where: { cooperative_id, role_id: 'drive' },
+            attributes: ['dni', 'name', 'last_name']
+        });
+
+        return { status: 200, json: drivers };
+    }catch(error){
+        return handleSequelizeError(error);
+    }
+};

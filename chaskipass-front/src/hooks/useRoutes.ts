@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../helpers/Constants";
 import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
@@ -11,6 +11,8 @@ interface RouteI{
 
 export default function useRoutes() {
     const [loading, setLoading] = useState(false);
+    //Listado de las rutas
+    const [listRoutes, setListRoutes] = useState<any[]>([]);
 
     const createRoute= async(routeData: RouteI)=>{  
         setLoading(true);
@@ -37,5 +39,35 @@ export default function useRoutes() {
         }
     };
 
-    return {loading, createRoute};
+    const getRoutes = async()=>{
+        setLoading(true);
+        try {
+            const response:Response = await fetch(`${API_BASE_URL}frequency/routes`,{
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                credentials:'include',
+            });
+            const data = await response.json();
+            if(data.error || response.status !== 200){
+                throw new Error(data.error);
+            }
+            console.log(data.json.listRoutes);
+            return data.json.listRoutes;
+        } catch (error) {
+            console.log(error);
+            toast.error(verifyError(error));
+        }finally{
+            setLoading(false);
+        }
+    };
+
+    useEffect(()=>{
+        getRoutes().then((data) =>{
+            setListRoutes(data);
+        })
+    }, []);
+
+    return {loading, createRoute, listRoutes};
 }

@@ -53,7 +53,6 @@ export default function useRoutes() {
             if(data.error || response.status !== 200){
                 throw new Error(data.error);
             }
-            console.log(data.json.listRoutes);
             return data.json.listRoutes;
         } catch (error) {
             console.log(error);

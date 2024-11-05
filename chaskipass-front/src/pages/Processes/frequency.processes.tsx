@@ -1,7 +1,5 @@
 import { TbBusStop } from "react-icons/tb";
 import { MdOutlinePriceChange } from "react-icons/md";
-import { CiCalendarDate } from "react-icons/ci";
-import { IoMdTime } from "react-icons/io";
 import { FaRoute } from "react-icons/fa";
 import { CiUser } from "react-icons/ci";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
@@ -12,17 +10,24 @@ import useRoutes from "../../hooks/useRoutes";
 import useBusCreation from "../../hooks/useBusCreation";
 import DataList from "../../components/DataList/datalist.components";
 import useUsers from "../../hooks/useUsers";
-
+import { FrequencyT, timeDateT } from "../../types";
+import toast from "react-hot-toast";
+import useFrequency from "../../hooks/useFrequency";
 
 // DATOS DE PRUEBA RENDERIZADO
 const titles = ['id', 'departure_station_name',
     'departure_city_name', 'arrival_station_name',
     'arrival_city_name'];
-
 const expandTitles = ['stop_station_names', 'stop_city_names'];
-
 const displayHeader = ['Identificador', 'Estación de salida', 'Ciudad de salida',
-    'Estación de llegada', 'Ciudad de llegada',];
+    'Estación de llegada', 'Ciudad de llegada'];
+
+//Estado inicial Datos
+const initialStateTimeDate: timeDateT = {
+    date: '',
+    departure_time: '',
+    arrival_time: ''
+}
 
 // DATOS DE PRUEBA RENDERIZADO
 const FrequencyRegistration = () => {
@@ -36,16 +41,14 @@ const FrequencyRegistration = () => {
     const [selectedBus, setSelectedBus] = useState('');
     const [selectedDriver, setSelectedDriver] = useState('');
     const [routeID, setRouteID] = useState('');
+    const [price, setPrice] = useState(0);
     const today = new Date().toISOString().split('T')[0]; //get today's date in the format YYYY-MM-DD
-    const [selectedDate, setSelectedDate] = useState(today);
-    const [selectedDepartureTime, setSelectedDepartureTime] = useState('');
-    const [selectedArrivalTime, setSelectedArrivalTime] = useState('');
-
+    const [selectedDateTime, setSelectedDateTime] = useState<timeDateT>(initialStateTimeDate);
 
     //hook
     const { getBuses } = useBusCreation();
     const { getDrivers } = useUsers();
-
+    const {createFrequency}= useFrequency();
     //render data
     const [buses, setBuses] = useState([]);
     const [drivers, setDrivers] = useState([]);
@@ -73,10 +76,48 @@ const FrequencyRegistration = () => {
         setFrequencyStatus(checked); //actualizo el estado con el valor del checkbox
     };
 
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        
+    const handleTimeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedDateTime({
+            ...selectedDateTime,
+            [e.target.id]: e.target.value
+        });
     };
-    
+    const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const frequencyData:FrequencyT = {
+            bus_id: selectedBus,
+            route_id: routeID,
+            departure_time: selectedDateTime.departure_time,
+            date: selectedDateTime.date,
+            arrival_time: selectedDateTime.arrival_time,
+            driver_id: selectedDriver,
+            price: price,
+            status: frequencyStatus
+        };
+        if (!selectedBus || !routeID || !selectedDateTime.departure_time || !selectedDateTime.date || !selectedDateTime.arrival_time || !selectedDriver || price <= 0) {
+            toast.error("Por favor, complete todos los campos.");
+            return;
+        };
+        createFrequency(frequencyData);
+        cleanData();
+        return;
+    };
+
+
+    const handleCancelBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        cleanData();
+    };
+
+    const cleanData = () => {
+        setSelectedDateTime(initialStateTimeDate);
+        setSelectedDriver('');
+        setSelectedBus('');
+        setRouteID('');
+        setFrequencyStatus(false);
+        setPrice(0);
+    };
+
 
 
     return (
@@ -106,7 +147,7 @@ const FrequencyRegistration = () => {
                                 </h3>
                             </div>
                             <div className="p-7">
-                                <form action="#">
+                                <form onSubmit={handleSubmit}>
                                     <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                                         <div className="w-full sm:w-[50%]">
                                             <DataList
@@ -156,7 +197,9 @@ const FrequencyRegistration = () => {
                                                     type="text"
                                                     name="price"
                                                     id="price"
-                                                    placeholder="25"
+                                                    placeholder="7"
+                                                    value={price}
+                                                    onChange={(e) => setPrice(Number(e.target.value))}
                                                 />
                                             </div>
                                         </div>
@@ -213,7 +256,8 @@ const FrequencyRegistration = () => {
                                                     type="date"
                                                     name="date"
                                                     id="date"
-                                                    value={selectedDate}
+                                                    onChange={handleTimeDateChange}
+                                                    value={selectedDateTime.date}
                                                     min={today}
                                                 />
                                             </div>
@@ -232,7 +276,8 @@ const FrequencyRegistration = () => {
                                                     type="time"
                                                     name="departure_time"
                                                     id="departure_time"
-                                                    value={selectedDepartureTime}
+                                                    onChange={handleTimeDateChange}
+                                                    value={selectedDateTime.departure_time}
                                                 />
                                             </div>
                                         </div>
@@ -244,14 +289,15 @@ const FrequencyRegistration = () => {
                                                 Hora de llegada
                                             </label>
                                             <div className="relative">
-                                                
+
                                                 <input
                                                     className="w-full rounded border border-stroke bg-gray py-3 pl-5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                                     type="time"
                                                     name="arrival_time"
                                                     id="arrival_time"
-                                                    value={selectedArrivalTime}
-                                                />
+                                                    onChange={handleTimeDateChange}
+                                                    value={selectedDateTime.arrival_time}
+                                                    />
                                             </div>
                                         </div>
                                     </div>
@@ -259,7 +305,8 @@ const FrequencyRegistration = () => {
                                     <div className="flex justify-end gap-4.5">
                                         <button
                                             className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
-                                            type="submit"
+                                            type="button"
+                                            onClick={handleCancelBtn}
                                         >
                                             Cancelar
                                         </button>

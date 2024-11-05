@@ -82,3 +82,20 @@ export type CreateBusT = Pick<TypeBusT, 'bus_number' | 'license_plate' | 'chassi
     'model' | 'year' | 'capacity' | 'bus_structure_id'>
 
 export type createBusStationT=Omit<TypeBusStationT,'id'>
+
+export type timeDateT ={
+    date:string,
+    departure_time:string,
+    arrival_time:string
+}
+
+export type FrequencyT = {
+    "bus_id": string,
+    "route_id": string,
+    "departure_time": string,
+    "date": string,
+    "arrival_time": string,
+    "driver_id": string,
+    "price": number,
+    "status": boolean   
+}

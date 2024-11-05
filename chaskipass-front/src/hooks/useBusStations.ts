@@ -34,7 +34,6 @@ export default function useBusStations() {
             }));
             return formattedData;
         } catch (error) {
-            console.log(error);
             toast.error(verifyError(error));
         }finally{
             setLoading(false);

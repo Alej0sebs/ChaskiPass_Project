@@ -26,7 +26,6 @@ export default function useUsers() {
             setLoading(false);
         }
     };
-
     return {
         loading,
         getDrivers,

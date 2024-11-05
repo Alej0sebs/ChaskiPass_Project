@@ -35,8 +35,13 @@ const FrequencyRegistration = () => {
     //state of inputs
     const [selectedBus, setSelectedBus] = useState('');
     const [selectedDriver, setSelectedDriver] = useState('');
-    //inputs
     const [routeID, setRouteID] = useState('');
+    const today = new Date().toISOString().split('T')[0]; //get today's date in the format YYYY-MM-DD
+    const [selectedDate, setSelectedDate] = useState(today);
+    const [selectedDepartureTime, setSelectedDepartureTime] = useState('');
+    const [selectedArrivalTime, setSelectedArrivalTime] = useState('');
+
+
     //hook
     const { getBuses } = useBusCreation();
     const { getDrivers } = useUsers();
@@ -57,14 +62,22 @@ const FrequencyRegistration = () => {
         fetchBuses();
     }, []);
 
-    const handleChange = (checked: boolean) => {
-        setFrequencyStatus(checked); //actualizo el estado con el valor del checkbox
-    };
-
     useEffect(() => {
         // Actualizar totalPages basado en el tamaño de listRoutes
         setTotalPages(Math.ceil(listRoutes.length / rowsPerPage));
     }, [listRoutes]);
+
+
+    //Para el switcher
+    const handleChange = (checked: boolean) => {
+        setFrequencyStatus(checked); //actualizo el estado con el valor del checkbox
+    };
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        
+    };
+    
+
 
     return (
         <>
@@ -186,8 +199,8 @@ const FrequencyRegistration = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                                        <div className="w-full sm:w-[40%]">
+                                    <div className="mb-5.5 flex flex-col gap-2.5 sm:flex-row">
+                                        <div className="w-full sm:w-[33%]">
                                             <label
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                                                 htmlFor="date"
@@ -195,20 +208,18 @@ const FrequencyRegistration = () => {
                                                 Fecha
                                             </label>
                                             <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <CiCalendarDate />
-                                                </span>
                                                 <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
+                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="date"
                                                     name="date"
                                                     id="date"
-                                                    placeholder="20/04/2024"
+                                                    value={selectedDate}
+                                                    min={today}
                                                 />
                                             </div>
                                         </div>
 
-                                        <div className="w-full sm:w-[33.33%]">
+                                        <div className="w-full sm:w-[32%]">
                                             <label
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                                                 htmlFor="departure_time"
@@ -216,19 +227,16 @@ const FrequencyRegistration = () => {
                                                 Hora de salida
                                             </label>
                                             <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <IoMdTime />
-                                                </span>
                                                 <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
+                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="time"
                                                     name="departure_time"
                                                     id="departure_time"
-                                                    placeholder="12:00"
+                                                    value={selectedDepartureTime}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="w-full sm:w-[33.33%]">
+                                        <div className="w-full sm:w-[32%]">
                                             <label
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
                                                 htmlFor="arrival_time"
@@ -236,15 +244,13 @@ const FrequencyRegistration = () => {
                                                 Hora de llegada
                                             </label>
                                             <div className="relative">
-                                                <span className="absolute left-4.5 top-4">
-                                                    <IoMdTime />
-                                                </span>
+                                                
                                                 <input
-                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                                                    type="text"
+                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="time"
                                                     name="arrival_time"
                                                     id="arrival_time"
-                                                    placeholder="23:00"
+                                                    value={selectedArrivalTime}
                                                 />
                                             </div>
                                         </div>

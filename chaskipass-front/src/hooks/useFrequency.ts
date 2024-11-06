@@ -45,7 +45,7 @@ export default function useFrequency(){
             if(data.error){
                 throw new Error(data.error);
             }
-            return data.json;
+            return data.json.listFrequencies;
         } catch (error) {
             toast.error(verifyError(error));
         }finally{

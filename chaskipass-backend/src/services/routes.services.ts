@@ -249,12 +249,16 @@ export const getFrequenciesService = async (cooperative_id: string) => {
         fr.departure_time,
         fr.arrival_time,
         fr.price,
+        fr.status,
+        fr.trip_type,
         bs1.name AS departure_station_name,
         cit1.name AS departure_city_name,
         bs2.id AS arrival_station_id,
         bs2.name AS arrival_station_name,
         cit2.name AS arrival_city_name,
-        c.name AS cooperative_name
+        c.name AS cooperative_name,
+        GROUP_CONCAT(stopStation.name ORDER BY stops.order SEPARATOR ', ') AS stop_station_names,
+        GROUP_CONCAT(stopCity.name ORDER BY stops.order SEPARATOR ', ') AS stop_city_names
     FROM 
         frequencies AS fr
     INNER JOIN 
@@ -269,6 +273,12 @@ export const getFrequenciesService = async (cooperative_id: string) => {
         cities AS cit2 ON cit2.id = bs2.city_id
     LEFT JOIN 
         cooperatives AS c ON c.id = fr.cooperative_id
+    LEFT JOIN 
+        StopOvers AS stops ON r.id = stops.route_id
+    LEFT JOIN 
+        bus_stations AS stopStation ON stops.station_id = stopStation.id
+    LEFT JOIN 
+        cities AS stopCity ON stopStation.city_id = stopCity.id
     WHERE 
         fr.cooperative_id = :cooperative_id AND fr.date >= CURRENT_DATE
     `;

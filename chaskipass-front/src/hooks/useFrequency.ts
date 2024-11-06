@@ -9,7 +9,6 @@ export default function useFrequency(){
     const [loading, setLoading] = useState(false);
     const createFrequency = async(frequencyData:FrequencyT)=>{
         setLoading(true);
-        console.log(frequencyData);
         try {
             const response:Response = await fetch(`${API_BASE_URL}frequency/frequency`,{
                 method:'POST',
@@ -30,6 +29,28 @@ export default function useFrequency(){
         }finally{
             setLoading(false);
         }
+    };
+
+    const getFrequencies = async()=>{
+        setLoading(true);
+        try {
+            const response:Response = await fetch(`${API_BASE_URL}frequency/frequencies`,{
+                method:'GET',
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                credentials:'include',
+            });
+            const data = await response.json();
+            if(data.error){
+                throw new Error(data.error);
+            }
+            return data.json;
+        } catch (error) {
+            toast.error(verifyError(error));
+        }finally{
+            setLoading(false);
+        }
     }
-    return {loading, createFrequency};
+    return {loading, createFrequency, getFrequencies};
 }

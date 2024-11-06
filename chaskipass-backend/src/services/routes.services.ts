@@ -183,7 +183,7 @@ export const verifyRoute = async ({ dni, cooperative_id, departure_station_id, a
 export const getRoutesService = async (cooperative_id: string, { page, limit, pattern }: DataPaginationT) => {
     try {
         const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
-        
+
         // Asegúrate de esperar el resultado de la consulta de conteo
         const totalItems = await Routes.count({ where: { cooperative_id } });
 
@@ -234,6 +234,55 @@ export const getRoutesService = async (cooperative_id: string, { page, limit, pa
             }
         };
 
+    } catch (error) {
+        return handleSequelizeError(error);
+    }
+};
+
+
+export const getFrequenciesService = async (cooperative_id: string) => {
+    try {
+        const sqlQuery = `
+    SELECT 
+        fr.id AS frequency_id,
+        fr.date,
+        fr.departure_time,
+        fr.arrival_time,
+        fr.price,
+        bs1.name AS departure_station_name,
+        cit1.name AS departure_city_name,
+        bs2.id AS arrival_station_id,
+        bs2.name AS arrival_station_name,
+        cit2.name AS arrival_city_name,
+        c.name AS cooperative_name
+    FROM 
+        frequencies AS fr
+    INNER JOIN 
+        routes AS r ON r.id = fr.route_id
+    INNER JOIN 
+        bus_stations AS bs1 ON bs1.id = r.departure_station_id
+    INNER JOIN 
+        cities AS cit1 ON cit1.id = bs1.city_id
+    INNER JOIN 
+        bus_stations AS bs2 ON bs2.id = r.arrival_station_id
+    INNER JOIN 
+        cities AS cit2 ON cit2.id = bs2.city_id
+    LEFT JOIN 
+        cooperatives AS c ON c.id = fr.cooperative_id
+    WHERE 
+        fr.cooperative_id = :cooperative_id AND fr.date >= CURRENT_DATE
+    `;
+
+        const [listFrequencies] = await connectionDb.query(sqlQuery, {
+            replacements: { cooperative_id },
+        });
+
+        return {
+            status: 200,
+            json: {
+                listFrequencies
+            }
+        };
     } catch (error) {
         return handleSequelizeError(error);
     }

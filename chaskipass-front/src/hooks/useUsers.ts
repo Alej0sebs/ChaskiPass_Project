@@ -20,7 +20,7 @@ export default function useUsers() {
             }
             return data.json;
         } catch (error) {
-            console.error(error);
+            console.error(error);   
             toast.error(verifyError(error));
         } finally {
             setLoading(false);

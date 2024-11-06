@@ -48,7 +48,7 @@ const FrequencyRegistration = () => {
     //hook
     const { getBuses } = useBusCreation();
     const { getDrivers } = useUsers();
-    const {createFrequency}= useFrequency();
+    const { createFrequency } = useFrequency();
     //render data
     const [buses, setBuses] = useState([]);
     const [drivers, setDrivers] = useState([]);
@@ -84,7 +84,7 @@ const FrequencyRegistration = () => {
     };
     const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const frequencyData:FrequencyT = {
+        const frequencyData: FrequencyT = {
             bus_id: selectedBus,
             route_id: routeID,
             departure_time: selectedDateTime.departure_time,
@@ -118,14 +118,12 @@ const FrequencyRegistration = () => {
         setPrice(0);
     };
 
-
-
     return (
         <>
             <div className="mx-auto">
                 <Breadcrumb pageName="Registro de Frecuencias" />
                 <div className="grid grid-cols-8 gap-8">
-                    <div className="col-span-8 xl:col-span-5">
+                    <div className="col-span-8 xl:col-span-5 ">
                         <PaginationDataTable
                             displayHeader={displayHeader}
                             titles={titles}
@@ -137,7 +135,6 @@ const FrequencyRegistration = () => {
                             onRowClick={(row) => setRouteID(row.id)}
                             dataHeaderToExpand={expandTitles}
                         />
-
                     </div>
                     <div className="col-span-8 xl:col-span-3">
                         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -284,12 +281,10 @@ const FrequencyRegistration = () => {
                                         <div className="w-full sm:w-[32%]">
                                             <label
                                                 className="mb-3 block text-sm font-medium text-black dark:text-white"
-                                                htmlFor="arrival_time"
-                                            >
+                                                htmlFor="arrival_time">
                                                 Hora de llegada
                                             </label>
                                             <div className="relative">
-
                                                 <input
                                                     className="w-full rounded border border-stroke bg-gray py-3 pl-5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                                                     type="time"
@@ -297,7 +292,7 @@ const FrequencyRegistration = () => {
                                                     id="arrival_time"
                                                     onChange={handleTimeDateChange}
                                                     value={selectedDateTime.arrival_time}
-                                                    />
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -306,14 +301,12 @@ const FrequencyRegistration = () => {
                                         <button
                                             className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
                                             type="button"
-                                            onClick={handleCancelBtn}
-                                        >
+                                            onClick={handleCancelBtn}>
                                             Cancelar
                                         </button>
                                         <button
                                             className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90"
-                                            type="submit"
-                                        >
+                                            type="submit">
                                             Guardar
                                         </button>
                                     </div>

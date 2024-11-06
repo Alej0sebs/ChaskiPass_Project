@@ -51,6 +51,7 @@ export default function useFrequency(){
         }finally{
             setLoading(false);
         }
-    }
+    };
+    
     return {loading, createFrequency, getFrequencies};
 }

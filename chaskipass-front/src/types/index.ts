@@ -107,10 +107,10 @@ export type FrequencyListT = {
     arrival_time: string;
     price: string;
     status: number;
-    trip_type: number;
+    bus_number: number;
     departure_station_name: string;
     departure_city_name: string;
-    arrival_station_id: number;
+    license_plate: string;
     arrival_station_name: string;
     arrival_city_name: string;
     cooperative_name: string;

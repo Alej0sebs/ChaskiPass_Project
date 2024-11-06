@@ -248,15 +248,14 @@ export const getFrequenciesService = async (cooperative_id: string) => {
         fr.date,
         fr.departure_time,
         fr.arrival_time,
+        bus.license_plate,
+        bus.bus_number,
         fr.price,
         fr.status,
-        fr.trip_type,
         bs1.name AS departure_station_name,
         cit1.name AS departure_city_name,
-        bs2.id AS arrival_station_id,
         bs2.name AS arrival_station_name,
         cit2.name AS arrival_city_name,
-        c.name AS cooperative_name,
         GROUP_CONCAT(stopStation.name ORDER BY stops.order SEPARATOR ', ') AS stop_station_names,
         GROUP_CONCAT(stopCity.name ORDER BY stops.order SEPARATOR ', ') AS stop_city_names
     FROM 
@@ -271,6 +270,8 @@ export const getFrequenciesService = async (cooperative_id: string) => {
         bus_stations AS bs2 ON bs2.id = r.arrival_station_id
     INNER JOIN 
         cities AS cit2 ON cit2.id = bs2.city_id
+    INNER JOIN
+        buses AS bus ON bus.id = fr.bus_id
     LEFT JOIN 
         cooperatives AS c ON c.id = fr.cooperative_id
     LEFT JOIN 

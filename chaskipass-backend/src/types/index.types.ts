@@ -43,6 +43,7 @@ export type CooperativesT = InferAttributes<Cooperatives>;
 
 export type FrequencyModelT = InferAttributes<Frequencies>;
 export type FrequencyT = Omit<InferAttributes<Frequencies>, 'trip_type'| 'id'>;
+export type EditFrequencyT = Partial<Pick<Frequencies, 'id' | 'bus_id' | 'driver_id' | 'date' | 'departure_time' | 'arrival_time' | 'price' | 'status'>>;
 
 export type RoutesT = InferAttributes<Routes> & {
     stopOverList?: string[],
@@ -53,29 +54,29 @@ export type DataPaginationT = {
     page: number,
     limit: number,
     pattern?: string
-}
+};
 
 export type TicketInformationT = InferAttributes<Tickets> & {
-}
+};
 
-export type BusStructureT = InferAttributes<BusStructure>
+export type BusStructureT = InferAttributes<BusStructure>;
 
-export type BusStationT = InferAttributes<BusStations>
+export type BusStationT = InferAttributes<BusStations>;
 
-export type SeatT = InferAttributes<Seats>
+export type SeatT = InferAttributes<Seats>;
 
 export type SeatBusT = Pick<BusT, 'license_plate'> &{
     layout: string
-}
+};
 
-export type StationCooperativeT = InferAttributes<StationCooperative>
+export type StationCooperativeT = InferAttributes<StationCooperative>;
 
 export type NewStationT = InferAttributes<BusStations>;
 
-export type SerialNumberT = InferAttributes<SerialStation>
+export type SerialNumberT = InferAttributes<SerialStation>;
 
-export type TypeSeatT = InferAttributes<TypeSeats>
-export type CreateTypeSeatT = Omit<TypeSeatT, 'id'>
+export type TypeSeatT = InferAttributes<TypeSeats>;
+export type CreateTypeSeatT = Omit<TypeSeatT, 'id'>;
 
 export type FilterFrequenciesT = Omit<FrequencyModelT, 'id' | 'status' | 'bus_id' | 'route_id' | 'driver_id'> &{
     departure_city: string,

@@ -8,7 +8,9 @@ import { FrequencyListT } from "../../types";
 
 const FrequencyList = () => {
     const [listRoutes, setListRoutes] = useState<FrequencyListT>([]);
-    const { getFrequencies } = useFrequency();
+    const { getFrequencies, editFrequency } = useFrequency();
+    const [listFrequenciesState, setListFrequenciesState] = useState<string[]>([]);
+
 
     useEffect(() => {
         const fetchBuses = async () => {
@@ -18,13 +20,16 @@ const FrequencyList = () => {
         fetchBuses();
     }, []);
 
-    const toggleStatus = (id: string) => {
+    const toggleStatus = async (id: string) => {
         setListRoutes((prev: FrequencyListT) =>
             prev.map((freq) =>
                 freq.frequency_id === id
                     ? { ...freq, status: freq.status === 0 ? 1 : 0 }
                     : freq)
         );
+
+        const newStatus = listRoutes.find((freq) => freq.frequency_id === id)?.status === 0 ? 1 : 0;
+        await editFrequency({ id, status: newStatus === 0 ? false : true });
     };
 
     return (
@@ -116,7 +121,20 @@ const FrequencyList = () => {
                     </table>
                 </div>
             </div>
+            <div className="flex justify-end mt-4">
+                <button
+                    className="flex justify-center rounded bg-red-700 py-2 px-6 font-medium text-white hover:bg-opacity-90 ml-4"
+                    type="button">
+                    Cancelar
+                </button>
+                <button
+                    className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90 ml-4"
+                    type="submit">
+                    Actualizar
+                </button>
+            </div>
         </div>
+
     );
 };
 

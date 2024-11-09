@@ -87,6 +87,8 @@ export const getFrequenciesService = async (cooperative_id: string) => {
         fr.date,
         fr.departure_time,
         fr.arrival_time,
+        u.dni AS driver_dni,
+        bus.id,
         bus.license_plate,
         bus.bus_number,
         fr.price,
@@ -113,6 +115,8 @@ export const getFrequenciesService = async (cooperative_id: string) => {
         buses AS bus ON bus.id = fr.bus_id
     LEFT JOIN 
         cooperatives AS c ON c.id = fr.cooperative_id
+    LEFT JOIN 
+        users AS u ON u.dni = fr.driver_id
     LEFT JOIN 
         StopOvers AS stops ON r.id = stops.route_id
     LEFT JOIN 
@@ -156,6 +160,7 @@ export const editFrequencyService = async ({ id,  bus_id, driver_id, date, depar
         }, {
             where: { id }
         });
+        return { status: 200, json: { msg: HandleMessages.FREQUENCY_UPDATED_SUCCESSFULLY } };
     }catch(error){
         return handleSequelizeError(error);
     }
@@ -164,6 +169,7 @@ export const editFrequencyService = async ({ id,  bus_id, driver_id, date, depar
 export const deleteFrequencyByIDService = async (id: string) => {
     try{
         await Frequencies.destroy({ where: { id } });
+        return { status: 200, json: { msg: HandleMessages.FREQUENCY_DELETED_SUCCESSFULLY } };
     }catch(error){
         return handleSequelizeError(error);
     }

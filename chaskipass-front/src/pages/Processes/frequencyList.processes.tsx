@@ -1,21 +1,48 @@
-import { IoTrashOutline } from "react-icons/io5";
 import { CiEdit } from "react-icons/ci";
 import { IoTicketSharp } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import useFrequency from "../../hooks/useFrequency";
-import { FrequencyListT } from "../../types";
+import { editFrequencyT, FrequencyListT } from "../../types";
+import DeletePopup from "../../modals/deletePopup.processes";
+import EditPopup from "../../modals/editPopup.processes";
+import useBusCreation from "../../hooks/useBusCreation";
+import useUsers from "../../hooks/useUsers";
+import DataList from "../../components/DataList/datalist.components";
+
+const initialPopupData: editFrequencyT = {
+    id: "",
+    bus_id: "",
+    license_plate: "",
+    route_id: "",
+    departure_time: "",
+    date: "",
+    arrival_time: "",
+    driver_id: "",
+    price: 0,
+    status: false
+};
 
 const FrequencyList = () => {
     const [listRoutes, setListRoutes] = useState<FrequencyListT>([]);
-    const { getFrequencies, editFrequency } = useFrequency();
-    const [listFrequenciesState, setListFrequenciesState] = useState<string[]>([]);
-
+    const { getFrequencies, editFrequency, deleteFrequency } = useFrequency();
+    //edit modal
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [inputModalData, setInputModalData] = useState<editFrequencyT>(initialPopupData);
+    //hooks
+    const { getBuses } = useBusCreation();
+    const { getDrivers } = useUsers();
+    const [buses, setBuses] = useState([]);
+    const [drivers, setDrivers] = useState([]);
 
     useEffect(() => {
         const fetchBuses = async () => {
             const frequenciesList = await getFrequencies();
-            if (frequenciesList && (frequenciesList.frequency_id != null || frequenciesList.frequency_id != "")) setListRoutes(frequenciesList);
+            if (frequenciesList && (frequenciesList.id != null || frequenciesList.id != "")) setListRoutes(frequenciesList);
+            const busData = await getBuses();
+            if (busData) setBuses(busData);
+            const driverData = await getDrivers();
+            if (driverData) setDrivers(driverData);
         };
         fetchBuses();
     }, []);
@@ -23,13 +50,53 @@ const FrequencyList = () => {
     const toggleStatus = async (id: string) => {
         setListRoutes((prev: FrequencyListT) =>
             prev.map((freq) =>
-                freq.frequency_id === id
-                    ? { ...freq, status: freq.status === 0 ? 1 : 0 }
+                freq.id === id
+                    ? { ...freq, status: !freq.status }
                     : freq)
         );
 
-        const newStatus = listRoutes.find((freq) => freq.frequency_id === id)?.status === 0 ? 1 : 0;
-        await editFrequency({ id, status: newStatus === 0 ? false : true });
+        const newStatus = !listRoutes.find((freq) => freq.id === id)?.status;
+        await editFrequency({ id, status: newStatus });
+    };
+
+    const handleDelete = async (id: string) => {
+        await deleteFrequency(id);
+    }
+
+    const openEditModal = (freq: editFrequencyT) => {
+        setInputModalData(freq);
+        setIsEditModalOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setIsEditModalOpen(false);
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputModalData({
+            ...inputModalData,
+            [e.target.name]: e.target.value
+        })
+    };
+
+    const handleSubmit = async () => {
+        await editFrequency(inputModalData);
+        closeEditModal();
+    };
+
+    const handleSelectBus = (selectedBus: any) => {
+        setInputModalData({
+            ...inputModalData,
+            bus_id: selectedBus.id,
+            license_plate: selectedBus.license_plate,
+        });
+    };
+
+    const handleSelectDriver = (selectedDriver: any) => {
+        setInputModalData({
+            ...inputModalData,
+            driver_id: selectedDriver.id,
+        });
     };
 
     return (
@@ -65,7 +132,7 @@ const FrequencyList = () => {
                         </thead>
                         <tbody>
                             {listRoutes.map((freq) => (
-                                <tr key={freq.frequency_id}>
+                                <tr key={freq.id}>
                                     <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
                                         <h5 className="font-medium text-black dark:text-white">
                                             {freq.departure_city_name} - {freq.arrival_city_name}
@@ -103,16 +170,98 @@ const FrequencyList = () => {
                                             <input
                                                 type="checkbox"
                                                 value="synthwave"
-                                                checked={freq.status === 1}
+                                                checked={freq.status === true}
                                                 className="toggle theme-controller col-span-2 col-start-1 row-start-1 bg-blue-300 [--tglbg:theme(colors.blue.900)] checked:border-blue-800 checked:bg-blue-50 checked:[--tglbg:theme(colors.green.500)]"
-                                                onChange={() => toggleStatus(freq.frequency_id)} />
+                                                onChange={() => toggleStatus(freq.id)} />
                                         </label>
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <div className="flex items-center space-x-3.5">
                                             <button className="hover:text-primary"><IoTicketSharp /></button>
-                                            <button className="hover:text-primary"><CiEdit /></button>
-                                            <button className="hover:text-primary"><IoTrashOutline /></button>
+                                            <button className="hover:text-primary" onClick={() => openEditModal(freq)}><CiEdit /></button>
+                                            {/* popup */}
+                                            <EditPopup
+                                                title="Editar Frecuencia"
+                                                isOpen={isEditModalOpen}
+                                                onClose={closeEditModal}
+                                                onSave={handleSubmit}
+                                            >
+                                                <div className="flex flex-col space-y-4 text-black dark:text-white">
+                                                    <label>
+                                                        <DataList
+                                                            id={"license_plate"}
+                                                            label="Placa autobús"
+                                                            placeholder="TAR-2107"
+                                                            options={buses}
+                                                            opKey={"id"}
+                                                            opValue={"license_plate"}
+                                                            optionP={"bus_number"}
+                                                            onSelect={handleSelectBus}
+                                                            value={inputModalData.bus_id || ""}
+                                                        />
+                                                    </label>
+                                                    <label>
+                                                        <DataList
+                                                            id={"driver_id"}
+                                                            label="Conductor"
+                                                            placeholder="18xxxxxxxx"
+                                                            options={drivers}
+                                                            opKey={"dni"}
+                                                            opValue={"name"}
+                                                            optionP={"dni"}
+                                                            onSelect={handleSelectDriver}
+                                                            value={inputModalData.driver_dni || ""}
+                                                        />
+                                                    </label>
+                                                    <label>
+                                                        Fecha:
+                                                        <input
+                                                            type="date"
+                                                            name="date"
+                                                            value={inputModalData.date}
+                                                            onChange={handleChange}
+                                                            className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
+                                                        />
+                                                    </label>
+                                                    <label>
+                                                        Hora de salida:
+                                                        <input
+                                                            type="time"
+                                                            name="departure_time"
+                                                            value={inputModalData.departure_time}
+                                                            onChange={handleChange}
+                                                            className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
+                                                        />
+                                                    </label>
+                                                    <label>
+                                                        Hora de llegada:
+                                                        <input
+                                                            type="time"
+                                                            name="arrival_time"
+                                                            value={inputModalData.arrival_time}
+                                                            onChange={handleChange}
+                                                            className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
+                                                        />
+                                                    </label>
+                                                    <label>
+                                                        Precio:
+                                                        <input
+                                                            type="number"
+                                                            name="price"
+                                                            value={inputModalData.price}
+                                                            onChange={handleChange}
+                                                            className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
+                                                        />
+                                                    </label>
+                                                </div>
+                                            </EditPopup>
+                                            {/* popup */}
+                                            <DeletePopup
+                                                id={freq.id}
+                                                title="Eliminar Frecuencia"
+                                                message="¿Estás seguro de que deseas eliminar esta frecuencia?"
+                                                onConfirm={() => handleDelete(freq.id)}
+                                            />
                                         </div>
                                     </td>
                                 </tr>
@@ -121,20 +270,7 @@ const FrequencyList = () => {
                     </table>
                 </div>
             </div>
-            <div className="flex justify-end mt-4">
-                <button
-                    className="flex justify-center rounded bg-red-700 py-2 px-6 font-medium text-white hover:bg-opacity-90 ml-4"
-                    type="button">
-                    Cancelar
-                </button>
-                <button
-                    className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:bg-opacity-90 ml-4"
-                    type="submit">
-                    Actualizar
-                </button>
-            </div>
         </div>
-
     );
 };
 

@@ -90,25 +90,23 @@ export type timeDateT = {
 };
 
 export type FrequencyT = {
-    "bus_id": string,
-    "route_id": string,
-    "departure_time": string,
-    "date": string,
-    "arrival_time": string,
-    "driver_id": string,
-    "price": number,
-    "status": boolean
+    bus_id: string,
+    route_id: string,
+    departure_time: string,
+    date: string,
+    arrival_time: string,
+    driver_id: string,
+    price: number,
+    status: boolean
 };
 
-export type editFrequencyT = Partial<FrequencyT> & { id: string };
-
 export type FrequencyListT = {
-    frequency_id: string;
+    id: string;
     date: string;
     departure_time: string;
     arrival_time: string;
-    price: string;
-    status: number;
+    price: number;
+    status:  boolean;
     bus_number: number;
     departure_station_name: string;
     departure_city_name: string;
@@ -119,3 +117,6 @@ export type FrequencyListT = {
     stop_station_names: string;
     stop_city_names: string;
 }[];
+
+export type editFrequencyT = Partial<FrequencyT> & { id: string, license_plate?: string, driver_dni?: string };
+

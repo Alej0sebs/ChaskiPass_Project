@@ -51,4 +51,6 @@ export enum HandleMessages{
     FREQUENCY_ALREADY_EXISTS='La frecuencia ya existe',
     DRIVER_NOT_FOUND='Conductor no encontrado',
     DRIVER_HAS_CONFLICTING_FREQUENCY='El conductor tiene frecuencias conflictivas, posible solapamiento de horarios',
+    FREQUENCY_UPDATED_SUCCESSFULLY='Frecuencia actualizada con éxito',
+    FREQUENCY_DELETED_SUCCESSFULLY='Frecuencia eliminada con éxito',
 }

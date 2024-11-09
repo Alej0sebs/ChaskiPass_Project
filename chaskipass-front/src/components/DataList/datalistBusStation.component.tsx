@@ -13,7 +13,7 @@ interface DataListProps {
     value: string
     iconP: IconType
     className?: string
-}
+};
 
 const DataListBusStation = ({ id, label, options, placeholder, onSelect, value, iconP: Icon, className }: DataListProps) => {
     const [inputValue, setInputValue] = useState(value);

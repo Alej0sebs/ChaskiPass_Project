@@ -13,8 +13,6 @@ import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Tables from './pages/Tables';
-import Alerts from './pages/UiElements/Alerts';
-import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import BusRegistration from './pages/Registration/bus.registration';
 import RoutesRegistration from './pages/Processes/routes.processes';
@@ -26,6 +24,7 @@ import FrequencyRegistration from './pages/Processes/frequency.processes';
 
 import TicketSeriesRegistration from './pages/Registration/tickets.registration';
 import BusStationRegistration from './pages/Registration/busStation.registration';
+import FrequencyList from './pages/Processes/frequencyList.processes';
 
 
 function App() {
@@ -148,26 +147,6 @@ function App() {
               }
             />
             <Route
-              path="/ui/alerts"
-              element={
-                authUser ?
-                  <>
-                    <PageTitle title="Alerts | ChaskiPass" />
-                    <Alerts />
-                  </> : <Navigate to='/auth/signin' />
-              }
-            />
-            <Route
-              path="/ui/buttons"
-              element={
-                authUser ?
-                  <>
-                    <PageTitle title="Buttons | ChaskiPass" />
-                    <Buttons />
-                  </> : <Navigate to='/auth/signin' />
-              }
-            />
-            <Route
               path="/auth/signup"
               element={
                 authUser ?
@@ -245,8 +224,18 @@ function App() {
               element={
                 authUser ?
                   <>
-                    <PageTitle title="Frecuencias| ChaskiPass" />
+                    <PageTitle title="Frecuencias Creación | ChaskiPass" />
                     <FrequencyRegistration />
+                  </> : <Navigate to='/auth/signin' />
+              }
+            />
+            <Route
+              path="/processes/frequency-list"
+              element={
+                authUser ?
+                  <>
+                    <PageTitle title="Frecuencias de selección | ChaskiPass" />
+                    <FrequencyList />
                   </> : <Navigate to='/auth/signin' />
               }
             />

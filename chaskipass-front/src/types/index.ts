@@ -12,11 +12,11 @@ export type LayoutBusT = {
     layout: {},
 };
 
-export type CitiesT={
-id:string,
-name:string,
-province_id:string
-}
+export type CitiesT = {
+    id: string,
+    name: string,
+    province_id: string
+};
 
 export type UserT = {
     dni: string,
@@ -45,40 +45,77 @@ export type TypeBusT = {
 export type BusStructureT = {
     id: string;
     name: string;
-}
-export type TypeBusStationT={
+};
+export type TypeBusStationT = {
 
-city_id:string,
-name:string,
-address:string,
-phone: string,
-open_time:string,
-close_time:string
+    city_id: string,
+    name: string,
+    address: string,
+    phone: string,
+    open_time: string,
+    close_time: string
 
-}
+};
 
 
 type CityBusStationT = {
-    id:string,
-    name:string
-}
+    id: string,
+    name: string
+};
 
 export type BusStationT = {
-    id:string,
-    name:string
-    city_bus_station:CityBusStationT
-}
+    id: string,
+    name: string
+    city_bus_station: CityBusStationT
+};
 
-export type UserSignUpT = Pick<UserT, 'email' | 'user_name' | 'password'>
+export type UserSignUpT = Pick<UserT, 'email' | 'user_name' | 'password'>;
 
 
-export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperative_id'>
+export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperative_id'>;
 
 // export type CreateUser=Pick<UserT,'dni'|'name'|'last_name'|'user_name'|'email'|'phone'|'address'|'role_id'|'cooperative_id'>
 
-export type CreateUserT = Omit<UserT, 'password'>
+export type CreateUserT = Omit<UserT, 'password'>;
 
 export type CreateBusT = Pick<TypeBusT, 'bus_number' | 'license_plate' | 'chassis_vin' | 'bus_manufacturer' |
-    'model' | 'year' | 'capacity' | 'bus_structure_id'>
+    'model' | 'year' | 'capacity' | 'bus_structure_id'>;
 
-export type createBusStationT=Omit<TypeBusStationT,'id'>
+export type createBusStationT = Omit<TypeBusStationT, 'id'>;
+
+export type timeDateT = {
+    date: string,
+    departure_time: string,
+    arrival_time: string
+};
+
+export type FrequencyT = {
+    "bus_id": string,
+    "route_id": string,
+    "departure_time": string,
+    "date": string,
+    "arrival_time": string,
+    "driver_id": string,
+    "price": number,
+    "status": boolean
+};
+
+export type editFrequencyT = Partial<FrequencyT> & { id: string };
+
+export type FrequencyListT = {
+    frequency_id: string;
+    date: string;
+    departure_time: string;
+    arrival_time: string;
+    price: string;
+    status: number;
+    bus_number: number;
+    departure_station_name: string;
+    departure_city_name: string;
+    license_plate: string;
+    arrival_station_name: string;
+    arrival_city_name: string;
+    cooperative_name: string;
+    stop_station_names: string;
+    stop_city_names: string;
+}[];

@@ -93,7 +93,7 @@ export const editFrequency = async (req:Request, res:Response) => {
 
 export const deleteFrequencyByID = async (req:Request, res:Response) => {
     try{
-        const {id} = req.body;
+        const {id} = req.params;
         const result = await deleteFrequencyByIDService(id);
         res.status(200).json(result);
         return;

@@ -11,7 +11,7 @@ router.post('/route', protectRoute, createRoute);
 router.post('/frequency', protectRoute, createFrequency);
 router.get('/routes', protectRoute, getRoutes);
 router.get('/frequencies', protectRoute, getFrequencies);
-router.put('/frequency/edit', protectRoute, editFrequency);
-router.delete('/frequency/delete/:id', protectRoute, deleteFrequencyByID);
+router.put('/edit', protectRoute, editFrequency);
+router.delete('/delete/:id', protectRoute, deleteFrequencyByID);
 
 export default router;

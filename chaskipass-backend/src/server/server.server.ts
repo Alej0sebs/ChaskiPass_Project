@@ -83,6 +83,7 @@ export default class Server {
             credentials: true,
             origin: true,
             allowedHeaders: ["Content-Type"],
+            methods: ["GET", "POST", "PUT", "DELETE"],  // Agrega aquí los métodos permitidos
         }));
         this.app.disable('x-powered-by');
         this.app.use(this.securityHeaders);

@@ -71,13 +71,32 @@ export default function useFrequency() {
             toast.success(data.msg);
             return;
         }catch(error){
+            console.log(error);
             toast.error(verifyError(error));    
         }
     };
 
     const deleteFrequency= async (id: string) => {
         setLoading(true);
+        try{
+            const response: Response = await fetch(`${API_BASE_URL}frequency/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if(data.error){
+                throw new Error(data.error);
+            }
+            toast.success(data.msg);
+            return;
+        }catch(error){
+            console.log(error);
+            toast.error(verifyError(error));    
+        }
     };
 
-    return { loading, createFrequency, getFrequencies, editFrequency};
+    return { loading, createFrequency, getFrequencies, editFrequency, deleteFrequency};
 }

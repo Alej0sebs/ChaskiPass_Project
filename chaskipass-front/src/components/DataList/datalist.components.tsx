@@ -8,7 +8,7 @@ interface DataListProps<T> {
     placeholder: string;
     onSelect: (value: string) => void;
     value: string;
-    iconP: IconType;
+    iconP?: IconType;
     className?: string;
     opKey: keyof T; // Propiedad para la clave de la opción
     opValue: keyof T; // Propiedad para el valor de la opción

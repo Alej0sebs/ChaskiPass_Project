@@ -1,4 +1,4 @@
-import { Op, where } from "sequelize";
+import { Op, Transaction, where } from "sequelize";
 import { HandleMessages } from "../error/handleMessages.error";
 import Frequencies from "../models/frequencies.models";
 import Routes from "../models/routes.models";
@@ -9,63 +9,87 @@ import { RoleEnum } from "../utils/enums.utils";
 import { handleSequelizeError } from "../utils/helpers.utils";
 import { v4 as uuidv4 } from 'uuid';
 import connectionDb from "../db/connection.db";
+import Seats from "../models/seats.models";
+import { SeatStatus } from "../models/seatStatus.models";
 
 export const createFrequencyService = async ({ cooperative_id, bus_id, route_id, driver_id, date, departure_time, arrival_time, price, status }: FrequencyT) => {
     try {
-        // Verificar si la ruta existe
-        const routeExists = await Routes.findOne({ where: { id: route_id } });
-        if (!routeExists) {
-            return { status: 400, json: { msg: HandleMessages.ROUTE_NOT_FOUND } };
-        }
+        await connectionDb.transaction(async (transaction) => {
 
-        // Verificar si la ruta tiene paradas intermedias
-        const stopOverExists = await StopOvers.count({ where: { route_id } }) > 0;
+            // Verificar si la ruta existe
+            const routeExists = await Routes.findOne({ where: { id: route_id }, transaction });
+            if (!routeExists) {
+                return { status: 400, json: { msg: HandleMessages.ROUTE_NOT_FOUND } };
+            }
 
-        // Verificar si ya existe una frecuencia en el mismo horario y fecha para esta ruta
-        const frequencyExists = await Frequencies.findOne({ where: { route_id, date, departure_time, arrival_time } });
-        if (frequencyExists) {
-            return { status: 400, json: { msg: HandleMessages.FREQUENCY_ALREADY_EXISTS } };
-        }
+            // Verificar si la ruta tiene paradas intermedias
+            const stopOverExists = await StopOvers.count({ where: { route_id }, transaction }) > 0;
 
-        // Verificar que el conductor exista, sea de rol chofer y no tenga frecuencias activas en el mismo rango de tiempo
-        const driver = await Users.findOne({ where: { dni: driver_id, role_id: RoleEnum.driver }, attributes: ['dni'] });
-        if (!driver) {
-            return { status: 400, json: { msg: HandleMessages.DRIVER_NOT_FOUND } };
-        }
+            // Verificar si ya existe una frecuencia en el mismo horario y fecha para esta ruta
+            const frequencyExists = await Frequencies.findOne({ where: { route_id, date, departure_time, arrival_time }, transaction });
+            if (frequencyExists) {
+                return { status: 400, json: { msg: HandleMessages.FREQUENCY_ALREADY_EXISTS } };
+            }
 
-        // Verificar superposición de horarios de frecuencias del conductor para la misma fecha
-        const isOverlapping = await Frequencies.findOne({
-            where: {
-                driver_id,
+            // Verificar que el conductor exista, sea de rol chofer y no tenga frecuencias activas en el mismo rango de tiempo
+            const driver = await Users.findOne({ where: { dni: driver_id, role_id: RoleEnum.driver }, attributes: ['dni'], transaction });
+            if (!driver) {
+                return { status: 400, json: { msg: HandleMessages.DRIVER_NOT_FOUND } };
+            }
+
+            // Verificar superposición de horarios de frecuencias del conductor para la misma fecha
+            const isOverlapping = await Frequencies.findOne({
+                where: {
+                    driver_id,
+                    date,
+                    [Op.or]: [
+                        { departure_time: { [Op.lt]: arrival_time }, arrival_time: { [Op.gt]: departure_time } },
+                        { arrival_time: { [Op.gt]: calculateWorkHours(departure_time, 8) } } //8 horas para el descanso
+                    ]
+                },
+                attributes: ["id"],
+                transaction
+            });
+
+            if (isOverlapping) {
+                return { status: 400, json: { msg: HandleMessages.DRIVER_HAS_CONFLICTING_FREQUENCY } };
+            }
+
+            // Generar el ID de la frecuencia y crear la frecuencia
+            const id = uuidv4();
+            const newFrequency = await Frequencies.create({
+                id,
+                cooperative_id: cooperative_id || '',
+                bus_id,
+                route_id,
                 date,
-                [Op.or]: [
-                    { departure_time: { [Op.lt]: arrival_time }, arrival_time: { [Op.gt]: departure_time } },
-                    { arrival_time: { [Op.gt]: calculateWorkHours(departure_time, 8) } } //8 horas para el descanso
-                ]
-            },
-            attributes: ["id"]
+                driver_id,
+                departure_time,
+                arrival_time,
+                status, // true: activo, false: inactivo
+                trip_type: stopOverExists, // true: con paradas, false: directo
+                price
+            },{transaction});
+
+            // Obtener los asientos del bus
+            const seats = await Seats.findAll({ where: { bus_id }, attributes: ['id'], transaction });
+            if (seats.length === 0) {
+                return { status: 400, json: { msg: HandleMessages.NO_SEATS_FOUND } };
+            }
+
+            // Crear los registros en SeatStatus para la nueva frecuencia
+            const seatStatusEntries = seats.map((seat) => ({
+                id: 0,
+                seat_id: seat.id,
+                frequency_id: newFrequency.id,
+                status: "f", // f: free, r: reserved, s: sold
+                reservation_date: null,
+                client_dni: null
+            }));
+
+            // Insertar los registros en la tabla SeatStatus
+            await SeatStatus.bulkCreate(seatStatusEntries,  { transaction });
         });
-
-        if (isOverlapping) {
-            return { status: 400, json: { msg: HandleMessages.DRIVER_HAS_CONFLICTING_FREQUENCY } };
-        }
-
-        // Generar el ID de la frecuencia y crear la frecuencia
-        const id = uuidv4();
-        await Frequencies.create({
-            id,
-            cooperative_id: cooperative_id || '',
-            bus_id,
-            route_id,
-            date,
-            driver_id,
-            departure_time,
-            arrival_time,
-            status, // true: activo, false: inactivo
-            trip_type: stopOverExists, // true: con paradas, false: directo
-            price
-        });
-
         return { status: 201, json: { msg: HandleMessages.FREQUENCY_CREATED_SUCCESSFULLY } };
     } catch (error) {
         return handleSequelizeError(error);
@@ -83,12 +107,14 @@ export const getFrequenciesService = async (cooperative_id: string) => {
     try {
         const sqlQuery = `
     SELECT 
-        fr.id AS frequency_id,
+        fr.id,
         fr.date,
         fr.departure_time,
         fr.arrival_time,
+        u.name AS driver_name,
+        u.last_name as driver_last_name,
         u.dni AS driver_dni,
-        bus.id,
+        bus.id as bus_id,
         bus.license_plate,
         bus.bus_number,
         fr.price,
@@ -147,8 +173,8 @@ export const getFrequenciesService = async (cooperative_id: string) => {
 };
 
 
-export const editFrequencyService = async ({ id,  bus_id, driver_id, date, departure_time, arrival_time, price, status}: EditFrequencyT) => {
-    try{
+export const editFrequencyService = async ({ id, bus_id, driver_id, date, departure_time, arrival_time, price, status }: EditFrequencyT) => {
+    try {
         await Frequencies.update({
             bus_id,
             driver_id,
@@ -161,16 +187,16 @@ export const editFrequencyService = async ({ id,  bus_id, driver_id, date, depar
             where: { id }
         });
         return { status: 200, json: { msg: HandleMessages.FREQUENCY_UPDATED_SUCCESSFULLY } };
-    }catch(error){
+    } catch (error) {
         return handleSequelizeError(error);
     }
 };
 
 export const deleteFrequencyByIDService = async (id: string) => {
-    try{
+    try {
         await Frequencies.destroy({ where: { id } });
         return { status: 200, json: { msg: HandleMessages.FREQUENCY_DELETED_SUCCESSFULLY } };
-    }catch(error){
+    } catch (error) {
         return handleSequelizeError(error);
     }
 };

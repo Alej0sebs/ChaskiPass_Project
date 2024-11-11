@@ -1,9 +1,10 @@
 import { CiEdit } from "react-icons/ci";
 import { IoTicketSharp } from "react-icons/io5";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import useFrequency from "../../hooks/useFrequency";
-import { editFrequencyT, FrequencyListT } from "../../types";
+import { editFrequencyT, FrequencyListObjectT, FrequencyListT } from "../../types";
 import DeletePopup from "../../modals/deletePopup.processes";
 import EditPopup from "../../modals/editPopup.processes";
 import useBusCreation from "../../hooks/useBusCreation";
@@ -24,6 +25,9 @@ const initialPopupData: editFrequencyT = {
 };
 
 const FrequencyList = () => {
+    //navigate
+    const navigate = useNavigate();
+
     const [listRoutes, setListRoutes] = useState<FrequencyListT>([]);
     const { getFrequencies, editFrequency, deleteFrequency } = useFrequency();
     //edit modal
@@ -34,6 +38,7 @@ const FrequencyList = () => {
     const { getDrivers } = useUsers();
     const [buses, setBuses] = useState([]);
     const [drivers, setDrivers] = useState([]);
+    const [reload, setReload] = useState(false);
 
     useEffect(() => {
         const fetchBuses = async () => {
@@ -45,7 +50,7 @@ const FrequencyList = () => {
             if (driverData) setDrivers(driverData);
         };
         fetchBuses();
-    }, []);
+    }, [reload]);
 
     const toggleStatus = async (id: string) => {
         setListRoutes((prev: FrequencyListT) =>
@@ -56,11 +61,13 @@ const FrequencyList = () => {
         );
 
         const newStatus = !listRoutes.find((freq) => freq.id === id)?.status;
+        console.log(id);
         await editFrequency({ id, status: newStatus });
     };
 
     const handleDelete = async (id: string) => {
         await deleteFrequency(id);
+        setReload((prev) => !prev);
     }
 
     const openEditModal = (freq: editFrequencyT) => {
@@ -72,16 +79,12 @@ const FrequencyList = () => {
         setIsEditModalOpen(false);
     };
 
+    //manage edit inputs
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputModalData({
             ...inputModalData,
             [e.target.name]: e.target.value
         })
-    };
-
-    const handleSubmit = async () => {
-        await editFrequency(inputModalData);
-        closeEditModal();
     };
 
     const handleSelectBus = (selectedBus: any) => {
@@ -97,6 +100,16 @@ const FrequencyList = () => {
             ...inputModalData,
             driver_id: selectedDriver.id,
         });
+    };
+    //close manage edit inputs
+    const handleSubmit = async () => {
+        await editFrequency(inputModalData);
+        closeEditModal();
+        setReload((prev) => !prev);
+    };
+
+    const handleTicketView = (rowData:FrequencyListObjectT) => {
+        navigate('/processes/ticketsales', {state: {frequencyData:rowData}});
     };
 
     return (
@@ -177,7 +190,7 @@ const FrequencyList = () => {
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <div className="flex items-center space-x-3.5">
-                                            <button className="hover:text-primary"><IoTicketSharp /></button>
+                                            <button className="hover:text-primary" onClick={()=> handleTicketView(freq)}><IoTicketSharp /></button>
                                             <button className="hover:text-primary" onClick={() => openEditModal(freq)}><CiEdit /></button>
                                             {/* popup */}
                                             <EditPopup

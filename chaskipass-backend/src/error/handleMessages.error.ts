@@ -53,4 +53,5 @@ export enum HandleMessages{
     DRIVER_HAS_CONFLICTING_FREQUENCY='El conductor tiene frecuencias conflictivas, posible solapamiento de horarios',
     FREQUENCY_UPDATED_SUCCESSFULLY='Frecuencia actualizada con éxito',
     FREQUENCY_DELETED_SUCCESSFULLY='Frecuencia eliminada con éxito',
+    NO_SEATS_FOUND='No se encontraron asientos',
 }

@@ -1,9 +1,23 @@
 type SvgSeatComponentProps = {
-    name:string,
-    isSelected:boolean,
+    name: string,
+    isSelected: boolean,
+    status: string
 };
 
-export default function SvgSeatComponent({name, isSelected}:SvgSeatComponentProps) {
+export default function SvgSeatComponent({ name, isSelected, status }: SvgSeatComponentProps) {
+    const getColor = () => {
+        switch (status) {
+            case "free":
+                return "#FFF"; // Fondo blanco para asientos libres
+            case "reserved":
+                return "#00ff80"; // Fondo amarillo para asientos reservados
+            case "sold":
+                return "#FF4500"; // Fondo rojo para asientos vendidos
+            default:
+                return "#FFF"; // Color por defecto
+        }
+    };
+
     return (
         <svg
             width="60"
@@ -11,7 +25,7 @@ export default function SvgSeatComponent({name, isSelected}:SvgSeatComponentProp
             viewBox="0 0 40 32"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className={`reserved ${isSelected ? 'border border-blue-500' : ''}`}
+            className={`seat ${isSelected ? 'border border-blue-500' : ''}`}
         >
             <rect
                 x="8.75"
@@ -19,7 +33,7 @@ export default function SvgSeatComponent({name, isSelected}:SvgSeatComponentProp
                 width="22.5"
                 height="26.5"
                 rx="2.25"
-                fill="#FFF"
+                fill={getColor()}
                 stroke="#B8B8B8"
                 strokeWidth="1.5"
                 strokeLinejoin="round"
@@ -31,7 +45,7 @@ export default function SvgSeatComponent({name, isSelected}:SvgSeatComponentProp
                 height="5.5"
                 rx="2.25"
                 transform="rotate(90 10.25 11.75)"
-                fill="#FFF"
+                fill={getColor()}
                 stroke="#B8B8B8"
                 strokeWidth="1.5"
                 strokeLinejoin="round"
@@ -43,7 +57,7 @@ export default function SvgSeatComponent({name, isSelected}:SvgSeatComponentProp
                 height="5.5"
                 rx="2.25"
                 transform="rotate(90 35.25 11.75)"
-                fill="#FFF"
+                fill={getColor()}
                 stroke="#B8B8B8"
                 strokeWidth="1.5"
                 strokeLinejoin="round"
@@ -54,7 +68,7 @@ export default function SvgSeatComponent({name, isSelected}:SvgSeatComponentProp
                 width="22.5"
                 height="6.5"
                 rx="2.25"
-                fill="#FFF"
+                fill={getColor()}
                 stroke="#B8B8B8"
                 strokeWidth="1.5"
                 strokeLinejoin="round"

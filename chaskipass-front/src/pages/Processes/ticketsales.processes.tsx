@@ -7,7 +7,8 @@ import Tabs from "../../components/Tabs";
 import SalesForm from "../../components/Forms/SalesForm";
 import { AlertCircle, Square } from "lucide-react";
 import TableOne from "../../components/Tables/TableOne";
-import TableThree from "../../components/Tables/TableThree";
+import { useLocation } from "react-router-dom";
+import SvgSeatComponent from "../../components/busElements/svgSeats.components";
 
 interface InputFieldProps {
     label: string;
@@ -16,6 +17,14 @@ interface InputFieldProps {
 }
 
 const TicketsalesRegistration = () => {
+    //get data from frequency
+    const location = useLocation();
+    const { frequencyData } = location.state || {};
+    if (!frequencyData) {
+        return <div>No se han seleccionado datos de una frecuencia</div>
+    }
+
+
     const [floorElements, setFloorElements] = useState<{ [key: number]: SeatConfigT[] }>({}); // Almacenar los elementos del bus por piso
     const [numFloors, setNumFloors] = useState(1); // Número de pisos
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado para visualizar
@@ -45,8 +54,6 @@ const TicketsalesRegistration = () => {
         setFloorElements(busData.floors);
     };
 
-
-
     useEffect(() => {
         fetchBusConfiguration(); // Llamar a la función para obtener la configuración
     }, []);
@@ -75,30 +82,30 @@ const TicketsalesRegistration = () => {
 
     const tabsData = [
         { title: 'Ventas', content: <SalesForm origin="Baños" destination="Quito" seat={5} /> },
-        { title: 'Reservados', content: <TableOne/> },
-        { title: 'Pasajeros', content: <TableOne/> }
+        { title: 'Reservados', content: <TableOne /> },
+        { title: 'Pasajeros', content: <TableOne /> }
     ];
 
     const statuses = [
-        { label: 'Libre', count: 22, color: 'text-gray-500', bgColor: 'bg-gray-100' },
-        { label: 'Reservados', count: 6, color: 'text-amber-500', bgColor: 'bg-amber-100' },
-        { label: 'Vendidos', count: 11, color: 'text-teal-500', bgColor: 'bg-teal-100' },
+        { label: 'Libre', count: 22, statusSeat: 'free', name: 'F' },
+        { label: 'Reservados', count: 6, statusSeat: 'reserved', name: 'R' },
+        { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'V' },
     ];
 
     // Estos datos vendrían de una consulta en una aplicación real
     const travelData = {
-        placa: 'TBA-2365',
-        piloto: 'Andrea Sifuentes Diaz',
-        copiloto: 'Ronaldo Izaguirre Melchor',
+        placa: frequencyData.license_plate,
+        piloto: `${frequencyData.driver_name} ${frequencyData.driver_last_name}`,
+        copiloto: 'Un x',
         libres: '32',
         vendidos: '15',
         reservados: '0',
         total: '47',
-        horaSalida: '05:00:00',
-        dia: '2021-04-30',
-        fechaViaje: '2021-04-30',
-        horaPartida: '05:05:00',
-        terminal: 'TERMINAL TERRESTRE - BAÑOS'
+        horaSalida: frequencyData.departure_time,
+        dia: frequencyData.date,
+        fechaViaje: frequencyData.date,
+        horaLlegada: frequencyData.arrival_time,
+        terminal: `${frequencyData.departure_station_name} - ${frequencyData.departure_city_name}`,
     };
 
     const InputField = ({ label, value, isWide = false }: InputFieldProps) => (
@@ -279,50 +286,48 @@ const TicketsalesRegistration = () => {
                 <div className="flex-grow">
                     <Accordion title="Descripción" color="#4A90E2">
                         <div className="flex p-4">
-                            {statuses.map((status) => (
-                                <div key={status.label} className="flex items-center  mx-auto">
-                                    <div className={`p-1 ${status.bgColor} rounded`}>
-                                        <Square className={`w-5 h-5 ${status.color}`} />
-                                    </div>
+                            {statuses.map((statusSeat) => (
+                                <div key={statusSeat.label} className="flex items-center  mx-auto">
+                                    <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.statusSeat} />
                                     <div className="flex flex-col">
-                                        <span className="text-lg font-medium text-gray-700">{status.label}</span>
-                                        <span className="text-base text-gray-500">{status.label.toLowerCase()}: {status.count}</span>
+                                        <span className="text-lg font-medium text-black dark:text-white">{statusSeat.label}</span>
+                                        <span className="text-base text-black dark:text-white">{statusSeat.label.toLowerCase()}: {statusSeat.count}</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </Accordion>
                     <Accordion title="Detalle de Bus Baños - Quito" color="#f4c05c">
-                            <div className="grid grid-cols-3 gap-x-6 gap-y-2">
-                                <InputField label="PLACA DE BUS" value={travelData.placa} />
-                                <InputField label="LIBRES" value={travelData.libres} />
-                                <InputField label="PILOTO" value={travelData.piloto} />
-                                <InputField label="VENDIDOS" value={travelData.vendidos} />
-                                <InputField label="COPILOTO" value={travelData.copiloto} />
-                                <InputField label="RESERVADOS" value={travelData.reservados} />
+                        <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                            <InputField label="PLACA DE BUS" value={travelData.placa} />
+                            <InputField label="LIBRES" value={travelData.libres} />
+                            <InputField label="PILOTO" value={travelData.piloto} />
+                            <InputField label="VENDIDOS" value={travelData.vendidos} />
+                            <InputField label="COPILOTO" value={travelData.copiloto} />
+                            <InputField label="RESERVADOS" value={travelData.reservados} />
 
-                                <div className="my-auto">
-                                    <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
-                                        {travelData.terminal}
-                                    </div>
+                            <div className="my-auto">
+                                <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
+                                    {travelData.terminal}
                                 </div>
-
-                                <div className="flex items-center space-x-2">
-                                    <span className="font-medium">TOTAL:</span>
-                                    <input
-                                        type="text"
-                                        value={travelData.total}
-                                        disabled
-                                        className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
-                                    />
-                                    <AlertCircle className="text-red-500 w-5 h-5" />
-                                </div>
-
-                                <InputField label="HORA SALIDA" value={travelData.horaSalida} />
-                                <InputField label="DIA" value={travelData.dia} />
-                                <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />
-                                <InputField label="HORA PARTIDA" value={travelData.horaPartida} />
                             </div>
+
+                            <div className="flex items-center space-x-2">
+                                <span className="font-medium">TOTAL:</span>
+                                <input
+                                    type="text"
+                                    value={travelData.total}
+                                    disabled
+                                    className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
+                                />
+                                <AlertCircle className="text-red-500 w-5 h-5" />
+                            </div>
+
+                            <InputField label="HORA SALIDA" value={travelData.horaSalida} />
+                            <InputField label="DIA" value={travelData.dia} />
+                            <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />
+                            <InputField label="HORA PARTIDA" value={travelData.horaLlegada} />
+                        </div>
                     </Accordion>
 
                     <Tabs tabs={tabsData} />

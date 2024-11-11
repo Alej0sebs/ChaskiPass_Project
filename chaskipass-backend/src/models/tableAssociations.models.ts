@@ -19,6 +19,7 @@ import { Admin } from "./administrators.models";
 import BusStructure from "./busStructure.models";
 import { SerialStation } from "./serialStation.model";
 import { StationCooperative } from "./stationCooperative.models";
+import { SeatStatus } from "./seatStatus.models";
 
 Roles.hasMany(Users, {foreignKey: 'role_id', sourceKey: 'id'});
 Users.belongsTo(Roles, {foreignKey: 'role_id', targetKey: 'id'});
@@ -82,6 +83,11 @@ Seats.belongsTo(TypeSeats, {foreignKey: 'type_seat_id', targetKey: 'id'});
 Tickets.belongsTo(Seats, {foreignKey: 'seat_id', targetKey: 'id'});
 Seats.hasMany(Tickets, {foreignKey: 'seat_id', sourceKey: 'id'});
 
+Seats.hasMany(SeatStatus, {foreignKey: 'seat_id', sourceKey: 'id'});
+SeatStatus.belongsTo(Seats, {foreignKey: 'seat_id', targetKey: 'id'});
+
+Frequencies.hasMany(SeatStatus, {foreignKey: 'frequency_id', sourceKey: 'id'});
+SeatStatus.belongsTo(Frequencies, {foreignKey: 'frequency_id', targetKey: 'id'});
 
 Tickets.hasMany(Payments, {foreignKey: 'ticket_id', sourceKey: 'id' , as: 'payments_ticket'});
 Payments.belongsTo(Tickets, {foreignKey: 'ticket_id', targetKey: 'id', as: 'ticket_payment'});
@@ -118,5 +124,6 @@ export{
     Admin,
     BusStructure,
     SerialStation,
-    StationCooperative
+    StationCooperative,
+    SeatStatus
 };

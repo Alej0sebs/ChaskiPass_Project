@@ -57,7 +57,6 @@ const RoutesRegistration = () => {
             setStopOvers([...stopOvers, stopOver]);
             setSelectedStopOver("");
         }
-
     }
 
     //Filtros para que no aparezcan las paradas de salida y llegada en las opciones de paradas

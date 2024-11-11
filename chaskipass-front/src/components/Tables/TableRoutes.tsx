@@ -24,9 +24,6 @@ const TableRoutes = ({ headerTable, displayHeader, children, onClick }: TableRou
                                     {header}
                                 </th>
                             ))}
-                            <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
-                                Acciones
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -42,7 +39,7 @@ const TableRoutes = ({ headerTable, displayHeader, children, onClick }: TableRou
                                 })}
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                     <div className="flex items-center space-x-3.5">
-                                        <button className="hover:text-primary" onClick={() => onClick(val.id)}>
+                                        <button className="hover:text-primary" type="button" onClick={() => onClick(val.id)}>
                                             <FaTrashCan />
                                         </button>
                                     </div>

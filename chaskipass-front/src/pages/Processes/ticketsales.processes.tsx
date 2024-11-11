@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import Accordion from "../../components/Accordion";
 import Tabs from "../../components/Tabs";
 import SalesForm from "../../components/Forms/SalesForm";
-import { AlertCircle, Square } from "lucide-react";
+import {AlertCircle} from "lucide-react";
 import TableOne from "../../components/Tables/TableOne";
 import { useLocation } from "react-router-dom";
 import SvgSeatComponent from "../../components/busElements/svgSeats.components";
@@ -95,7 +95,7 @@ const TicketsalesRegistration = () => {
     // Estos datos vendrían de una consulta en una aplicación real
     const travelData = {
         placa: frequencyData.license_plate,
-        piloto: `${frequencyData.driver_name} ${frequencyData.driver_last_name}`,
+        piloto: frequencyData.driver_name,
         copiloto: 'Un x',
         libres: '32',
         vendidos: '15',

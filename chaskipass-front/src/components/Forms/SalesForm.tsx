@@ -2,20 +2,99 @@ import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 
 interface SalesFormProps {
-    origin: string;
-    destination: string;
-    seat: number;
+    stopOvers: string;
+    stop_city_names: string;
+    seats: string[];
 }
 
-const SalesForm: React.FC<SalesFormProps> = ({ origin, destination, seat }) => {
+interface PassengerData {
+    nombres: string;
+    apellidos: string;
+}
+
+const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names }) => {
     const [destinos, setDestinos] = useState<string[]>([]);
+    const [tipoDocumento, setTipoDocumento] = useState<string>('');
+    const [numeroDocumento, setNumeroDocumento] = useState<string>('');
+    const [nombres, setNombres] = useState<string>('');
+    const [apellidos, setApellidos] = useState<string>('');
+    const [isDocumentoValid, setIsDocumentoValid] = useState<boolean>(false);
+    const [isSearching, setIsSearching] = useState<boolean>(false);
+    const [selectedDestination, setSelectedDestination] = useState<string>('');
+    const [isFound, setIsFound] = useState<boolean>(false);
 
     useEffect(() => {
-        setTimeout(() => {
-            setDestinos(['Huaral', 'Quito', 'Ambato', 'Latacunga']);
-        }, 1000);
-    }, []);
+        const cities = stop_city_names.split(',').map((city) => city.trim());
+        const destination = stopOvers.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`);
+        destination.unshift('Viaje Completo');
+        setDestinos(destination);
+    }, [stopOvers, stop_city_names]);
 
+    // Función para simular la búsqueda en la base de datos
+    const searchInDatabase = async (tipoDoc: string, numeroDoc: string): Promise<PassengerData | null> => {
+        // Simular un retraso
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                // Simular datos encontrados
+                if (numeroDoc === '1234567890') {
+                    resolve({ nombres: 'Juan', apellidos: 'Pérez' });
+                } else {
+                    resolve(null);
+                }
+            }, 1000);
+        });
+    };
+
+    // Manejar cambio en "Tipo de Documento"
+    const handleTipoDocumentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setTipoDocumento(value);
+        setNumeroDocumento('');
+        setNombres('');
+        setApellidos('');
+        setIsDocumentoValid(false);
+        setIsFound(false);
+    };
+
+    // Manejar cambio en "Número de Documento"
+    const handleNumeroDocumentoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value.replace(/\D/g, ''); // Remover caracteres no numéricos
+        const maxLength = tipoDocumento === 'Cedula' ? 10 : 9;
+        if (value.length > maxLength) {
+            value = value.slice(0, maxLength);
+        }
+        setNumeroDocumento(value);
+        setIsDocumentoValid(value.length === maxLength);
+    };
+
+    const handleDestinationChange= (e:React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedDestination(e.target.value);
+    }
+
+    // Usar efecto para desencadenar búsqueda cuando el documento es válido
+    useEffect(() => {
+        const fetchPassengerData = async () => {
+            if (isDocumentoValid) {
+                setIsSearching(true);
+                const result = await searchInDatabase(tipoDocumento, numeroDocumento);
+                if (result) {
+                    setNombres(result.nombres);
+                    setApellidos(result.apellidos);
+                    setIsFound(true);
+                } else {
+                    setIsFound(false);
+                    // Permitir entrada manual
+                }
+                setIsSearching(false);
+            } else {
+                setNombres('');
+                setApellidos('');
+                setIsFound(false);
+            }
+        };
+
+        fetchPassengerData();
+    }, [isDocumentoValid, tipoDocumento, numeroDocumento]);
 
     return (
         <>
@@ -23,8 +102,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ origin, destination, seat }) => {
             <form>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <SelectGroupTwo label="Tipo de Documento">
-                            <option value="RUC">RUC</option>
+                        <SelectGroupTwo label="Tipo de Documento" onChange={handleTipoDocumentoChange} value={tipoDocumento}>
                             <option value="Cedula">Cédula</option>
                             <option value="Pasaporte">Pasaporte</option>
                         </SelectGroupTwo>
@@ -36,8 +114,12 @@ const SalesForm: React.FC<SalesFormProps> = ({ origin, destination, seat }) => {
                         <input
                             type="text"
                             placeholder="Ingrese número de documento"
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                            value={numeroDocumento}
+                            onChange={handleNumeroDocumentoChange}
+                            disabled={!tipoDocumento}
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
+                        {isSearching && <p className="text-sm text-gray-500">Buscando...</p>}
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 my-3">
@@ -48,7 +130,10 @@ const SalesForm: React.FC<SalesFormProps> = ({ origin, destination, seat }) => {
                         <input
                             type="text"
                             placeholder="Ingrese los nombres"
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                            value={nombres}
+                            onChange={(e) => setNombres(e.target.value)}
+                            disabled={!tipoDocumento || isSearching}
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                     <div>
@@ -58,13 +143,16 @@ const SalesForm: React.FC<SalesFormProps> = ({ origin, destination, seat }) => {
                         <input
                             type="text"
                             placeholder="Ingrese los apellidos"
-                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                            value={apellidos}
+                            onChange={(e) => setApellidos(e.target.value)}
+                            disabled={!tipoDocumento || isSearching}
+                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                     <div>
-                        <SelectGroupTwo label="Destino">
+                        <SelectGroupTwo label="Destino" value={selectedDestination} onChange={handleDestinationChange}>
                             {destinos.length > 0 ? (
                                 destinos.map((destino) => (
                                     <option key={destino} value={destino}>
@@ -85,7 +173,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ origin, destination, seat }) => {
                         <input
                             type="number"
                             placeholder="Ingrese el precio"
-                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                     <div>
@@ -102,7 +190,15 @@ const SalesForm: React.FC<SalesFormProps> = ({ origin, destination, seat }) => {
                     >
                         Pagar
                     </button>
-                    <div className="text-4xl font-bold text-black dark:text-white">Asiento: {seat}</div>
+                    {seats.length > 0 ? (
+                        <div className="text-4xl font-bold text-black dark:text-white">
+                            Asiento{seats.length > 1 ? 's' : ''}: {seats.join(', ')}
+                        </div>
+                    ) : (
+                        <div className="text-xl text-gray-500 dark:text-gray-400">
+                            No hay asientos seleccionados
+                        </div>
+                    )}
                 </div>
             </form>
         </>

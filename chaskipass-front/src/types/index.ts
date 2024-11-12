@@ -141,7 +141,7 @@ export type editFrequencyT = Partial<FrequencyT> & { id: string, license_plate?:
 
 
 export type SeatsStructureT = {
-    bus_id: string,
-    frequency_id: number,
+    frequency_id: string,
+    bus_id: number,
     bus_structure_id: number
 };

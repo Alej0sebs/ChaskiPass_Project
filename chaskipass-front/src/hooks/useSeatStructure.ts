@@ -16,9 +16,8 @@ export default function useSeatStructure() {
                     'Content-Type':'application/json',
                 },
                 credentials:'include',
-                body:JSON.stringify({dataStructure}),
+                body:JSON.stringify(dataStructure),
             });
-
             const data = await response.json();
             if(data.error){
                 throw new Error(data.error);

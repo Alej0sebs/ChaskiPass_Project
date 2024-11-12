@@ -330,7 +330,7 @@ const TypebusRegistration = () => {
                                             top: `${absoluteTop}px`,
                                         }}
                                     >
-                                        {element.type === 'seat' && <SvgSeatComponent name={element.name} isSelected={selectedElement === element.id} status='free' />}
+                                        {element.type === 'seat' && <SvgSeatComponent name={element.name} isSelected={selectedElement === element.id} status='f' />}
                                         {element.type === 'bathroom' && <SvgBathroomComponent />}
                                         {element.type === 'stairs' && <SvgStairsComponent />}
                                     </div>

@@ -139,3 +139,9 @@ export type FrequencyListT = {
 
 export type editFrequencyT = Partial<FrequencyT> & { id: string, license_plate?: string, driver_dni?: string };
 
+
+export type SeatsStructureT = {
+    bus_id: string,
+    frequency_id: number,
+    bus_structure_id: number
+};

@@ -38,7 +38,8 @@ export const getTypeSeatsService = async (cooperative_id: string, transaction?: 
     try {
         const typeSeatsList = await TypeSeats.findAll({
             where: { cooperative_id },
-            transaction
+            transaction,
+            raw: true
         });
 
         return { status: 200, json: typeSeatsList };

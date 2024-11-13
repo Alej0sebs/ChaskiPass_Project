@@ -30,18 +30,18 @@ const TicketsalesRegistration = () => {
     //hooks
     const { getSeatStructure } = useSeatStructure();
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    //useState
     const [floorElements, setFloorElements] = useState<{ [key: number]: SeatConfigT[] }>({}); // Almacenar los elementos del bus por piso
     const [numFloors, setNumFloors] = useState(1); // Número de pisos
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado para visualizar
     const [selectedSeats, setSelectedSeats] = useState<string[]>([]); // Asientos seleccionados por el usuario para reservar
 
+    //global variables
+    let totalSeats: number = 0;
+
     //Tomo los valores de la frecuencia
     useEffect(() => {
         const fetchBusConfiguration = async () => {
-            setLoading(true);
-            setError('');
             try {
                 const { id: frequency_id, bus_id, bus_structure_id } = frequencyData;
                 const busData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
@@ -49,11 +49,15 @@ const TicketsalesRegistration = () => {
                     const numFloors = Object.keys(busData).length;
                     setNumFloors(numFloors);
                     setFloorElements(busData);
+
+                    // Calcula el número total de asientos
+                    totalSeats = Object.values(busData).reduce((acc, floor) => {
+                        const seatCount = floor.filter((element: any) => element.type === "seat").length;
+                        return acc + seatCount;
+                    }, 0);
                 }
             } catch (err) {
-                setError('Error al obtener la configuración del bus.');
-            } finally {
-                setLoading(false);
+                toast.error('Error al obtener la estructura del bus');
             }
         };
         fetchBusConfiguration();
@@ -81,7 +85,7 @@ const TicketsalesRegistration = () => {
     };
 
     const tabsData = [
-        { title: 'Ventas', content: <SalesForm seats={selectedSeats} stopOvers= {frequencyData.stop_station_names} stop_city_names={frequencyData.stop_city_names}/> },
+        { title: 'Ventas', content: <SalesForm seats={selectedSeats} stopOvers={frequencyData.stop_station_names} stop_city_names={frequencyData.stop_city_names} /> },
         { title: 'Reservados', content: <TableOne /> },
         { title: 'Pasajeros', content: <TableOne /> }
     ];
@@ -175,58 +179,58 @@ const TicketsalesRegistration = () => {
                             ))}
                         </BusTemplate>
                     </div>
-            </div>
+                </div>
 
-            <div className="flex-grow">
-                <Accordion title="Descripción" color="#4A90E2">
-                    <div className="flex p-4">
-                        {statuses.map((statusSeat) => (
-                            <div key={statusSeat.label} className="flex items-center  mx-auto">
-                                <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.statusSeat} />
-                                <div className="flex flex-col">
-                                    <span className="text-lg font-medium text-black dark:text-white">{statusSeat.label}</span>
-                                    <span className="text-base text-black dark:text-white">{statusSeat.label.toLowerCase()}: {statusSeat.count}</span>
+                <div className="flex-grow">
+                    <Accordion title="Descripción" color="#4A90E2">
+                        <div className="flex p-4">
+                            {statuses.map((statusSeat) => (
+                                <div key={statusSeat.label} className="flex items-center  mx-auto">
+                                    <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.statusSeat} />
+                                    <div className="flex flex-col">
+                                        <span className="text-lg font-medium text-black dark:text-white">{statusSeat.label}</span>
+                                        <span className="text-base text-black dark:text-white">{statusSeat.label.toLowerCase()}: {statusSeat.count}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Accordion>
+                    <Accordion title="Detalle de Bus Baños - Quito" color="#f4c05c">
+                        <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                            <InputField label="PLACA DE BUS" value={travelData.placa} />
+                            <InputField label="LIBRES" value={travelData.libres} />
+                            <InputField label="PILOTO" value={travelData.piloto} />
+                            <InputField label="VENDIDOS" value={travelData.vendidos} />
+                            <InputField label="COPILOTO" value={travelData.copiloto} />
+                            <InputField label="RESERVADOS" value={travelData.reservados} />
+
+                            <div className="my-auto">
+                                <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
+                                    {travelData.terminal}
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                </Accordion>
-                <Accordion title="Detalle de Bus Baños - Quito" color="#f4c05c">
-                    <div className="grid grid-cols-3 gap-x-6 gap-y-2">
-                        <InputField label="PLACA DE BUS" value={travelData.placa} />
-                        <InputField label="LIBRES" value={travelData.libres} />
-                        <InputField label="PILOTO" value={travelData.piloto} />
-                        <InputField label="VENDIDOS" value={travelData.vendidos} />
-                        <InputField label="COPILOTO" value={travelData.copiloto} />
-                        <InputField label="RESERVADOS" value={travelData.reservados} />
 
-                        <div className="my-auto">
-                            <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
-                                {travelData.terminal}
+                            <div className="flex items-center space-x-2">
+                                <span className="font-medium">TOTAL:</span>
+                                <input
+                                    type="text"
+                                    value={travelData.total}
+                                    disabled
+                                    className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
+                                />
+                                <AlertCircle className="text-red-500 w-5 h-5" />
                             </div>
+
+                            <InputField label="HORA SALIDA" value={travelData.horaSalida} />
+                            <InputField label="DIA" value={travelData.dia} />
+                            <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />
+                            <InputField label="HORA PARTIDA" value={travelData.horaLlegada} />
                         </div>
+                    </Accordion>
 
-                        <div className="flex items-center space-x-2">
-                            <span className="font-medium">TOTAL:</span>
-                            <input
-                                type="text"
-                                value={travelData.total}
-                                disabled
-                                className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
-                            />
-                            <AlertCircle className="text-red-500 w-5 h-5" />
-                        </div>
-
-                        <InputField label="HORA SALIDA" value={travelData.horaSalida} />
-                        <InputField label="DIA" value={travelData.dia} />
-                        <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />
-                        <InputField label="HORA PARTIDA" value={travelData.horaLlegada} />
-                    </div>
-                </Accordion>
-
-                <Tabs tabs={tabsData} />
+                    <Tabs tabs={tabsData} />
+                </div>
             </div>
-        </div>
         </div >
     );
 

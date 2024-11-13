@@ -145,3 +145,17 @@ export type SeatsStructureT = {
     bus_id: number,
     bus_structure_id: number
 };
+
+export type PositionT = {
+    x:number,
+    y:number
+};
+
+export type BusLayoutConfigurationT={
+    id: string;
+    type: string;
+    name: string;
+    position: PositionT;
+    status: string;
+    additionalCost?: number;
+}

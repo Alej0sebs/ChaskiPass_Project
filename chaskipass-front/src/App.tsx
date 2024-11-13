@@ -55,12 +55,11 @@ function App() {
             <Route
               path="/auth/signin"
               element={
-                <ProtectedRoute>
+                authUser ? <Navigate to='/' /> :
                   <>
                     <PageTitle title="Signin | ChaskiPass" />
                     <SignIn />
                   </>
-                </ProtectedRoute>
               }
             />
           </Routes>
@@ -72,13 +71,13 @@ function App() {
             <Route
               path='/'
               element={
-              <ProtectedRoute>
-              <>
-              <PageTitle title="eCommerce Dashboard | ChaskiPass" />
-              <ECommerce />
-              </>
-            </ProtectedRoute>
-            }
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
+                  <>
+                    <PageTitle title="eCommerce Dashboard | ChaskiPass" />
+                    <ECommerce />
+                  </>
+                </ProtectedRoute>
+              }
             />
             <Route
               path="/calendar"
@@ -181,7 +180,7 @@ function App() {
             <Route
               path="/processes/routes"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="Routes | ChaskiPass" />
                     <RoutesRegistration />
@@ -192,7 +191,7 @@ function App() {
             <Route
               path="/register/busStations"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="BusStations| ChaskiPass" />
                     <BusStationRegistration />

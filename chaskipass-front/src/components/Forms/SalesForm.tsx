@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
+import TableSeats from '../Tables/TableSeats';
+import { useClient } from '../../hooks/useClient';
 
 interface SalesFormProps {
     stopOvers: string;
@@ -13,6 +15,10 @@ interface PassengerData {
 }
 
 const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names }) => {
+
+    //Hooks
+    const {getClientByDNI, loading} = useClient();
+
     const [destinos, setDestinos] = useState<string[]>([]);
     const [tipoDocumento, setTipoDocumento] = useState<string>('');
     const [numeroDocumento, setNumeroDocumento] = useState<string>('');
@@ -31,19 +37,19 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names
     }, [stopOvers, stop_city_names]);
 
     // Función para simular la búsqueda en la base de datos
-    const searchInDatabase = async (tipoDoc: string, numeroDoc: string): Promise<PassengerData | null> => {
-        // Simular un retraso
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                // Simular datos encontrados
-                if (numeroDoc === '1234567890') {
-                    resolve({ nombres: 'Juan', apellidos: 'Pérez' });
-                } else {
-                    resolve(null);
-                }
-            }, 1000);
-        });
-    };
+    // const searchInDatabase = async (tipoDoc: string, numeroDoc: string): Promise<PassengerData | null> => {
+    //     // Simular un retraso
+    //     return new Promise((resolve) => {
+    //         setTimeout(() => {
+    //             // Simular datos encontrados
+    //             if (numeroDoc === '1234567890') {
+    //                 resolve({ nombres: 'Juan', apellidos: 'Pérez' });
+    //             } else {
+    //                 resolve(null);
+    //             }
+    //         }, 1000);
+    //     });
+    // };
 
     // Manejar cambio en "Tipo de Documento"
     const handleTipoDocumentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -76,7 +82,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names
         const fetchPassengerData = async () => {
             if (isDocumentoValid) {
                 setIsSearching(true);
-                const result = await searchInDatabase(tipoDocumento, numeroDocumento);
+                const result = await getClientByDNI(numeroDocumento)
                 if (result) {
                     setNombres(result.nombres);
                     setApellidos(result.apellidos);
@@ -92,7 +98,6 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names
                 setIsFound(false);
             }
         };
-
         fetchPassengerData();
     }, [isDocumentoValid, tipoDocumento, numeroDocumento]);
 
@@ -178,6 +183,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names
                     </div>
                     <div>
                         <SelectGroupTwo label="Estado">
+                            <option value="sn">Seleccione una opcion</option>
                             <option value="reservar">Reservar</option>
                             <option value="vender">Vender</option>
                         </SelectGroupTwo>
@@ -191,9 +197,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names
                         Pagar
                     </button>
                     {seats.length > 0 ? (
-                        <div className="text-4xl font-bold text-black dark:text-white">
-                            Asiento{seats.length > 1 ? 's' : ''}: {seats.join(', ')}
-                        </div>
+                        <TableSeats headerTable='Boletos' displayData={seats}/>
                     ) : (
                         <div className="text-xl text-gray-500 dark:text-gray-400">
                             No hay asientos seleccionados

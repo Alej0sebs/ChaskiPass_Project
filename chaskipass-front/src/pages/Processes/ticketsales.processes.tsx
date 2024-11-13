@@ -86,6 +86,7 @@ const TicketsalesRegistration = () => {
         { title: 'Pasajeros', content: <TableOne /> }
     ];
 
+    //Contabilizar los datos de los asientos segun la estructura
     const statuses = [
         { label: 'Libre', count: 22, statusSeat: 'free', name: 'F' },
         { label: 'Reservados', count: 6, statusSeat: 'reserved', name: 'R' },

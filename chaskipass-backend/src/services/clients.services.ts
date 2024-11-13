@@ -33,7 +33,7 @@ export const getClientsService = async (dni: string, { page, limit }: DataPagina
     }
 };
 
-export const getClientByDNI = async (dni:string) => {
+export const getClientByDNIService = async (dni:string) => {
     try{
         const client = await Clients.findOne({where:{dni}});
         if(!client){

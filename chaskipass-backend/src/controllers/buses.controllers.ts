@@ -7,7 +7,17 @@ import { BusT } from '../types/index.types';
 export const busRegister = async (req: Request, res: Response) => {
     try {
         const { cooperative_id} = req.userReq ?? {};
-        const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture, bus_structure_id} = req.body;
+        const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id} = req.body;
+        let messageError:string; 
+        let pictureUrl:string;
+        
+        console.log(bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id);
+        if(!req.file){
+            messageError = 'No se ha proporcionado la imagen del bus';
+            pictureUrl = '';
+        }else{
+            pictureUrl = `https://lightskyblue-snail-177115.hostingersite.com/bus_images/${req.file.filename}`;
+        }
 
         const busInformation:BusT={
             id: 0,
@@ -18,7 +28,7 @@ export const busRegister = async (req: Request, res: Response) => {
             model,
             year,
             capacity,
-            picture,
+            picture: pictureUrl,
             cooperative_id: cooperative_id || '',
             bus_structure_id
         }

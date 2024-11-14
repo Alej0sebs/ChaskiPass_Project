@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import { SeatConfigT } from "../../types";
+import { BusLayoutConfigurationT, SeatConfigT } from "../../types";
 import toast from "react-hot-toast";
 import Accordion from "../../components/Accordion";
 import Tabs from "../../components/Tabs";
@@ -19,6 +19,12 @@ interface InputFieldProps {
     value: string;
     isWide?: boolean;
 }
+
+
+interface BusData {
+    [floor: string]: BusLayoutConfigurationT[];
+}
+
 
 const TicketsalesRegistration = () => {
     //get data from frequency
@@ -44,7 +50,7 @@ const TicketsalesRegistration = () => {
         const fetchBusConfiguration = async () => {
             try {
                 const { id: frequency_id, bus_id, bus_structure_id } = frequencyData;
-                const busData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
+                const busData:BusData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
                 if (busData) {
                     const numFloors = Object.keys(busData).length;
                     setNumFloors(numFloors);
@@ -105,7 +111,7 @@ const TicketsalesRegistration = () => {
         libres: '32',
         vendidos: '15',
         reservados: '0',
-        total: '47',
+        total: totalSeats.toString(), //Total de asientos del bus como se renderiza ya que toma el valor inicial de 0
         horaSalida: frequencyData.departure_time,
         dia: frequencyData.date,
         fechaViaje: frequencyData.date,

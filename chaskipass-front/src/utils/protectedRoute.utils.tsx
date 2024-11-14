@@ -8,7 +8,6 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     const { authUser } = useAuthContext();
-    console.log(authUser);
     // Redirigir al inicio de sesión si no hay usuario autenticado
     if (!authUser) {
         return <Navigate to="/auth/signin"/>;

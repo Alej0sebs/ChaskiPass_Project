@@ -12,14 +12,12 @@ export const busRegister = async (req: Request, res: Response) => {
         const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id} = req.body;
         let messageError:string; 
         let remoteFileName:string= '';
-        let pictureUrl:string='';
 
         console.log(bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id);
         if(!req.file){
             messageError = 'No se ha proporcionado la imagen del bus';
         }else{
             remoteFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(req.file.originalname)}`;
-            pictureUrl = `https://lightskyblue-snail-177115.hostingersite.com/bus_images/${remoteFileName}`;
             await uploadToHostinger(req.file.buffer, remoteFileName);
         }
 

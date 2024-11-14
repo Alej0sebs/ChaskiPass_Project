@@ -17,14 +17,10 @@ export default function useBusCreation() {
             Object.entries(creBus).forEach(([key, value]) => {
                 formData.append(key, value as string);
             });
-
             const response: Response = await fetch(`${API_BASE_URL}buses/newBus`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 credentials: 'include',
-                body: JSON.stringify(formData),
+                body: formData,
             });
             const data = await response.json();
             if (data.error) {
@@ -36,7 +32,7 @@ export default function useBusCreation() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     const getBuses = async () => {
         setLoading(true);

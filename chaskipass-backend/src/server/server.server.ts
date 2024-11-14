@@ -80,7 +80,7 @@ export default class Server {
     }
 
     middlewares() {
-        this.app.use(express.json({limit: "50mb"}));//send data in json format, and the middleware parse it to a js object to use in req.body
+        this.app.use(express.json({limit: "50mb"}));
         this.app.use(cookieParser());//analize the cookies in the request and parse them to a js object (req.cookies)
         this.app.use(cors({
             credentials: true,

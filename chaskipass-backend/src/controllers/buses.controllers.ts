@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { busRegisterService, getBusesService, editBusByIdService, deleteBusByIdService } from '../services/buses.services';
 import { HandleMessages } from '../error/handleMessages.error';
 import { BusT } from '../types/index.types';
+import path from 'path';
+import uploadToHostinger from '../utils/uploadImagesFtp';
 
 // Registrar un nuevo bus
 export const busRegister = async (req: Request, res: Response) => {
@@ -9,14 +11,16 @@ export const busRegister = async (req: Request, res: Response) => {
         const { cooperative_id} = req.userReq ?? {};
         const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id} = req.body;
         let messageError:string; 
-        let pictureUrl:string;
-        
+        let remoteFileName:string= '';
+        let pictureUrl:string='';
+
         console.log(bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id);
         if(!req.file){
             messageError = 'No se ha proporcionado la imagen del bus';
-            pictureUrl = '';
         }else{
-            pictureUrl = `https://lightskyblue-snail-177115.hostingersite.com/bus_images/${req.file.filename}`;
+            remoteFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(req.file.originalname)}`;
+            pictureUrl = `https://lightskyblue-snail-177115.hostingersite.com/bus_images/${remoteFileName}`;
+            await uploadToHostinger(req.file.buffer, remoteFileName);
         }
 
         const busInformation:BusT={
@@ -28,7 +32,7 @@ export const busRegister = async (req: Request, res: Response) => {
             model,
             year,
             capacity,
-            picture: pictureUrl,
+            picture: remoteFileName,
             cooperative_id: cooperative_id || '',
             bus_structure_id
         }

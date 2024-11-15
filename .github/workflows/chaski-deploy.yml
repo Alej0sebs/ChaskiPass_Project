@@ -1,0 +1,58 @@
+name: ChaskiPass CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup:
+    name: Setup Node.js Environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install backend dependencies
+        working-directory: ./chaskipass-backend
+        run: npm install
+
+      - name: Install frontend dependencies
+        working-directory: ./chaskipass-front
+        run: npm install
+
+  deploy:
+    name: Deploy Applications to Vercel
+    needs: setup
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy Backend
+        working-directory: ./chaskipass-backend
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npm run build
+          vercel --prod --confirm
+
+      - name: Deploy Frontend
+        working-directory: ./chaskipass-front
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npm run build
+          vercel --prod --confirm

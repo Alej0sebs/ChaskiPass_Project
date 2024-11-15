@@ -58,7 +58,7 @@ export type TypeBusStationT = {
 };
 
 
-export type CityBusStationT = {
+type CityBusStationT = {
     id: string,
     name: string
 };
@@ -137,13 +137,25 @@ export type FrequencyListT = {
 }[];
 
 
-export type TicketsListT={
-station_id:number,
-user_id:string,
-serial_number:string;
-status:string;
-
-}
-
 export type editFrequencyT = Partial<FrequencyT> & { id: string, license_plate?: string, driver_dni?: string };
 
+
+export type SeatsStructureT = {
+    frequency_id: string,
+    bus_id: number,
+    bus_structure_id: number
+};
+
+export type PositionT = {
+    x:number,
+    y:number
+};
+
+export type BusLayoutConfigurationT={
+    id: string;
+    type: string;
+    name: string;
+    position: PositionT;
+    status: string;
+    additionalCost?: number;
+}

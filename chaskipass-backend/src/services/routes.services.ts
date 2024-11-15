@@ -18,6 +18,7 @@ export const createRouteService = async ({ dni, arrival_station_id, departure_st
                 include: [{
                     model: StopOvers,
                     attributes: ["station_id"],
+                    as: "stopovers_route",
                     where: {
                         station_id: {
                             [Op.in]: stopOverList!.map(stop => parseInt(stop as string)) // Asegúrate de convertir a número si es necesario

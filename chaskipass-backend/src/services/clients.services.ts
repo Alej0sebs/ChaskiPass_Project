@@ -33,6 +33,18 @@ export const getClientsService = async (dni: string, { page, limit }: DataPagina
     }
 };
 
+export const getClientByDNIService = async (dni:string) => {
+    try{
+        const client = await Clients.findOne({where:{dni}});
+        if(!client){
+            return {status:404, json:{error:HandleMessages.CLIENT_NOT_FOUND}}
+        }
+        return {status:200, json:{client}};
+    }catch(error){
+        return handleSequelizeError(error);
+    }
+};
+
 
 // Servicio para crear un nuevo cliente
 export const createClientService = async ({ dni, name, last_name, email, phone, address }: ClientsT) => {

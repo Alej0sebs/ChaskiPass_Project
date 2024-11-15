@@ -15,6 +15,7 @@ import serialStationRoutes from '../routes/serialStation.routes';
 import typeSeatsRoutes from '../routes/typeSeats.routes';
 import paypalRoutes from '../routes/paypal.routes';
 import frequenciesRoutes from '../routes/frequencies.routes';
+import ticketsRoutes from '../routes/tickets.routes';
 
 import {
     Roles,
@@ -75,16 +76,18 @@ export default class Server {
         this.app.use(`${prefixUrl}/typeSeats`, typeSeatsRoutes);
         this.app.use(`${prefixUrl}/paypal`, paypalRoutes);
         this.app.use(`${prefixUrl}/frequency`, frequenciesRoutes);
+        this.app.use(`${prefixUrl}/tickets`, ticketsRoutes);
     }
 
     middlewares() {
-        this.app.use(express.json());//send data in json format, and the middleware parse it to a js object to use in req.body
+        this.app.use(express.json({limit: "50mb"}));
         this.app.use(cookieParser());//analize the cookies in the request and parse them to a js object (req.cookies)
         this.app.use(cors({
             credentials: true,
             origin: true,
             allowedHeaders: ["Content-Type"],
             methods: ["GET", "POST", "PUT", "DELETE"],  // Agrega aquí los métodos permitidos
+            
         }));
         this.app.disable('x-powered-by');
         this.app.use(this.securityHeaders);
@@ -121,7 +124,7 @@ export default class Server {
                 await Seats.sync(),               
                 await StopOvers.sync(),
                 await Frequencies.sync(),      
-                await SeatStatus.sync({alter: true}),    
+                await SeatStatus.sync(),    
                 await SerialStation.sync(),        
                 await Clients.sync(),              
                 await ClientCooperatives.sync(),   

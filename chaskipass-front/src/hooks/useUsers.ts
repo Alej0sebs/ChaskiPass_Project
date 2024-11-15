@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../helpers/Constants";
 import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
+import { UserT } from "../types";
 
 export default function useUsers() {
     const [loading, setLoading] = useState(false);
+    const [dataListUsers, setdataListUsers] = useState<UserT[]>([]);
+
+
 
     const getDrivers = async () => {
         setLoading(true);
@@ -26,8 +30,18 @@ export default function useUsers() {
             setLoading(false);
         }
     };
+
+
+    useEffect(() => {
+        getDrivers
+().then((data) => {
+            setdataListUsers(data); // Asigna la lista al estado selectSeller
+
+        });
+    }, []);
+
     return {
         loading,
-        getDrivers,
+        dataListUsers,getDrivers
     };
 }

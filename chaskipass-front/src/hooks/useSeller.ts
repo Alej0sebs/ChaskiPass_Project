@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../helpers/Constants";
 import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
-import { CityBusStationT } from "../types";
+import {  UserT } from "../types";
 
-export const useCity = () => {
+export const useSeller = () => {
     const [loading, setLoading] = useState(false);
-    const [selectCity, setSelectCity] = useState<CityBusStationT[]>([]); // Cambiar a array
+    const [selectSeller, setSelectSeller] = useState<UserT[]>([]); // Cambiar a array
 
-    const getCity = async () => {
+    const getSellers = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}ubi?page=1&&limit=200`, {
+            const response = await fetch(`${API_BASE_URL}users`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,10 +35,13 @@ export const useCity = () => {
     };
     
     useEffect(() => {
-        getCity().then((data) => {
-            setSelectCity(data); // Asigna la lista al estado selectCity
+        getSellers
+().then((data) => {
+            setSelectSeller(data); // Asigna la lista al estado selectSeller
+
         });
     }, []);
 
-    return { loading, selectCity };
+    return { loading, selectSeller
+     };
 };

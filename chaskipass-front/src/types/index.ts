@@ -58,7 +58,7 @@ export type TypeBusStationT = {
 };
 
 
-type CityBusStationT = {
+export type CityBusStationT = {
     id: string,
     name: string
 };
@@ -136,6 +136,14 @@ export type FrequencyListT = {
     stop_city_names: string;
 }[];
 
+
+export type TicketsListT={
+station_id:number,
+user_id:string,
+serial_number:string;
+status:string;
+
+}
 
 export type editFrequencyT = Partial<FrequencyT> & { id: string, license_plate?: string, driver_dni?: string };
 

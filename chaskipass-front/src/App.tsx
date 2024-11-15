@@ -25,6 +25,7 @@ import FrequencyRegistration from './pages/Processes/frequency.processes';
 import TicketSeriesRegistration from './pages/Registration/tickets.registration';
 import BusStationRegistration from './pages/Registration/busStation.registration';
 import FrequencyList from './pages/Processes/frequencyList.processes';
+import LinkTicketSeriesRegistration from './pages/Registration/linktickets.registration';
 
 
 function App() {
@@ -145,7 +146,7 @@ function App() {
                     <Chart />
                   </> : <Navigate to='/auth/signin' />
               }
-            />
+            /> 
             <Route
               path="/auth/signup"
               element={
@@ -208,7 +209,16 @@ function App() {
                   </> : <Navigate to='/auth/signin' />
               }
             />
-
+     <Route
+              path="/register/linktickets"
+              element={
+                authUser ?
+                  <>
+                    <PageTitle title="Enlazar Tickets| ChaskiPass" />
+                    <LinkTicketSeriesRegistration/>
+                  </> : <Navigate to='/auth/signin' />
+              }
+            />
             <Route
               path="/processes/ticketsales"
               element={

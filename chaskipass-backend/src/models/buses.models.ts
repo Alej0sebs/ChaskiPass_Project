@@ -1,46 +1,74 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Buses= connectionDb.define('buses',{
-    id:{
-        type: DataTypes.STRING(10),
+export class Buses extends Model<
+    InferAttributes<Buses>,
+    InferCreationAttributes<Buses>
+> {
+    declare id: number;
+    declare cooperative_id: string;
+    declare bus_number: string;
+    declare license_plate: string;
+    declare chassis_vin: string;
+    declare bus_manufacturer: string;
+    declare model: string;
+    declare year: number;
+    declare capacity: number;
+    declare picture: string;  // Campo opcional
+    declare bus_structure_id: number;  // Campo opcional
+}
+
+// Inicializar el modelo usando `init()`
+Buses.init({
+    id: {
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
-    cooperative_id:{
+    cooperative_id: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    bus_number:{
+    bus_number: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: false,
     },
-    license_plate:{
+    license_plate: {
         type: DataTypes.STRING(8),
-        allowNull: false
+        allowNull: false,
     },
-    chassis_vin:{
+    chassis_vin: {
         type: DataTypes.STRING(17),
-        allowNull: false
+        allowNull: false,
     },
-    bus_manufacturer:{
+    bus_manufacturer: {
         type: DataTypes.STRING(50),
-        allowNull: false
+        allowNull: false,
     },
-    model:{
+    model: {
         type: DataTypes.STRING(20),
-        allowNull: false
+        allowNull: false,
     },
-    year:{
+    year: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
-    capacity:{
+    capacity: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
     },
-    picture:{
+    picture: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
+    },
+    bus_structure_id:{
+        type: DataTypes.INTEGER,
+        allowNull: true,
     }
-    
+}, {
+    sequelize: connectionDb,  // Conexión a la base de datos
+    tableName: 'Buses',       // Nombre de la tabla en la base de datos
+    timestamps: false         // Deshabilitar timestamps si no son necesarios
 });
+
+export default Buses;

@@ -1,13 +1,27 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Provinces= connectionDb.define('provinces',{
-    id:{
-        type: DataTypes.CHAR(3),
+export class Provinces extends Model<
+    InferAttributes<Provinces>,
+    InferCreationAttributes<Provinces>
+> {
+    declare id: string;
+    declare name: string;
+}
+
+Provinces.init({
+    id: {
+        type: DataTypes.STRING(3),
         primaryKey: true,
     },
-    name:{
+    name: {
         type: DataTypes.STRING(30),
-        allowNull: false
+        allowNull: false,
     }
+}, {
+    sequelize: connectionDb,
+    tableName: 'Provinces',
+    timestamps: false
 });
+
+export default Provinces;

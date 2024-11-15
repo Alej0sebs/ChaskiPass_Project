@@ -1,33 +1,53 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const BusStations= connectionDb.define('bus_stations',{
-    id:{
-        type: DataTypes.STRING(10),
+export class BusStations extends Model<
+    InferAttributes<BusStations>,
+    InferCreationAttributes<BusStations>
+> {
+    declare id: number;
+    declare city_id: string;
+    declare name: string;
+    declare address: string;
+    declare phone: string;
+    declare open_time: string;
+    declare close_time: string;
+}
+
+BusStations.init({
+    id: {
+        type: DataTypes.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
     },
-    city_id:{
-        type: DataTypes.STRING(5),
-        allowNull: false
+    city_id: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
     },
-    name:{
+    name: {
         type: DataTypes.STRING(50),
-        allowNull: false
+        allowNull: false,
     },
-    address:{
-        type: DataTypes.TEXT,
-        allowNull: false
+    address: {
+        type: DataTypes.STRING(80),
+        allowNull: false,
     },
-    phone:{
+    phone: {
         type: DataTypes.STRING(14),
-        allowNull: true
+        allowNull: true,
     },
-    open_time:{
-        type: DataTypes.TIME,
-        allowNull: false
+    open_time: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
     },
-    close_time:{
-        type: DataTypes.TIME,
-        allowNull: false
-    },
+    close_time: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+    }
+}, {
+    sequelize: connectionDb,
+    tableName: 'Bus_stations',
+    timestamps: false
 });
+
+export default BusStations;

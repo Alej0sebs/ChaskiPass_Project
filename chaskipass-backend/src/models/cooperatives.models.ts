@@ -1,29 +1,47 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const Cooperatives= connectionDb.define('cooperatives',{
-    id:{
+export class Cooperatives extends Model<
+    InferAttributes<Cooperatives>,
+    InferCreationAttributes<Cooperatives>
+> {
+    declare id: string;
+    declare name: string;
+    declare address: string;
+    declare phone: string;
+    declare email: string;
+    declare logo: string;
+}
+
+Cooperatives.init({
+    id: {
         type: DataTypes.STRING(10),
         primaryKey: true,
     },
-    name:{
+    name: {
         type: DataTypes.STRING(50),
-        allowNull: false
+        allowNull: false,
     },
-    address:{
+    address: {
         type: DataTypes.STRING(80),
-        allowNull: false
+        allowNull: false,
     },
-    phone:{
+    phone: {
         type: DataTypes.STRING(14),
-        allowNull: false
+        allowNull: false,
     },
-    email:{
+    email: {
         type: DataTypes.STRING(50),
-        allowNull: false
+        allowNull: false,
     },
-    description:{
+    logo: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
     }
+}, {
+    sequelize: connectionDb,
+    tableName: 'Cooperatives',
+    timestamps: false
 });
+
+export default Cooperatives;

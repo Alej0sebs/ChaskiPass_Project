@@ -1,21 +1,38 @@
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from "sequelize";
 import connectionDb from "../db/connection.db";
-import { DataTypes } from "sequelize";
 
-export const StopOvers= connectionDb.define('stopOver',{
-    id:{
-        type: DataTypes.STRING(10),
-        primaryKey: true,
-    },
-    route_id:{
-        type: DataTypes.STRING(10),
-        allowNull: false
-    },
-    station_id:{
-        type: DataTypes.STRING(10),
-        allowNull: false
-    },
-    order:{
+export class StopOvers extends Model<
+    InferAttributes<StopOvers>,
+    InferCreationAttributes<StopOvers>
+> {
+    declare id: number;
+    declare route_id: string;
+    declare station_id: number;
+    declare order: number;
+}
+
+StopOvers.init({
+    id: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        primaryKey: true,
+        autoIncrement: true,
     },
+    route_id: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+    },
+    station_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    order: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    }
+}, {
+    sequelize: connectionDb,
+    tableName: 'Stopovers',
+    timestamps: false
 });
+
+export default StopOvers;

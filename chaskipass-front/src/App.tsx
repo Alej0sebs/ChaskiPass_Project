@@ -26,6 +26,7 @@ import TicketSeriesRegistration from './pages/Registration/tickets.registration'
 import BusStationRegistration from './pages/Registration/busStation.registration';
 import FrequencyList from './pages/Processes/frequencyList.processes';
 import ProtectedRoute from './utils/protectedRoute.utils';
+import LinkStationsRegistration from './pages/Registration/linkStations.registration';
 
 
 function App() {
@@ -251,6 +252,18 @@ function App() {
                   <>
                     <PageTitle title="Frecuencias de selección | ChaskiPass" />
                     <FrequencyList />
+                  </>
+                </ProtectedRoute>
+
+              }
+            />
+            <Route
+              path="/register/linkStations"
+              element={
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
+                  <>
+                    <PageTitle title="Enlazar estaciones | ChaskiPass" />
+                    <LinkStationsRegistration />
                   </>
                 </ProtectedRoute>
 

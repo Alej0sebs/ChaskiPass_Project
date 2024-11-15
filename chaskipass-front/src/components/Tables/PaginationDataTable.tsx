@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { IoIosArrowDown } from 'react-icons/io';
 
 interface PaginationDataTableProps {
@@ -55,7 +55,10 @@ const PaginationDataTable: React.FC<PaginationDataTableProps> = ({
           <table className="w-full">
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700">
-                <th className="p-2.5 text-sm font-medium text-center uppercase text-gray-700 dark:text-white"></th>
+                {/* Solo mostrar el encabezado de expansión si hay datos a expandir */}
+                {dataHeaderToExpand.length > 0 && (
+                  <th className="p-2.5 text-sm font-medium text-center uppercase text-gray-700 dark:text-white"></th>
+                )}
                 {displayHeader.map((title, index) => (
                   <th
                     key={index}
@@ -73,26 +76,29 @@ const PaginationDataTable: React.FC<PaginationDataTableProps> = ({
                     onClick={() => onRowClick?.(row)}
                     className="cursor-pointer border-b border-stroke dark:border-strokedark hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    <td className="p-2.5 text-center">
-                      <button onClick={() => toggleExpandRow(rowIndex)}>
-                        <IoIosArrowDown className={`right-4 top-1/2 translate-y-1/2 fill-current ${expandedRow === rowIndex && 'rotate-180'}`} />
-                      </button>
-                    </td>
-
+                    {/* Mostrar el botón de expansión solo si hay datos a expandir */}
+                    {dataHeaderToExpand.length > 0 && (
+                      <td className="p-2.5 text-center">
+                        <button onClick={() => toggleExpandRow(rowIndex)}>
+                          <IoIosArrowDown className={`right-4 top-1/2 translate-y-1/2 fill-current ${expandedRow === rowIndex && 'rotate-180'}`} />
+                        </button>
+                      </td>
+                    )}
                     {titles.map((title, colIndex) => (
                       <td key={colIndex} className="p-2.5 text-center text-black dark:text-white">
                         {row[title] !== undefined ? row[title] : '-'}
                       </td>
                     ))}
                   </tr>
-                  {expandedRow === rowIndex && (
+                  {/* Renderizar la fila expandible solo si hay datos y la fila está expandida */}
+                  {expandedRow === rowIndex && dataHeaderToExpand.length > 0 && (
                     <tr>
                       <td colSpan={titles.length + 1} className="p-4 bg-gray-100 dark:bg-gray-700">
                         {/* Contenido expandido de la fila */}
-                        <div>{dataHeaderToExpand.map((expandedTitle, expandedColIndex)=>(
-                          <td key={expandedColIndex} className='p-4 bg-gray-100 dark:bg-gray-700'>
+                        <div>{dataHeaderToExpand.map((expandedTitle, expandedColIndex) => (
+                          <span key={expandedColIndex} className="block p-2">
                             {row[expandedTitle] !== undefined ? row[expandedTitle] : '-'}
-                          </td>
+                          </span>
                         ))}</div>
                       </td>
                     </tr>

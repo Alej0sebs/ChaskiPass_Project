@@ -58,7 +58,7 @@ export type TypeBusStationT = {
 };
 
 
-type CityBusStationT = {
+export type CityBusStationT = {
     id: string,
     name: string
 };
@@ -106,7 +106,7 @@ export type FrequencyListObjectT = {
     departure_time: string;
     arrival_time: string;
     price: number;
-    status:  boolean;
+    status: boolean;
     bus_number: number;
     departure_station_name: string;
     departure_city_name: string;
@@ -124,7 +124,7 @@ export type FrequencyListT = {
     departure_time: string;
     arrival_time: string;
     price: number;
-    status:  boolean;
+    status: boolean;
     bus_number: number;
     departure_station_name: string;
     departure_city_name: string;
@@ -147,15 +147,23 @@ export type SeatsStructureT = {
 };
 
 export type PositionT = {
-    x:number,
-    y:number
+    x: number,
+    y: number
 };
 
-export type BusLayoutConfigurationT={
+export type BusLayoutConfigurationT = {
     id: string;
     type: string;
     name: string;
     position: PositionT;
     status: string;
     additionalCost?: number;
+}
+
+
+export type TicketsListT = {
+    station_id: number,
+    user_id: string,
+    serial_number: string;
+    status: string;
 }

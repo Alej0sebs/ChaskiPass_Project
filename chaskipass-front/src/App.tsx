@@ -25,6 +25,7 @@ import FrequencyRegistration from './pages/Processes/frequency.processes';
 import TicketSeriesRegistration from './pages/Registration/tickets.registration';
 import BusStationRegistration from './pages/Registration/busStation.registration';
 import FrequencyList from './pages/Processes/frequencyList.processes';
+import ProtectedRoute from './utils/protectedRoute.utils';
 
 
 function App() {
@@ -70,10 +71,12 @@ function App() {
             <Route
               path='/'
               element={
-                authUser ? <>
-                  <PageTitle title="eCommerce Dashboard | ChaskiPass" />
-                  <ECommerce />
-                </> : <Navigate to='/auth/signin' />
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
+                  <>
+                    <PageTitle title="eCommerce Dashboard | ChaskiPass" />
+                    <ECommerce />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
@@ -88,11 +91,12 @@ function App() {
             <Route
               path="/profile"
               element={
-                authUser ?
+                <ProtectedRoute>
                   <>
                     <PageTitle title="Profile | ChaskiPass" />
                     <Profile />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
@@ -119,124 +123,137 @@ function App() {
             <Route
               path="/tables"
               element={
-                authUser ?
+                <ProtectedRoute>
                   <>
                     <PageTitle title="Tables | ChaskiPass" />
                     <Tables />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/settings"
               element={
-                authUser ?
+                <ProtectedRoute>
                   <>
                     <PageTitle title="Settings | ChaskiPass" />
                     <Settings />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/chart"
               element={
-                authUser ?
+                <ProtectedRoute>
                   <>
                     <PageTitle title="Basic Chart | ChaskiPass" />
                     <Chart />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/auth/signup"
               element={
-                authUser ?
+                <ProtectedRoute requiredRole={['admin']}>
                   <>
                     <PageTitle title="Signin | ChaskiPass" />
                     <SignUp />
-                  </> :
-                  <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             {/* Added by me  */}
             <Route
               path="/register/bus"
               element={
-                authUser ?
+
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="Bus | ChaskiPass" />
                     <BusRegistration />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/processes/routes"
               element={
-                authUser ?
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="Routes | ChaskiPass" />
                     <RoutesRegistration />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/register/busStations"
               element={
-                authUser ?
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="BusStations| ChaskiPass" />
                     <BusStationRegistration />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/register/typebus"
               element={
-                authUser ?
+                <ProtectedRoute requiredRole={['admin']}>
                   <>
                     <PageTitle title="Typebus| ChaskiPass" />
                     <TypebusRegistration />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/register/tickets"
               element={
-                authUser ?
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="Tickets| ChaskiPass" />
-                    <TicketSeriesRegistration/>
-                  </> : <Navigate to='/auth/signin' />
+                    <TicketSeriesRegistration />
+                  </>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path="/processes/ticketsales"
               element={
-                authUser ?
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="Ticketsales| ChaskiPass" />
-                    <TicketsalesRegistration/>
-                  </> : <Navigate to='/auth/signin' />
+                    <TicketsalesRegistration />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/processes/frequency"
               element={
-                authUser ?
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="Frecuencias Creación | ChaskiPass" />
                     <FrequencyRegistration />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
               }
             />
             <Route
               path="/processes/frequency-list"
               element={
-                authUser ?
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
                   <>
                     <PageTitle title="Frecuencias de selección | ChaskiPass" />
                     <FrequencyList />
-                  </> : <Navigate to='/auth/signin' />
+                  </>
+                </ProtectedRoute>
+
               }
             />
           </Routes>

@@ -6,6 +6,8 @@ import { HandleMessages } from "../error/handleMessages.error";
 import { Response } from "express";
 import { UserLoginT } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
+import Roles from "../models/roles.models";
+import { RoleEnum } from "../utils/enums.utils";
 
 // Servicio para iniciar sesión
 export const loginUserService = async (
@@ -35,7 +37,8 @@ export const loginUserService = async (
             status: 200,
             json: {
                 dni: user.dni,
-                cooperative: user.cooperative_id
+                cooperative: user.cooperative_id,
+                role: user.role_id 
             }
         };
     } catch (error) {

@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { generateToken } from "../services/paypal.services";
-import { useInflection } from "sequelize";
-
 
 interface Link {
     href: string;

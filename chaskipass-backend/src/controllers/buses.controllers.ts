@@ -2,12 +2,24 @@ import { Request, Response } from 'express';
 import { busRegisterService, getBusesService, editBusByIdService, deleteBusByIdService } from '../services/buses.services';
 import { HandleMessages } from '../error/handleMessages.error';
 import { BusT } from '../types/index.types';
+import path from 'path';
+import uploadToHostinger from '../utils/uploadImagesFtp';
 
 // Registrar un nuevo bus
 export const busRegister = async (req: Request, res: Response) => {
     try {
         const { cooperative_id} = req.userReq ?? {};
-        const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, picture, bus_structure_id} = req.body;
+        const { bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id} = req.body;
+        let messageError:string; 
+        let remoteFileName:string= '';
+
+        console.log(bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id);
+        if(!req.file){
+            messageError = 'No se ha proporcionado la imagen del bus';
+        }else{
+            remoteFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(req.file.originalname)}`;
+            await uploadToHostinger(req.file.buffer, remoteFileName);
+        }
 
         const busInformation:BusT={
             id: 0,
@@ -18,7 +30,7 @@ export const busRegister = async (req: Request, res: Response) => {
             model,
             year,
             capacity,
-            picture,
+            picture: remoteFileName,
             cooperative_id: cooperative_id || '',
             bus_structure_id
         }

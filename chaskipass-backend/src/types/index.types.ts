@@ -82,10 +82,3 @@ export type FilterFrequenciesT = Omit<FrequencyModelT, 'id' | 'status' | 'bus_id
     departure_city: string,
     arrival_city: string
 };
-
-export type SeatsStructureT = {
-    cooperative_id: string,
-    frequency_id: string,
-    bus_id: number,
-    bus_structure_id: number
-}

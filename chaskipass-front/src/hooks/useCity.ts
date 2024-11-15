@@ -11,7 +11,7 @@ export const useCity = () => {
     const getCity = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}ubi`, {
+            const response = await fetch(`${API_BASE_URL}/ubi`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

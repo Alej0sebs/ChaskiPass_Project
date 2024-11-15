@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 interface SelectGroupProps {
   label: string;
   children: React.ReactNode;
-  onChange?: React.ChangeEventHandler<HTMLSelectElement>;
-  value?: string;
 }
 
-const SelectGroupTwo: React.FC<SelectGroupProps> = ({ label, children, onChange, value }) => {
-  const isOptionSelected = value !== '';
+const SelectGroupTwo: React.FC<SelectGroupProps> = ({ label, children }) => {
+  const [selectedOption, setSelectedOption] = useState<string>(''); // Inicia sin ninguna opción seleccionada
+  const [isOptionSelected, setIsOptionSelected] = useState<boolean>(false);
+
+  const changeTextColor = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedOption(value);
+
+    // Cambia el estado si no es la opción predeterminada
+    if (value !== '') {
+      setIsOptionSelected(true);
+    } else {
+      setIsOptionSelected(false);
+    }
+  };
 
   return (
     <div>
@@ -16,16 +27,15 @@ const SelectGroupTwo: React.FC<SelectGroupProps> = ({ label, children, onChange,
 
       <div className="relative z-20 bg-white dark:bg-form-input">
         <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
-          {/* Puedes agregar un ícono aquí si lo deseas */}
         </span>
 
         <select
-          value={value}
-          onChange={onChange}
+          value={selectedOption}
+          onChange={changeTextColor}
           className={`relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 pl-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input ${
             isOptionSelected ? 'text-black dark:text-white' : 'text-gray-400'
           }`}
-          required
+          required // Campo obligatorio
         >
           <option value="" disabled>
             Seleccione una opción

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getClientsService, createClientService, updateClientService, deleteClientService, getClientByDNIService } from '../services/clients.services';
+import { getClientsService, createClientService, updateClientService, deleteClientService } from '../services/clients.services';
 import { HandleMessages } from '../error/handleMessages.error';
 import { getPaginationData } from '../utils/helpers.utils';
 
@@ -56,21 +56,8 @@ export const deleteClient = async (req: Request, res: Response) => {
         res.status(result.status).json(result.json);
         return;
     } catch (error) {
+        console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
         return;
     }
 };
-
-
-export const getClientByDNI = async (req: Request, res: Response) => {
-    try {
-        const {dni}= req.params;
-        const result = await getClientByDNIService(dni);
-        res.status(result.status).json(result.json);
-        return;
-
-    } catch (error) {
-        res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
-        return;
-    }
-}

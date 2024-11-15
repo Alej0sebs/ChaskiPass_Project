@@ -1,12 +1,11 @@
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { FaBus, FaCar } from 'react-icons/fa';
 import { IoCalendarNumberSharp } from 'react-icons/io5';
-import { MdOutlineReduceCapacity } from 'react-icons/md';
+import { MdOutlineReduceCapacity} from 'react-icons/md';
 import { CreateBusT } from '../../types';
 import createBus from '../../hooks/useBusCreation';
 import { useBusStructure } from '../../hooks/useBusStructure'; // Importar el hook
 import { useState } from 'react';
-import toast from 'react-hot-toast';
 // import { StylesheetMap } from '@angular/flex-layout';
 
 const initialStateBus: CreateBusT = {
@@ -25,7 +24,6 @@ const BusRegistration: React.FC = () => {
   const [selectedBusStructure, setSelectedBusStructure] = useState<string>("");
   const { loading: loadingBus, bus } = createBus(); // Cambiado aquí
   const [inputBus, setInputBus] = useState<CreateBusT>(initialStateBus);
-  const [selectedBusImg, setSelectedBusImg] = useState<File | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -47,20 +45,9 @@ const BusRegistration: React.FC = () => {
     });
   };
 
-  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedBusImg(file); // Guarda el archivo en el estado
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedBusImg) {
-      toast.error('Por favor, selecciona una imagen');
-      return;
-    }
-    await bus(inputBus, selectedBusImg); // subir img
+    await bus(inputBus); // Cambiado aquí
   };
 
   const handleCancel = () => {
@@ -293,11 +280,15 @@ const BusRegistration: React.FC = () => {
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                     <div>
                       <h2>Subir Imagen</h2>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFiles}
-                      />
+                      <form onSubmit={handleSubmit}>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          // onChange={handleImageChange}
+                        />
+
+                        {/* <button type="submit">Subir Imagen</button> */}
+                      </form>
                     </div>
                   </div>
 

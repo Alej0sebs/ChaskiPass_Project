@@ -1,23 +1,13 @@
-import { Op, where } from "sequelize";
+import { Op } from "sequelize";
 import { HandleMessages } from "../error/handleMessages.error";
 import BusStructure from "../models/busStructure.models";
 import { BusStructureT } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
 
-export const getBusStructureService = async (cooperative_id: string) => {
+export const getBusStructureService = async (cooperative_id:string) => {
     try {
         const busStructures = await BusStructure.findAll();
         return { status: 200, json: busStructures };
-    } catch (error) {
-        // Usar la función genérica para manejar errores de Sequelize
-        return handleSequelizeError(error);
-    }
-};
-
-export const getBusStructureBYIDService = async (busStructureId: number) => {
-    try {
-        const busStructure = await BusStructure.findOne({where: {id: busStructureId}, raw: true});
-        return busStructure;
     } catch (error) {
         // Usar la función genérica para manejar errores de Sequelize
         return handleSequelizeError(error);

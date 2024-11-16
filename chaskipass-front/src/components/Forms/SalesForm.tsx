@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 import TableSeats from '../Tables/TableSeats';
 import { useClient } from '../../hooks/useClient';
-import { FrequencyListObjectT, SelectedSeatT } from '../../types';
 
 interface SalesFormProps {
-    dataFrequency: FrequencyListObjectT;
-    seats: SelectedSeatT[];
+    stopOvers: string;
+    stop_city_names: string;
+    seats: string[];
 }
 
 interface PassengerData {
@@ -14,10 +14,10 @@ interface PassengerData {
     apellidos: string;
 }
 
-const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
+const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names }) => {
 
     //Hooks
-    const {getClientByDNI} = useClient();
+    const {getClientByDNI, loading} = useClient();
 
     const [destinos, setDestinos] = useState<string[]>([]);
     const [tipoDocumento, setTipoDocumento] = useState<string>('');
@@ -28,20 +28,13 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [selectedDestination, setSelectedDestination] = useState<string>('');
     const [isFound, setIsFound] = useState<boolean>(false);
-    //total price
-    const [totalPrice, setTotalPrice] = useState<number>(0);
 
     useEffect(() => {
-        const cities = dataFrequency.stop_city_names.split(',').map((city) => city.trim());
-        const destination = dataFrequency.stop_station_names.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`);
+        const cities = stop_city_names.split(',').map((city) => city.trim());
+        const destination = stopOvers.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`);
         destination.unshift('Viaje Completo');
         setDestinos(destination);
-    }, [dataFrequency]);
-
-    useEffect(()=>{
-        console.log(seats);        
-
-    },[seats, dataFrequency.price]);
+    }, [stopOvers, stop_city_names]);
 
     // Función para simular la búsqueda en la base de datos
     // const searchInDatabase = async (tipoDoc: string, numeroDoc: string): Promise<PassengerData | null> => {

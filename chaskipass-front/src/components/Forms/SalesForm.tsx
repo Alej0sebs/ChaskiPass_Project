@@ -17,7 +17,7 @@ interface PassengerData {
 const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
 
     //Hooks
-    const {getClientByDNI} = useClient();
+    const { getClientByDNI } = useClient();
 
     const [destinos, setDestinos] = useState<string[]>([]);
     const [tipoDocumento, setTipoDocumento] = useState<string>('');
@@ -30,6 +30,9 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
     const [isFound, setIsFound] = useState<boolean>(false);
     //total price
     const [totalPrice, setTotalPrice] = useState<number>(0);
+    // Estado de los asientos para asignacion
+    const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
+
 
     useEffect(() => {
         const cities = dataFrequency.stop_city_names.split(',').map((city) => city.trim());
@@ -38,51 +41,12 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
         setDestinos(destination);
     }, [dataFrequency]);
 
-    useEffect(()=>{
-        console.log(seats);        
-
-    },[seats, dataFrequency.price]);
-
-    // Función para simular la búsqueda en la base de datos
-    // const searchInDatabase = async (tipoDoc: string, numeroDoc: string): Promise<PassengerData | null> => {
-    //     // Simular un retraso
-    //     return new Promise((resolve) => {
-    //         setTimeout(() => {
-    //             // Simular datos encontrados
-    //             if (numeroDoc === '1234567890') {
-    //                 resolve({ nombres: 'Juan', apellidos: 'Pérez' });
-    //             } else {
-    //                 resolve(null);
-    //             }
-    //         }, 1000);
-    //     });
-    // };
-
-    // Manejar cambio en "Tipo de Documento"
-    const handleTipoDocumentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        setTipoDocumento(value);
-        setNumeroDocumento('');
-        setNombres('');
-        setApellidos('');
-        setIsDocumentoValid(false);
-        setIsFound(false);
-    };
-
-    // Manejar cambio en "Número de Documento"
-    const handleNumeroDocumentoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ''); // Remover caracteres no numéricos
-        const maxLength = tipoDocumento === 'Cedula' ? 10 : 9;
-        if (value.length > maxLength) {
-            value = value.slice(0, maxLength);
-        }
-        setNumeroDocumento(value);
-        setIsDocumentoValid(value.length === maxLength);
-    };
-
-    const handleDestinationChange= (e:React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedDestination(e.target.value);
-    }
+    useEffect(() => {
+        const accumulativePrice: number = seats.reduce((acc, seat) => {
+            return acc + (Number(dataFrequency.price) + Number(seat.additionalCost));
+        }, 0);
+        setTotalPrice(Number(accumulativePrice.toFixed(2)));
+    }, [seats, dataFrequency.price]);
 
     // Usar efecto para desencadenar búsqueda cuando el documento es válido
     useEffect(() => {
@@ -108,9 +72,51 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
         fetchPassengerData();
     }, [isDocumentoValid, tipoDocumento, numeroDocumento]);
 
+
+    // Manejar cambio en "Tipo de Documento"
+    const handleTipoDocumentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setTipoDocumento(value);
+        setNumeroDocumento('');
+        setNombres('');
+        setApellidos('');
+        setIsDocumentoValid(false);
+        setIsFound(false);
+    };
+
+    // Manejar cambio en "Número de Documento"
+    const handleNumeroDocumentoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value.replace(/\D/g, ''); // Remover caracteres no numéricos
+        const maxLength = tipoDocumento === 'Cedula' ? 10 : 9;
+        if (value.length > maxLength) {
+            value = value.slice(0, maxLength);
+        }
+        setNumeroDocumento(value);
+        setIsDocumentoValid(value.length === maxLength);
+    };
+
+    const handleDestinationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedDestination(e.target.value);
+    }
+
+    const handleSelectSeat = (seat: SelectedSeatT) => {
+        setCurrentSeat(seat);
+        setTipoDocumento(''); // Opcional: limpiar inputs
+        setNumeroDocumento('');
+        setNombres(seat.client?.name || '');
+        setApellidos(seat.client?.lastName || '');
+    };
+
+
+
     return (
         <>
             <h2 className="text-2xl font-bold mb-6 text-center text-black dark:text-white">BOLETO: 100 - 000017</h2>
+            <div className="col-span-3">
+                <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
+                    Frecuencia: {dataFrequency.id}
+                </label>
+            </div>
             <form>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -183,28 +189,39 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                             Precio
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             placeholder="Ingrese el precio"
+                            value={totalPrice}
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                     <div>
-                        <SelectGroupTwo label="Estado">
-                            <option value="sn">Seleccione una opcion</option>
-                            <option value="reservar">Reservar</option>
-                            <option value="vender">Vender</option>
-                        </SelectGroupTwo>
+                        <label className="mb-3 block text-black dark:text-white">
+                            Procesar Pago
+                        </label>
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        >
+                            Pagar
+                        </button>
+                    </div>
+                    <div className="col-span-3">
+                        <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
+                            Asiento: {
+                                seats.length === 0
+                                    ? ''
+                                    : seats.length === 1
+                                        ? seats[0].seatId
+                                        : currentSeat?.seatId || 'No seleccionado'
+                            }
+
+                        </label>
                     </div>
                 </div>
                 <div className="flex justify-between items-center my-4">
-                    <button
-                        type="submit"
-                        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                        Pagar
-                    </button>
                     {seats.length > 0 ? (
-                        <TableSeats headerTable='Boletos' displayData={seats}/>
+                        <TableSeats headerTable='Boletos' displayData={seats} onSelectSeat={handleSelectSeat} />
                     ) : (
                         <div className="text-xl text-gray-500 dark:text-gray-400">
                             No hay asientos seleccionados

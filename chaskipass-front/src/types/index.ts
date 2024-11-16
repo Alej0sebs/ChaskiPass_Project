@@ -6,9 +6,17 @@ export type SeatConfigT = {
     additionalCost?:number
 };
 
+type ClientT={
+    dni:string,
+    name:string,
+    lastName:string,
+    exist:boolean //uso para saber si el cliente fue encontrado en la BD para no hacer inserciones innecesarias o evitar errores
+}
+
 export type SelectedSeatT={
-    seatId:string
-    additionalCost:number
+    seatId:string,
+    additionalCost:number,
+    client?:ClientT
 };
 
 export type LayoutBusT = {

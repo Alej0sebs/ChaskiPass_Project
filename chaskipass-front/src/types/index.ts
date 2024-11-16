@@ -3,12 +3,6 @@ export type SeatConfigT = {
     type: string,
     name: string,
     position: { "x": number, "y": number },
-    additionalCost?:number
-};
-
-export type SelectedSeatT={
-    seatId:string
-    additionalCost:number
 };
 
 export type LayoutBusT = {

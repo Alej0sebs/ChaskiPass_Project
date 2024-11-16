@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import { BusLayoutConfigurationT, SeatConfigT } from "../../types";
+import { BusLayoutConfigurationT, SeatConfigT, SelectedSeatT } from "../../types";
 import toast from "react-hot-toast";
 import Accordion from "../../components/Accordion";
 import Tabs from "../../components/Tabs";
@@ -19,12 +19,9 @@ interface InputFieldProps {
     value: string;
     isWide?: boolean;
 }
-
-
 interface BusData {
     [floor: string]: BusLayoutConfigurationT[];
 }
-
 
 const TicketsalesRegistration = () => {
     //get data from frequency
@@ -40,7 +37,9 @@ const TicketsalesRegistration = () => {
     const [floorElements, setFloorElements] = useState<{ [key: number]: SeatConfigT[] }>({}); // Almacenar los elementos del bus por piso
     const [numFloors, setNumFloors] = useState(1); // Número de pisos
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado para visualizar
-    const [selectedSeats, setSelectedSeats] = useState<string[]>([]); // Asientos seleccionados por el usuario para reservar
+    // const [selectedSeats, setSelectedSeats] = useState<string[]>([]); // Asientos seleccionados por el usuario para reservar
+    const [selectedSeats, setSelectedSeats] = useState<SelectedSeatT[]>([]);
+
 
     //global variables
     let totalSeats: number = 0;
@@ -62,6 +61,7 @@ const TicketsalesRegistration = () => {
                         return acc + seatCount;
                     }, 0);
                 }
+                console.log(busData);
             } catch (err) {
                 toast.error('Error al obtener la estructura del bus');
             }
@@ -70,15 +70,30 @@ const TicketsalesRegistration = () => {
     }, [frequencyData]);
 
     // Manejar la selección de un asiento
-    const handleSeatClick = (seatId: string) => {
-        setSelectedSeats((prevSelectedSeats) =>
-            prevSelectedSeats.includes(seatId)
-                ? prevSelectedSeats.filter((id) => id !== seatId)
-                : [...prevSelectedSeats, seatId]
-        );
+    // const handleSeatClick = (seatId: string) => {
+    //     setSelectedSeats((prevSelectedSeats) =>
+    //         prevSelectedSeats.includes(seatId)
+    //             ? prevSelectedSeats.filter((id) => id !== seatId)
+    //             : [...prevSelectedSeats, seatId]
+    //     );
+    // };
+
+    const handleSeatClick = ({seatId, additionalCost}:SelectedSeatT) => {
+        setSelectedSeats((prevSelectedSeats) => {
+            const seatIndex = prevSelectedSeats.findIndex((seat) => seat.seatId === seatId);
+            if (seatIndex !== -1) {
+                // Si el asiento ya está seleccionado, lo eliminamos
+                return prevSelectedSeats.filter((seat) => seat.seatId !== seatId);
+            } else {
+                // Si el asiento no está seleccionado, lo agregamos
+                return [...prevSelectedSeats, { seatId, additionalCost }];
+            }
+        });
     };
 
-    const isSeatSelected = (seatId: string) => selectedSeats.includes(seatId);
+    const isSeatSelected = (seatId: string) => {
+        return selectedSeats.some((seat) => seat.seatId === seatId);
+    };
 
     const handlePurchase = () => {
         if (selectedSeats.length === 0) {
@@ -91,7 +106,7 @@ const TicketsalesRegistration = () => {
     };
 
     const tabsData = [
-        { title: 'Ventas', content: <SalesForm seats={selectedSeats} stopOvers={frequencyData.stop_station_names} stop_city_names={frequencyData.stop_city_names} /> },
+        { title: 'Ventas', content: <SalesForm seats={selectedSeats} dataFrequency={frequencyData}/> },
         { title: 'Reservados', content: <TableOne /> },
         { title: 'Pasajeros', content: <TableOne /> }
     ];
@@ -170,7 +185,7 @@ const TicketsalesRegistration = () => {
                                         left: `${element.position.x}%`,
                                         top: `${element.position.y}%`,
                                     }}
-                                    onClick={() => element.type === 'seat' && handleSeatClick(element.id)}
+                                    onClick={() => element.type === 'seat' && handleSeatClick({seatId: element.id, additionalCost: element.additionalCost || 0})}
                                 >
                                     {element.type === 'seat' && (
                                         <SvgSeatComponent

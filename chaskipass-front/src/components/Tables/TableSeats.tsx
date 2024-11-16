@@ -1,6 +1,8 @@
+import { SelectedSeatT } from "../../types";
+
 interface TableTicketsProps {
     headerTable: string;
-    displayData: string[];
+    displayData: SelectedSeatT[];
 }
 
 const TableSeats = ({ headerTable, displayData }: TableTicketsProps) => {
@@ -10,11 +12,15 @@ const TableSeats = ({ headerTable, displayData }: TableTicketsProps) => {
                 <thead>
                     <tr>
                         <th>{headerTable}</th>
+                        <th>Costo</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {displayData.map((val:string, index:number)=>(
-                        <tr key={index}><td>{val}</td></tr>
+                    {displayData.map((val: SelectedSeatT, index: number) => (
+                        <tr key={index}>
+                            <td>{val.seatId}</td>
+                            <td>{val.additionalCost}</td>
+                        </tr>
                     ))}
                 </tbody>
             </table>

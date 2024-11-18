@@ -55,12 +55,11 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                 setIsSearching(true);
                 const result = await getClientByDNI(numeroDocumento)
                 if (result) {
-                    setNombres(result.nombres);
-                    setApellidos(result.apellidos);
+                    setNombres(result.client.name);
+                    setApellidos(result.client.last_name);
                     setIsFound(true);
                 } else {
                     setIsFound(false);
-                    // Permitir entrada manual
                 }
                 setIsSearching(false);
             } else {
@@ -196,15 +195,32 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                         />
                     </div>
                     <div>
-                        <label className="mb-3 block text-black dark:text-white">
-                            Procesar Pago
-                        </label>
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        >
-                            Pagar
-                        </button>
+                        {seats.length === 1 || seats.every(seat => seat.client) ? (
+                            <>
+                                <label className="mb-3 block text-black dark:text-white">
+                                    Procesar Pago
+                                </label>
+                                <button
+                                    type="submit"
+                                    className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                >
+                                    Pagar
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <label className="mb-3 block text-black dark:text-white">
+                                    Agregar Pasajero
+                                </label>
+                                <button
+                                    type="button"
+                                    className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                    onClick={() => {/* lógica para agregar pasajero */}}
+                                >
+                                    Agregar
+                                </button>
+                            </>
+                        )}
                     </div>
                     <div className="col-span-3">
                         <label className="mb-3 block text-black dark:text-white text-lg font-semibold">

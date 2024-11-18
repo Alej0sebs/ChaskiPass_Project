@@ -61,7 +61,6 @@ const TicketsalesRegistration = () => {
                         return acc + seatCount;
                     }, 0);
                 }
-                console.log(busData);
             } catch (err) {
                 toast.error('Error al obtener la estructura del bus');
             }

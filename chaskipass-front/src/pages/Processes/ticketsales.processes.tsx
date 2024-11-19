@@ -13,6 +13,7 @@ import useSeatStructure from "../../hooks/useSeatStructure";
 import SvgBathroomComponent from "../../components/busElements/svgBathroom.components";
 import SvgStairsComponent from "../../components/busElements/svgStairs.components";
 import BusTemplate from "../../components/Bus";
+import { useSelectedSeatsStore } from "../../Zustand/useSelectedSeats";
 
 interface InputFieldProps {
     label: string;
@@ -37,8 +38,8 @@ const TicketsalesRegistration = () => {
     const [floorElements, setFloorElements] = useState<{ [key: number]: SeatConfigT[] }>({}); // Almacenar los elementos del bus por piso
     const [numFloors, setNumFloors] = useState(1); // Número de pisos
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado para visualizar
-    // const [selectedSeats, setSelectedSeats] = useState<string[]>([]); // Asientos seleccionados por el usuario para reservar
-    const [selectedSeats, setSelectedSeats] = useState<SelectedSeatT[]>([]);
+    // const [selectedSeats, setSelectedSeats] = useState<SelectedSeatT[]>([]);
+    const {selectedSeats, addSeat, removeSeat } = useSelectedSeatsStore();
 
 
     //global variables
@@ -68,26 +69,13 @@ const TicketsalesRegistration = () => {
         fetchBusConfiguration();
     }, [frequencyData]);
 
-    // Manejar la selección de un asiento
-    // const handleSeatClick = (seatId: string) => {
-    //     setSelectedSeats((prevSelectedSeats) =>
-    //         prevSelectedSeats.includes(seatId)
-    //             ? prevSelectedSeats.filter((id) => id !== seatId)
-    //             : [...prevSelectedSeats, seatId]
-    //     );
-    // };
-
     const handleSeatClick = ({seatId, additionalCost}:SelectedSeatT) => {
-        setSelectedSeats((prevSelectedSeats) => {
-            const seatIndex = prevSelectedSeats.findIndex((seat) => seat.seatId === seatId);
-            if (seatIndex !== -1) {
-                // Si el asiento ya está seleccionado, lo eliminamos
-                return prevSelectedSeats.filter((seat) => seat.seatId !== seatId);
-            } else {
-                // Si el asiento no está seleccionado, lo agregamos
-                return [...prevSelectedSeats, { seatId, additionalCost }];
-            }
-        });
+        
+        if(isSeatSelected(seatId)){
+            removeSeat(seatId);
+        }else{
+            addSeat({seatId, additionalCost})
+        }
     };
 
     const isSeatSelected = (seatId: string) => {

@@ -3,10 +3,10 @@ import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 import TableSeats from '../Tables/TableSeats';
 import { useClient } from '../../hooks/useClient';
 import { ClientT, FrequencyListObjectT, SelectedSeatT } from '../../types';
+import { useSelectedSeatsStore } from '../../Zustand/useSelectedSeats';
 
 interface SalesFormProps {
     dataFrequency: FrequencyListObjectT;
-    seats: SelectedSeatT[];
 }
 
 interface PassengerData {
@@ -14,8 +14,10 @@ interface PassengerData {
     lastName: string;
 }
 
-const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
+const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) => {
 
+    //Store seats
+    const { selectedSeats, addSeat, removeSeat, updateSeatClient } = useSelectedSeatsStore();
     //Hooks
     const { getClientByDNI } = useClient();
 
@@ -32,7 +34,6 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // Estado de los asientos para asignacion
     const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
-    const [localSeats, setLocalSeats] = useState<SelectedSeatT[]>(seats);
 
 
 
@@ -43,14 +44,12 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
         setDestinos(destination);
     }, [dataFrequency]);
 
-    useEffect(() => { setLocalSeats(seats); }, [seats]);
-
     useEffect(() => {
-        const accumulativePrice: number = localSeats.reduce((acc, seat) => {
+        const accumulativePrice: number = selectedSeats.reduce((acc, seat) => {
             return acc + (Number(dataFrequency.price) + Number(seat.additionalCost));
         }, 0);
         setTotalPrice(Number(accumulativePrice.toFixed(2)));
-    }, [localSeats, dataFrequency.price]);
+    }, [selectedSeats, dataFrequency.price]);
 
     const isDocumentoValid = documentNumber.length === (documentType === 'Cedula' ? 10 : 9);
 
@@ -110,23 +109,17 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
         setLastName(seat.client?.lastName || '');
     };
 
+
     const setClientSeat = (client: PassengerData) => {
-        const newSeats = localSeats.map(seat => {
-            if (seat.seatId === currentSeat?.seatId) {
-                return {
-                    ...seat,
-                    client: {
-                        dni: documentNumber,
-                        name: client.name,
-                        lastName: client.lastName,
-                        exists: isFound
-                    } as ClientT,
-                };
-            }
-            return seat;
-        });
-        setLocalSeats(newSeats); // Actualizamos el estado local
-        setCurrentSeat(null);
+        if (currentSeat) {
+            updateSeatClient(currentSeat.seatId, {
+                dni: documentNumber,
+                name: client.name,
+                lastName: client.lastName,
+                exist: isFound
+            });
+            setCurrentSeat(null);
+        }
     }
 
 
@@ -217,7 +210,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                         />
                     </div>
                     <div>
-                        {localSeats.length === 1 || localSeats.every(seat => seat.client) ? (
+                        {selectedSeats.length === 1 || selectedSeats.every(seat => seat.client) ? (
                             <>
                                 <label className="mb-3 block text-black dark:text-white">
                                     Procesar Pago
@@ -247,10 +240,10 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                     <div className="col-span-3">
                         <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
                             Asiento: {
-                                seats.length === 0
+                                selectedSeats.length === 0
                                     ? ''
-                                    : seats.length === 1
-                                        ? seats[0].seatId
+                                    : selectedSeats.length === 1
+                                        ? selectedSeats[0].seatId
                                         : currentSeat?.seatId || 'No seleccionado'
                             }
 
@@ -258,8 +251,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                     </div>
                 </div>
                 <div className="flex justify-between items-center my-4">
-                    {localSeats.length > 0 ? (
-                        <TableSeats headerTable='Boletos' displayData={localSeats} onSelectSeat={handleSelectSeat} />
+                    {selectedSeats.length > 0 ? (
+                        <TableSeats headerTable='Boletos' displayData={selectedSeats} onSelectSeat={handleSelectSeat} />
                     ) : (
                         <div className="text-xl text-gray-500 dark:text-gray-400">
                             No hay asientos seleccionados

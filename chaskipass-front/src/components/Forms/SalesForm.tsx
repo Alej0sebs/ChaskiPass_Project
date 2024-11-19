@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 import TableSeats from '../Tables/TableSeats';
 import { useClient } from '../../hooks/useClient';
-import { FrequencyListObjectT, SelectedSeatT } from '../../types';
+import { ClientT, FrequencyListObjectT, SelectedSeatT } from '../../types';
 
 interface SalesFormProps {
     dataFrequency: FrequencyListObjectT;
@@ -10,8 +10,8 @@ interface SalesFormProps {
 }
 
 interface PassengerData {
-    nombres: string;
-    apellidos: string;
+    name: string;
+    lastName: string;
 }
 
 const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
@@ -20,11 +20,11 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
     const { getClientByDNI } = useClient();
 
     const [destinos, setDestinos] = useState<string[]>([]);
-    const [tipoDocumento, setTipoDocumento] = useState<string>('');
-    const [numeroDocumento, setNumeroDocumento] = useState<string>('');
-    const [nombres, setNombres] = useState<string>('');
-    const [apellidos, setApellidos] = useState<string>('');
-    const [isDocumentoValid, setIsDocumentoValid] = useState<boolean>(false);
+    const [documentType, setDocumentType] = useState<string>('');
+    const [documentNumber, setDocumentNumber] = useState<string>('');
+    const [name, setNames] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
+    // const [isDocumentoValid, setIsDocumentoValid] = useState<boolean>(false);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [selectedDestination, setSelectedDestination] = useState<string>('');
     const [isFound, setIsFound] = useState<boolean>(false);
@@ -32,6 +32,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // Estado de los asientos para asignacion
     const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
+    const [localSeats, setLocalSeats] = useState<SelectedSeatT[]>(seats);
+
 
 
     useEffect(() => {
@@ -41,57 +43,59 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
         setDestinos(destination);
     }, [dataFrequency]);
 
+    useEffect(() => { setLocalSeats(seats); }, [seats]);
+
     useEffect(() => {
-        const accumulativePrice: number = seats.reduce((acc, seat) => {
+        const accumulativePrice: number = localSeats.reduce((acc, seat) => {
             return acc + (Number(dataFrequency.price) + Number(seat.additionalCost));
         }, 0);
         setTotalPrice(Number(accumulativePrice.toFixed(2)));
-    }, [seats, dataFrequency.price]);
+    }, [localSeats, dataFrequency.price]);
+
+    const isDocumentoValid = documentNumber.length === (documentType === 'Cedula' ? 10 : 9);
 
     // Usar efecto para desencadenar búsqueda cuando el documento es válido
     useEffect(() => {
         const fetchPassengerData = async () => {
-            if (isDocumentoValid) {
+            if (isDocumentoValid && documentNumber) {
                 setIsSearching(true);
-                const result = await getClientByDNI(numeroDocumento)
+                const result = await getClientByDNI(documentNumber)
                 if (result) {
-                    setNombres(result.client.name);
-                    setApellidos(result.client.last_name);
+                    setNames(result.client.name);
+                    setLastName(result.client.last_name);
                     setIsFound(true);
                 } else {
                     setIsFound(false);
                 }
                 setIsSearching(false);
             } else {
-                setNombres('');
-                setApellidos('');
+                setNames('');
+                setLastName('');
                 setIsFound(false);
             }
         };
         fetchPassengerData();
-    }, [isDocumentoValid, tipoDocumento, numeroDocumento]);
+    }, [isDocumentoValid, documentType, documentNumber]);
 
 
     // Manejar cambio en "Tipo de Documento"
-    const handleTipoDocumentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handledocumentTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
-        setTipoDocumento(value);
-        setNumeroDocumento('');
-        setNombres('');
-        setApellidos('');
-        setIsDocumentoValid(false);
+        setDocumentType(value);
+        setDocumentNumber('');
+        setNames('');
+        setLastName('');
         setIsFound(false);
     };
 
     // Manejar cambio en "Número de Documento"
-    const handleNumeroDocumentoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handledocumentNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let value = e.target.value.replace(/\D/g, ''); // Remover caracteres no numéricos
-        const maxLength = tipoDocumento === 'Cedula' ? 10 : 9;
+        const maxLength = documentType === 'Cedula' ? 10 : 9;
         if (value.length > maxLength) {
             value = value.slice(0, maxLength);
         }
-        setNumeroDocumento(value);
-        setIsDocumentoValid(value.length === maxLength);
+        setDocumentNumber(value);
     };
 
     const handleDestinationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -100,12 +104,30 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
 
     const handleSelectSeat = (seat: SelectedSeatT) => {
         setCurrentSeat(seat);
-        setTipoDocumento(''); // Opcional: limpiar inputs
-        setNumeroDocumento('');
-        setNombres(seat.client?.name || '');
-        setApellidos(seat.client?.lastName || '');
+        setDocumentType(''); // Opcional: limpiar inputs
+        setDocumentNumber('');
+        setNames(seat.client?.name || '');
+        setLastName(seat.client?.lastName || '');
     };
 
+    const setClientSeat = (client: PassengerData) => {
+        const newSeats = localSeats.map(seat => {
+            if (seat.seatId === currentSeat?.seatId) {
+                return {
+                    ...seat,
+                    client: {
+                        dni: documentNumber,
+                        name: client.name,
+                        lastName: client.lastName,
+                        exists: isFound
+                    } as ClientT,
+                };
+            }
+            return seat;
+        });
+        setLocalSeats(newSeats); // Actualizamos el estado local
+        setCurrentSeat(null);
+    }
 
 
     return (
@@ -119,7 +141,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
             <form>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <SelectGroupTwo label="Tipo de Documento" onChange={handleTipoDocumentoChange} value={tipoDocumento}>
+                        <SelectGroupTwo label="Tipo de Documento" onChange={handledocumentTypeChange} value={documentType}>
                             <option value="Cedula">Cédula</option>
                             <option value="Pasaporte">Pasaporte</option>
                         </SelectGroupTwo>
@@ -131,9 +153,9 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                         <input
                             type="text"
                             placeholder="Ingrese número de documento"
-                            value={numeroDocumento}
-                            onChange={handleNumeroDocumentoChange}
-                            disabled={!tipoDocumento}
+                            value={documentNumber}
+                            onChange={handledocumentNumberChange}
+                            disabled={!documentType}
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                         {isSearching && <p className="text-sm text-gray-500">Buscando...</p>}
@@ -142,27 +164,27 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                 <div className="grid grid-cols-2 gap-4 my-3">
                     <div>
                         <label className="mb-3 block text-black dark:text-white">
-                            Nombres
+                            Nombre
                         </label>
                         <input
                             type="text"
-                            placeholder="Ingrese los nombres"
-                            value={nombres}
-                            onChange={(e) => setNombres(e.target.value)}
-                            disabled={!tipoDocumento || isSearching}
+                            placeholder="Ingrese los Names"
+                            value={name}
+                            onChange={(e) => setNames(e.target.value)}
+                            disabled={!documentType || isSearching}
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                     <div>
                         <label className="mb-3 block text-black dark:text-white">
-                            Apellidos
+                            Apellido
                         </label>
                         <input
                             type="text"
-                            placeholder="Ingrese los apellidos"
-                            value={apellidos}
-                            onChange={(e) => setApellidos(e.target.value)}
-                            disabled={!tipoDocumento || isSearching}
+                            placeholder="Ingrese los lastName"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            disabled={!documentType || isSearching}
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
@@ -195,13 +217,13 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                         />
                     </div>
                     <div>
-                        {seats.length === 1 || seats.every(seat => seat.client) ? (
+                        {localSeats.length === 1 || localSeats.every(seat => seat.client) ? (
                             <>
                                 <label className="mb-3 block text-black dark:text-white">
                                     Procesar Pago
                                 </label>
                                 <button
-                                    type="submit"
+                                    type="button"
                                     className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                 >
                                     Pagar
@@ -215,7 +237,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                                 <button
                                     type="button"
                                     className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                    onClick={() => {/* lógica para agregar pasajero */}}
+                                    onClick={() => setClientSeat({ name, lastName })}
                                 >
                                     Agregar
                                 </button>
@@ -236,8 +258,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, dataFrequency }) => {
                     </div>
                 </div>
                 <div className="flex justify-between items-center my-4">
-                    {seats.length > 0 ? (
-                        <TableSeats headerTable='Boletos' displayData={seats} onSelectSeat={handleSelectSeat} />
+                    {localSeats.length > 0 ? (
+                        <TableSeats headerTable='Boletos' displayData={localSeats} onSelectSeat={handleSelectSeat} />
                     ) : (
                         <div className="text-xl text-gray-500 dark:text-gray-400">
                             No hay asientos seleccionados

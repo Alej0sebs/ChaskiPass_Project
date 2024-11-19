@@ -6,11 +6,11 @@ export type SeatConfigT = {
     additionalCost?:number
 };
 
-type ClientT={
+export type ClientT={
     dni:string,
     name:string,
     lastName:string,
-    exist:boolean //uso para saber si el cliente fue encontrado en la BD para no hacer inserciones innecesarias o evitar errores
+    exist?:boolean //uso para saber si el cliente fue encontrado en la BD para no hacer inserciones innecesarias o evitar errores
 }
 
 export type SelectedSeatT={

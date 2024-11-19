@@ -8,7 +8,7 @@ interface TableTicketsProps {
 
 const TableSeats = ({ headerTable, displayData, onSelectSeat }: TableTicketsProps) => {
     return (
-        <div className="h-55 overflow-x-auto w-[40%]">
+        <div className="h-55 overflow-x-auto">
             <table className="table table-pin-rows">
                 <thead>
                     <tr>
@@ -26,7 +26,7 @@ const TableSeats = ({ headerTable, displayData, onSelectSeat }: TableTicketsProp
                         >
                             <td>{val.seatId}</td>
                             <td>{val.additionalCost}</td>
-                            <td>{val.client?.name}</td>
+                            <td>{val.client?.name} {val.client?.lastName}</td>
                         </tr>
                     ))}
                 </tbody>

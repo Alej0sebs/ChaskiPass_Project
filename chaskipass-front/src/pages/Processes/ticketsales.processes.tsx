@@ -93,7 +93,7 @@ const TicketsalesRegistration = () => {
     };
 
     const tabsData = [
-        { title: 'Ventas', content: <SalesForm seats={selectedSeats} dataFrequency={frequencyData}/> },
+        { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData}/> },
         { title: 'Reservados', content: <TableOne /> },
         { title: 'Pasajeros', content: <TableOne /> }
     ];

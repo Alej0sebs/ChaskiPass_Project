@@ -11,6 +11,7 @@ export class Cooperatives extends Model<
     declare phone: string;
     declare email: string;
     declare logo: string;
+    declare ticket_counter: number;
 }
 
 Cooperatives.init({
@@ -37,6 +38,10 @@ Cooperatives.init({
     logo: {
         type: DataTypes.TEXT,
         allowNull: true,
+    },
+    ticket_counter: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
     }
 }, {
     sequelize: connectionDb,

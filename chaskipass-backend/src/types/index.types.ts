@@ -101,11 +101,12 @@ type PurchasedSeatT={
 
 export type TicketClientInformationT = {
     id: number;
-    serial_station_id: number;
+    serial_number: number;
     frequency_id: string;
     price: number;
     departure_station: number;
     arrival_station: number;
     date: Date;
-    seats: PurchasedSeatT[]
+    selectedSeats: PurchasedSeatT[];
+    cooperative_id: string;
 }

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getClientsService, createClientService, updateClientService, deleteClientService, getClientByDNIService } from '../services/clients.services';
+import { getClientsService, createClientService, updateClientService, deleteClientService, getClientCooperativeByDNIService } from '../services/clients.services';
 import { HandleMessages } from '../error/handleMessages.error';
 import { getPaginationData } from '../utils/helpers.utils';
 
@@ -65,7 +65,7 @@ export const deleteClient = async (req: Request, res: Response) => {
 export const getClientByDNI = async (req: Request, res: Response) => {
     try {
         const {dni}= req.params;
-        const result = await getClientByDNIService(dni);
+        const result = await getClientCooperativeByDNIService(dni);
         res.status(result.status).json(result.json);
         return;
 

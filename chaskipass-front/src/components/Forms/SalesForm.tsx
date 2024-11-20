@@ -12,6 +12,7 @@ interface SalesFormProps {
 interface PassengerData {
     name: string;
     lastName: string;
+    exist: boolean;
 }
 
 const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) => {
@@ -62,9 +63,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                 if (result) {
                     setNames(result.client.name);
                     setLastName(result.client.last_name);
-                    setIsFound(true);
-                } else {
-                    setIsFound(false);
+                    setIsFound(result.client.exist);
                 }
                 setIsSearching(false);
             } else {
@@ -109,7 +108,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
         setLastName(seat.client?.lastName || '');
     };
 
-
+    //Agrego los datos del pasajero
     const setClientSeat = (client: PassengerData) => {
         if (currentSeat) {
             updateSeatClient(currentSeat.seatId, {
@@ -230,7 +229,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                                 <button
                                     type="button"
                                     className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                    onClick={() => setClientSeat({ name, lastName })}
+                                    onClick={() => setClientSeat({ name, lastName, exist:isFound})}
                                 >
                                     Agregar
                                 </button>

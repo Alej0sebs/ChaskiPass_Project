@@ -87,16 +87,17 @@ export type SeatsStructureT = {
     bus_structure_id: number
 }
 
-type ClientT = {
+type ClientSeatT = {
     dni:string,
     name:string,
-    lastName:string
+    last_name:string,
+    exist:boolean
 };
 
 type PurchasedSeatT={
     seatId:string,
     additionalCost:number
-    client:ClientT
+    client:ClientSeatT
 }
 
 export type TicketClientInformationT = {
@@ -109,4 +110,9 @@ export type TicketClientInformationT = {
     date: Date;
     selectedSeats: PurchasedSeatT[];
     cooperative_id: string;
+}
+
+export type ClientCooperativeT={
+    dni:string,
+    cooperative_id:string
 }

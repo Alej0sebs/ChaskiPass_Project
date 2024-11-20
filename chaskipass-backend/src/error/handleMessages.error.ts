@@ -55,4 +55,7 @@ export enum HandleMessages{
     FREQUENCY_UPDATED_SUCCESSFULLY='Frecuencia actualizada con éxito',
     FREQUENCY_DELETED_SUCCESSFULLY='Frecuencia eliminada con éxito',
     NO_SEATS_FOUND='No se encontraron asientos',
+    CLIENT_COOPERATIVE_EXIST='El cliente ya está registrado en la cooperativa',
+    CLIENT_COOPERATIVE_NOT_FOUND='El cliente no está registrado en la cooperativa',
+    CLIENT_COOPERATIVE_CREATED='Cliente registrado en la cooperativa',
 }

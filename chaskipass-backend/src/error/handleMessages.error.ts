@@ -58,4 +58,5 @@ export enum HandleMessages{
     CLIENT_COOPERATIVE_EXIST='El cliente ya está registrado en la cooperativa',
     CLIENT_COOPERATIVE_NOT_FOUND='El cliente no está registrado en la cooperativa',
     CLIENT_COOPERATIVE_CREATED='Cliente registrado en la cooperativa',
+    TICKET_SOLD_SUCESSFULLY='Ticket vendido con éxito',
 }

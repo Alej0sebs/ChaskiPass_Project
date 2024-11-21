@@ -186,7 +186,30 @@ export type LinkCooperativesT = {
     cooperative_id: string,
 }
 
+type ClientSeatT = {
+    dni:string,
+    name:string,
+    last_name:string,
+    exist:boolean
+};
 
+type PurchasedSeatT={
+    seatId:string,
+    additionalCost:number
+    client:ClientSeatT
+}
+
+export type TicketClientInformationT = {
+    id: number;
+    serial_number: number;
+    frequency_id: string;
+    price: number;
+    departure_station: number;
+    arrival_station: number;
+    date: Date;
+    selectedSeats: PurchasedSeatT[];
+    cooperative_id: string;
+}
 
 
 

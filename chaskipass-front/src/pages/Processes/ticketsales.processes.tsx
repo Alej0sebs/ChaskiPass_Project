@@ -70,7 +70,6 @@ const TicketsalesRegistration = () => {
     }, [frequencyData]);
 
     const handleSeatClick = ({seatId, additionalCost}:SelectedSeatT) => {
-        
         if(isSeatSelected(seatId)){
             removeSeat(seatId);
         }else{

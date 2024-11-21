@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { filterFrequencies } from "../controllers/filterFrequencies.controllers";
 import protectRoute from "../middleware/protectRoute.middleware";
-import { createFrequency, createRoute, deleteFrequencyByID, editFrequency, getFrequencies, getRoutes } from "../controllers/routes.controller";
+import { createFrequency, createRoute, deleteFrequencyByID, editFrequency, getFrequencies, getRoutes } from "../controllers/routes.controllers";
 
 
 const router = Router();

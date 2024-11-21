@@ -63,7 +63,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                 if (result) {
                     setNames(result.client.name);
                     setLastName(result.client.last_name);
-                    setIsFound(result.client.exist);
+                    setIsFound(result.exist);
                 }
                 setIsSearching(false);
             } else {

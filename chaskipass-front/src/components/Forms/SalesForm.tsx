@@ -2,47 +2,61 @@ import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 import TableSeats from '../Tables/TableSeats';
 import { useClient } from '../../hooks/useClient';
-import { ClientT, FrequencyListObjectT, SelectedSeatT } from '../../types';
+import { ClientT, FrequencyListObjectT, SelectedSeatT, TicketClientInformationT } from '../../types';
 import { useSelectedSeatsStore } from '../../Zustand/useSelectedSeats';
+import { useSellTicket } from '../../hooks/useSellTicket';
+import useSerialStation from '../../hooks/useSerialStation';
 
 interface SalesFormProps {
     dataFrequency: FrequencyListObjectT;
-}
+};
 
 interface PassengerData {
     name: string;
     lastName: string;
-    exist: boolean;
-}
+    exist?: boolean;
+};
 
 const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) => {
 
     //Store seats
-    const { selectedSeats, addSeat, removeSeat, updateSeatClient } = useSelectedSeatsStore();
+    const { selectedSeats, updateSeatClient } = useSelectedSeatsStore();
     //Hooks
     const { getClientByDNI } = useClient();
+    const { sellTicket } = useSellTicket();
+    const { getSerialStationByStationAndDNI } = useSerialStation()
 
+    //local state
     const [destinos, setDestinos] = useState<string[]>([]);
     const [documentType, setDocumentType] = useState<string>('');
     const [documentNumber, setDocumentNumber] = useState<string>('');
-    const [name, setNames] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    // const [isDocumentoValid, setIsDocumentoValid] = useState<boolean>(false);
+    // const [passengerData, setPassengerData] = useState<{ name: string; lastName: string; exist?: boolean }>({ name: '', lastName: '' });
+    const [passengerData, setPassengerData] = useState<PassengerData>({ name: '', lastName: '' });
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [selectedDestination, setSelectedDestination] = useState<string>('');
-    const [isFound, setIsFound] = useState<boolean>(false);
     //total price
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // Estado de los asientos para asignacion
     const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
 
-
+    let ticketSerialData = {
+        serialNumber: "",
+        actualTicket: 0,
+    }
 
     useEffect(() => {
         const cities = dataFrequency.stop_city_names.split(',').map((city) => city.trim());
         const destination = dataFrequency.stop_station_names.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`);
         destination.unshift('Viaje Completo');
         setDestinos(destination);
+
+        //Datos para el ticket
+        const fetchData = async () => {
+            const data = await getSerialStationByStationAndDNI();
+            ticketSerialData.serialNumber = data.serialNumber;
+            ticketSerialData.actualTicket = data.actualTicket;
+        };
+        fetchData();
     }, [dataFrequency]);
 
     useEffect(() => {
@@ -61,15 +75,19 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                 setIsSearching(true);
                 const result = await getClientByDNI(documentNumber)
                 if (result) {
-                    setNames(result.client.name);
-                    setLastName(result.client.last_name);
-                    setIsFound(result.exist);
+                    setPassengerData({
+                        name: result.client.name,
+                        lastName: result.client.last_name,
+                        exist: result.exist
+                    });
                 }
                 setIsSearching(false);
             } else {
-                setNames('');
-                setLastName('');
-                setIsFound(false);
+                setPassengerData({
+                    name: '',
+                    lastName: '',
+                    exist: false
+                });
             }
         };
         fetchPassengerData();
@@ -81,9 +99,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
         const value = e.target.value;
         setDocumentType(value);
         setDocumentNumber('');
-        setNames('');
-        setLastName('');
-        setIsFound(false);
+        setPassengerData({ name: '', lastName: '' });
     };
 
     // Manejar cambio en "Número de Documento"
@@ -96,35 +112,58 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
         setDocumentNumber(value);
     };
 
+    // Manejo de cambios en los campos de pasajero
+    const handlePassengerChange = (field: keyof typeof passengerData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassengerData((prev) => ({
+            ...prev,
+            [field]: e.target.value,
+        }));
+    };
+
     const handleDestinationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedDestination(e.target.value);
-    }
+    };
 
     const handleSelectSeat = (seat: SelectedSeatT) => {
         setCurrentSeat(seat);
         setDocumentType(''); // Opcional: limpiar inputs
         setDocumentNumber('');
-        setNames(seat.client?.name || '');
-        setLastName(seat.client?.lastName || '');
+        setPassengerData({
+            name: seat.client?.name || '',
+            lastName: seat.client?.lastName || '',
+        });
     };
 
-    //Agrego los datos del pasajero
-    const setClientSeat = (client: PassengerData) => {
+    //Agrego los datos del pasajero,  no necesito pasarle datos ya que manejare lo de passengerData
+    const setClientSeat = () => {
         if (currentSeat) {
             updateSeatClient(currentSeat.seatId, {
                 dni: documentNumber,
-                name: client.name,
-                lastName: client.lastName,
-                exist: isFound
+                name: passengerData.name,
+                lastName: passengerData.lastName,
+                exist: passengerData.exist
             });
             setCurrentSeat(null);
         }
     }
 
+    /*
+        const ticketPurchase= () =>{
+            const purchaseData:TicketClientInformationT = {
+                frequency_id: dataFrequency.id,
+                departure_station
+                arrival_station
+                totalPrice,
+                date: new Date(),
+                selectedSeats
+            };
+            sellTicket(purchaseData);
+        }
+    */
 
     return (
         <>
-            <h2 className="text-2xl font-bold mb-6 text-center text-black dark:text-white">BOLETO: 100 - 000017</h2>
+            <h2 className="text-2xl font-bold mb-6 text-center text-black dark:text-white">BOLETO: {`${ticketSerialData.serialNumber}-${ticketSerialData.actualTicket}`} </h2>
             <div className="col-span-3">
                 <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
                     Frecuencia: {dataFrequency.id}
@@ -161,8 +200,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                         <input
                             type="text"
                             placeholder="Ingrese los Names"
-                            value={name}
-                            onChange={(e) => setNames(e.target.value)}
+                            value={passengerData.name}
+                            onChange={handlePassengerChange('name')}
                             disabled={!documentType || isSearching}
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
@@ -174,8 +213,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                         <input
                             type="text"
                             placeholder="Ingrese los lastName"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
+                            value={passengerData.lastName}
+                            onChange={handlePassengerChange('lastName')}
                             disabled={!documentType || isSearching}
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
@@ -215,7 +254,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                                     Procesar Pago
                                 </label>
                                 <button
-                                    type="button"
+                                    type="submit"
                                     className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                 >
                                     Pagar
@@ -229,7 +268,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                                 <button
                                     type="button"
                                     className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                                    onClick={() => setClientSeat({ name, lastName, exist:isFound})}
+                                    onClick={() => setClientSeat()}
                                 >
                                     Agregar
                                 </button>

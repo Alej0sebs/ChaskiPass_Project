@@ -63,7 +63,31 @@ export default function useSerialStation() {
             setLoading(false);
         }
     };
+
+    const getSerialStationByStationAndDNI = async () => {
+        setLoading(true);
+        try {
+            const response: Response = await fetch(`${API_BASE_URL}serialNumbers/serialSeller`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error al obtener los datos');
+            }
+            const data = await response.json();
+            console.log(data);  
+            return data.json; 
+        } catch (error) {
+            toast.error(verifyError(error));
+        } finally {
+            setLoading(false);
+        }
+    };
     
 
-    return {loading,createSerialStation,getSerialStation};
+    return {loading,createSerialStation,getSerialStation, getSerialStationByStationAndDNI};
 }

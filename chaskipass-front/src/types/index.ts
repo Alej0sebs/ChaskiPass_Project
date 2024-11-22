@@ -36,6 +36,7 @@ export type UserT = {
     dni: string,
     name: string,
     last_name: string,
+    full_name: string,
     user_name: string,
     email: string,
     phone: string,
@@ -44,6 +45,7 @@ export type UserT = {
     role_id: string
     cooperative_id: string
 };
+
 
 export type TypeBusT = {
     bus_number: string,
@@ -86,7 +88,7 @@ export type BusStationT = {
 export type UserSignUpT = Pick<UserT, 'email' | 'user_name' | 'password'>;
 
 
-export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperative_id'>;
+export type UserLocalStorageT = Pick<UserT, 'full_name' | 'role_id' | 'cooperative_id'>;
 
 // export type CreateUser=Pick<UserT,'dni'|'name'|'last_name'|'user_name'|'email'|'phone'|'address'|'role_id'|'cooperative_id'>
 
@@ -184,7 +186,7 @@ export type TicketsListT = {
 export type LinkCooperativesT = {
     station_id: number,
     cooperative_id: string,
-}
+};
 
 type ClientSeatT = {
     dni:string,
@@ -197,11 +199,11 @@ type PurchasedSeatT={
     seatId:string,
     additionalCost:number
     client:ClientSeatT
-}
+};
 
 export type TicketClientInformationT = {
     id: number;
-    serial_number: number;
+    serial_station_id: number;
     frequency_id: string;
     price: number;
     departure_station: number;
@@ -209,7 +211,7 @@ export type TicketClientInformationT = {
     date: Date;
     selectedSeats: PurchasedSeatT[];
     cooperative_id: string;
-}
+};
 
 
 

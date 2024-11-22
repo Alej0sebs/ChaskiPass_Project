@@ -30,19 +30,15 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
     const [destinos, setDestinos] = useState<string[]>([]);
     const [documentType, setDocumentType] = useState<string>('');
     const [documentNumber, setDocumentNumber] = useState<string>('');
-    // const [passengerData, setPassengerData] = useState<{ name: string; lastName: string; exist?: boolean }>({ name: '', lastName: '' });
     const [passengerData, setPassengerData] = useState<PassengerData>({ name: '', lastName: '' });
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [selectedDestination, setSelectedDestination] = useState<string>('');
+    const [ticketSerialData, setTicketSerialData] = useState<{ serialNumber: string, actualTicket: number }>({ serialNumber: '', actualTicket: 0 });
     //total price
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // Estado de los asientos para asignacion
     const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
-
-    let ticketSerialData = {
-        serialNumber: "",
-        actualTicket: 0,
-    }
+    
 
     useEffect(() => {
         const cities = dataFrequency.stop_city_names.split(',').map((city) => city.trim());
@@ -53,8 +49,10 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
         //Datos para el ticket
         const fetchData = async () => {
             const data = await getSerialStationByStationAndDNI();
-            ticketSerialData.serialNumber = data.serialNumber;
-            ticketSerialData.actualTicket = data.actualTicket;
+            setTicketSerialData({
+                serialNumber: data.serialNumber,
+                actualTicket: data.actualTicket
+            });
         };
         fetchData();
     }, [dataFrequency]);
@@ -199,7 +197,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                         </label>
                         <input
                             type="text"
-                            placeholder="Ingrese los Names"
+                            placeholder="Ingrese su nombre"
                             value={passengerData.name}
                             onChange={handlePassengerChange('name')}
                             disabled={!documentType || isSearching}
@@ -212,7 +210,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                         </label>
                         <input
                             type="text"
-                            placeholder="Ingrese los lastName"
+                            placeholder="Ingrese su apellido"
                             value={passengerData.lastName}
                             onChange={handlePassengerChange('lastName')}
                             disabled={!documentType || isSearching}

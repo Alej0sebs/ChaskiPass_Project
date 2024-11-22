@@ -110,9 +110,17 @@ export type TicketClientInformationT = {
     date: Date;
     selectedSeats: PurchasedSeatT[];
     cooperative_id: string;
+    payment_method: string;
 }
 
 export type ClientCooperativeT={
     dni:string,
     cooperative_id:string
+}
+
+export type PaymentT = {
+    payment_method: string,
+    amount: number,
+    cooperative_id: string,
+    ticket_id: number,
 }

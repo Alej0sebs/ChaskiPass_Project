@@ -38,7 +38,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // Estado de los asientos para asignacion
     const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
-    
+
 
     useEffect(() => {
         const cities = dataFrequency.stop_city_names.split(',').map((city) => city.trim());
@@ -145,19 +145,26 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
         }
     }
 
-    /*
-        const ticketPurchase= () =>{
-            const purchaseData:TicketClientInformationT = {
-                frequency_id: dataFrequency.id,
-                departure_station
-                arrival_station
-                totalPrice,
-                date: new Date(),
-                selectedSeats
-            };
-            sellTicket(purchaseData);
-        }
-    */
+    const ticketPurchase = () => {
+
+        const localStorageData = localStorage.getItem('chaski-log');
+        const cooperative_id = localStorageData ? JSON.parse(localStorageData).cooperative_id : '1';
+
+        //Ver errores de departure_station y arrival_station
+        /*const purchaseData: TicketClientInformationT = {
+            frequency_id: dataFrequency.id,
+            serial_station_id: Number(ticketSerialData.serialNumber),
+            price: dataFrequency.price,
+            departure_station: dataFrequency.departure_station,
+            arrival_station: dataFrequency.arrival_station,
+            date: dataFrequency.date,
+            selectedSeats: selectedSeats,
+            cooperative_id
+        };*/
+
+        // sellTicket(purchaseData);
+    }
+
 
     return (
         <>

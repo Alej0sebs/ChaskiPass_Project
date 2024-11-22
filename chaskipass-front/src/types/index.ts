@@ -202,7 +202,6 @@ type PurchasedSeatT={
 };
 
 export type TicketClientInformationT = {
-    id: number;
     serial_station_id: number;
     frequency_id: string;
     price: number;

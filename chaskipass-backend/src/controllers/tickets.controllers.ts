@@ -6,7 +6,7 @@ import { HandleMessages } from "../error/handleMessages.error";
 
 export const sellTicket = async (req: Request, res: Response) => {
     try{
-        const {serial_number, frequency_id, price, departure_station, arrival_station, date, selectedSeats, cooperative_id} = req.body;
+        const {serial_number, frequency_id, price, departure_station, arrival_station, date, selectedSeats, cooperative_id, payment_method} = req.body;
         const dataSellTicket:TicketClientInformationT = {
             id: 0,
             serial_number,
@@ -16,7 +16,8 @@ export const sellTicket = async (req: Request, res: Response) => {
             arrival_station,
             date,
             selectedSeats,
-            cooperative_id
+            cooperative_id,
+            payment_method
         };
 
         //Call to service

@@ -22,6 +22,7 @@ export type UserT = {
     dni: string,
     name: string,
     last_name: string,
+    full_name: string,
     user_name: string,
     email: string,
     phone: string,
@@ -72,7 +73,7 @@ export type BusStationT = {
 export type UserSignUpT = Pick<UserT, 'email' | 'user_name' | 'password'>;
 
 
-export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperative_id'>;
+export type UserLocalStorageT = Pick<UserT, 'full_name' | 'role_id' | 'cooperative_id'>;
 
 // export type CreateUser=Pick<UserT,'dni'|'name'|'last_name'|'user_name'|'email'|'phone'|'address'|'role_id'|'cooperative_id'>
 

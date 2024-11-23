@@ -89,20 +89,14 @@ const TicketsalesRegistration = () => {
         // Aquí enviarías los asientos seleccionados al backend para procesar la compra
         toast.success(`Has reservado los siguientes asientos: ${selectedSeats.join(', ')}`);
     };
-
-    const tabsData = [
-        { title: 'Ventas', content: <SalesForm seats={selectedSeats} stopOvers={frequencyData.stop_station_names} stop_city_names={frequencyData.stop_city_names} /> },
-        { title: 'Reservados', content: <TableOne /> },
-        { title: 'Pasajeros', content: <TableOne /> }
-    ];
-
+    
     //Contabilizar los datos de los asientos segun la estructura
     const statuses = [
         { label: 'Libre', count: 22, statusSeat: 'free', name: 'F' },
         { label: 'Reservados', count: 6, statusSeat: 'reserved', name: 'R' },
         { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'V' },
     ];
-
+    
     // Estos datos vendrían de una consulta en una aplicación real
     const travelData = {
         placa: frequencyData.license_plate,
@@ -118,7 +112,13 @@ const TicketsalesRegistration = () => {
         horaLlegada: frequencyData.arrival_time,
         terminal: `${frequencyData.departure_station_name} - ${frequencyData.departure_city_name}`,
     };
-
+    
+    const tabsData = [
+        { title: 'Ventas', content: <SalesForm seats={selectedSeats} stopOvers={frequencyData.stop_station_names} stop_city_names={frequencyData.stop_city_names} ticketData={travelData} /> },
+        { title: 'Reservados', content: <TableOne /> },
+        { title: 'Pasajeros', content: <TableOne /> }
+    ];
+    
     const InputField = ({ label, value, isWide = false }: InputFieldProps) => (
         <div className={`mb-4 ${isWide ? 'col-span-2' : ''}`}>
             <label className="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-200">

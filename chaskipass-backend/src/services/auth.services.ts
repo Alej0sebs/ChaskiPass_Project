@@ -36,6 +36,7 @@ export const loginUserService = async (
         return {
             status: 200,
             json: {
+                full_name: user.name+" "+user.last_name,
                 dni: user.dni,
                 cooperative: user.cooperative_id,
                 role: user.role_id 

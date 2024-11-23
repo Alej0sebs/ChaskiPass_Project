@@ -27,6 +27,7 @@ import BusStationRegistration from './pages/Registration/busStation.registration
 import FrequencyList from './pages/Processes/frequencyList.processes';
 import ProtectedRoute from './utils/protectedRoute.utils';
 import LinkStationsRegistration from './pages/Registration/linkStations.registration';
+import { authInterceptor } from './hooks/useInterceptor';
 
 
 function App() {
@@ -277,4 +278,4 @@ function App() {
   );
 }
 
-export default App;
+export default authInterceptor(App);

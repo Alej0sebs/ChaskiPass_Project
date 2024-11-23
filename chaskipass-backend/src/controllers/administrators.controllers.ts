@@ -26,7 +26,7 @@ export const createSaasAdministrator = async (req: Request, res: Response) => {
 export const createCooperative = async (req: Request, res: Response) => {
     try {
         const { id, name, address, phone, email, logo } = req.body;
-        const result = await createCooperativeService({id, name, address, phone, email, logo});
+        const result = await createCooperativeService({id, name, address, phone, email, logo, ticket_counter: 0});
         res.status(result.status).json(result.json);
         return;
     } catch (error) {

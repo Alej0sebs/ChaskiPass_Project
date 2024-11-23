@@ -40,30 +40,48 @@ export default function useSerialStation() {
                 },
                 credentials: 'include',
             });
-            
+
             if (!response.ok) {
                 throw new Error('Error al obtener los datos');
             }
-            
+
             const data = await response.json();
-            
-            // Verifica la estructura de los datos con un log
-            console.log(data);  // Agrega esta línea para inspeccionar la respuesta
-            
-            // Verificar si la propiedad 'json' y 'list' están presentes
+
             if (!data?.json || !data.json.list) {
                 throw new Error('Los datos no contienen la propiedad "json.list"');
             }
-            
-            // Retornar los datos correctamente
-            return data.json.list; // Acceder a la propiedad 'list'
+
+            return data.json.list;
         } catch (error) {
             toast.error(verifyError(error));
         } finally {
             setLoading(false);
         }
     };
-    
 
-    return {loading,createSerialStation,getSerialStation};
+    const getSerialStationByStationAndDNI = async () => {
+        setLoading(true);
+        try {
+            const response: Response = await fetch(`${API_BASE_URL}serialNumbers/serialSeller`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al obtener los datos');
+            }
+            const data = await response.json();
+            return data.json;
+        } catch (error) {
+            toast.error(verifyError(error));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    return { loading, createSerialStation, getSerialStation, getSerialStationByStationAndDNI };
 }

@@ -102,7 +102,8 @@ export const createCooperativeService = async ({
             address,
             phone,
             email,
-            logo
+            logo,
+            ticket_counter: 0
         });
 
         return { status: 201, json: { msg: HandleMessages.COOPERATIVE_CREATED_SUCCESSFULLY } };

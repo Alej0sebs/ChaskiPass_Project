@@ -1,9 +1,11 @@
+import { Op } from "sequelize";
 import { HandleMessages } from "../error/handleMessages.error";
 import BusStations from "../models/busStations.models";
 import { SerialStation } from "../models/serialStation.model";
 import { Users } from "../models/users.models";
 import { DataPaginationT, SerialNumberT } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
+import Cooperatives from "../models/cooperatives.models";
 
 export const createSellerSerialNumberService = async ({ cooperative_id, station_id, serial_number, user_id, status }: SerialNumberT) => {
     try {
@@ -69,4 +71,24 @@ export const getSerialNumbersService = async ({ page, limit }: DataPaginationT) 
         return handleSequelizeError(error);
     }
 };
+
+export const getSerialNumberByStationAndDNIService = async (cooperative_id: string, dni: string) => {
+    try {
+        const serialNumber = await SerialStation.findOne({
+            where: {
+                [Op.and]: [{ cooperative_id }, { user_id: dni }],
+            },
+            attributes: ['serial_number', 'id']
+        });
+
+        const actualTicket = await Cooperatives.findOne({
+            where: { id: cooperative_id },
+            attributes: ['ticket_counter']
+        });
+
+        return { status: 200, json: { id: serialNumber?.id, serialNumber: serialNumber?.serial_number, actualTicket: actualTicket?.ticket_counter } };
+    }catch(error){
+        return handleSequelizeError(error);
+    }
+}
 

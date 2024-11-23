@@ -2,7 +2,7 @@ import { FaCity, FaPhoneAlt } from 'react-icons/fa';
 import { MdLocationOn, MdAccessTime } from 'react-icons/md';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { createBusStationT } from '../../types';
-import createBusStation from '../../hooks/busStationRegistration';
+import createBusStation from '../../hooks/usebusStationRegistration';
 import { useState } from 'react';
 import { useCity } from '../../hooks/useCity';
 

@@ -3,6 +3,21 @@ export type SeatConfigT = {
     type: string,
     name: string,
     position: { "x": number, "y": number },
+    additionalCost?:number,
+    status?: string
+};
+
+export type ClientT={
+    dni:string,
+    name:string,
+    last_name:string,
+    exist?:boolean //uso para saber si el cliente fue encontrado en la BD para no hacer inserciones innecesarias o evitar errores
+}
+
+export type SelectedSeatT={
+    seatId:string,
+    additionalCost:number,
+    client?:ClientT
 };
 
 export type LayoutBusT = {
@@ -22,6 +37,7 @@ export type UserT = {
     dni: string,
     name: string,
     last_name: string,
+    full_name: string,
     user_name: string,
     email: string,
     phone: string,
@@ -30,6 +46,7 @@ export type UserT = {
     role_id: string
     cooperative_id: string
 };
+
 
 export type TypeBusT = {
     bus_number: string,
@@ -72,7 +89,7 @@ export type BusStationT = {
 export type UserSignUpT = Pick<UserT, 'email' | 'user_name' | 'password'>;
 
 
-export type UserLocalStorageT = Pick<UserT, 'user_name' | 'role_id' | 'cooperative_id'>;
+export type UserLocalStorageT = Pick<UserT, 'full_name' | 'role_id' | 'cooperative_id'>;
 
 // export type CreateUser=Pick<UserT,'dni'|'name'|'last_name'|'user_name'|'email'|'phone'|'address'|'role_id'|'cooperative_id'>
 
@@ -108,12 +125,15 @@ export type FrequencyListObjectT = {
     price: number;
     status: boolean;
     bus_number: number;
+    departure_station_id: number;
     departure_station_name: string;
     departure_city_name: string;
     license_plate: string;
+    arrival_station_id: number;
     arrival_station_name: string;
     arrival_city_name: string;
     cooperative_name: string;
+    stop_station_ids: string;
     stop_station_names: string;
     stop_city_names: string;
 };
@@ -126,12 +146,15 @@ export type FrequencyListT = {
     price: number;
     status: boolean;
     bus_number: number;
+    departure_station_id: number;
     departure_station_name: string;
     departure_city_name: string;
     license_plate: string;
+    arrival_station_id: number;
     arrival_station_name: string;
     arrival_city_name: string;
     cooperative_name: string;
+    stop_station_ids: string;
     stop_station_names: string;
     stop_city_names: string;
 }[];
@@ -170,9 +193,21 @@ export type TicketsListT = {
 export type LinkCooperativesT = {
     station_id: number,
     cooperative_id: string,
-}
+};
 
 
+export type TicketClientInformationT = {
+    serial_id: number;
+    serial_number: number;
+    frequency_id: string;
+    price: number;
+    departure_station: number;
+    arrival_station: number;
+    date: Date;
+    selectedSeats: SelectedSeatT[];
+    cooperative_id: string;
+    payment_method: string;
+};
 
 
 

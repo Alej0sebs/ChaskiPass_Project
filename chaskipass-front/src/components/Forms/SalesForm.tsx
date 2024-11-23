@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 import TableSeats from '../Tables/TableSeats';
 import { useClient } from '../../hooks/useClient';
-import { ClientT, FrequencyListObjectT, SelectedSeatT, TicketClientInformationT } from '../../types';
+import { FrequencyListObjectT, SelectedSeatT, TicketClientInformationT } from '../../types';
 import { useSelectedSeatsStore } from '../../Zustand/useSelectedSeats';
 import { useSellTicket } from '../../hooks/useSellTicket';
 import useSerialStation from '../../hooks/useSerialStation';
+import toast from 'react-hot-toast';
+import ConfirmPopup from '../../modals/confirmPopup.processes';
 
 interface SalesFormProps {
     dataFrequency: FrequencyListObjectT;
@@ -33,7 +35,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
     const [passengerData, setPassengerData] = useState<PassengerData>({ name: '', lastName: '' });
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [selectedDestination, setSelectedDestination] = useState<string>('');
-    const [ticketSerialData, setTicketSerialData] = useState<{ serialNumber: string, actualTicket: number }>({ serialNumber: '', actualTicket: 0 });
+    const [ticketSerialData, setTicketSerialData] = useState<{ serialNumber: string, actualTicket: number, id: number }>({ serialNumber: '', actualTicket: 0, id: 0 });
+    const [isModalOpen, setIsModalOpen] = useState(false);
     //total price
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // Estado de los asientos para asignacion
@@ -51,7 +54,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
             const data = await getSerialStationByStationAndDNI();
             setTicketSerialData({
                 serialNumber: data.serialNumber,
-                actualTicket: data.actualTicket
+                actualTicket: data.actualTicket,
+                id: data.id
             });
         };
         fetchData();
@@ -128,7 +132,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
         setDocumentNumber('');
         setPassengerData({
             name: seat.client?.name || '',
-            lastName: seat.client?.lastName || '',
+            lastName: seat.client?.last_name || '',
         });
     };
 
@@ -138,33 +142,52 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
             updateSeatClient(currentSeat.seatId, {
                 dni: documentNumber,
                 name: passengerData.name,
-                lastName: passengerData.lastName,
+                last_name: passengerData.lastName,
                 exist: passengerData.exist
             });
             setCurrentSeat(null);
         }
     }
 
-    const ticketPurchase = () => {
+    const ticketPurchaseConfirmationModal = async () => {
+        if (selectedSeats.length === 1 && !currentSeat) {
+            setCurrentSeat(selectedSeats[0]);
+        };
 
-        const localStorageData = localStorage.getItem('chaski-log');
-        const cooperative_id = localStorageData ? JSON.parse(localStorageData).cooperative_id : '1';
-
-        //Ver errores de departure_station y arrival_station
-        /*const purchaseData: TicketClientInformationT = {
-            frequency_id: dataFrequency.id,
-            serial_station_id: Number(ticketSerialData.serialNumber),
-            price: dataFrequency.price,
-            departure_station: dataFrequency.departure_station,
-            arrival_station: dataFrequency.arrival_station,
-            date: dataFrequency.date,
-            selectedSeats: selectedSeats,
-            cooperative_id
-        };*/
-
-        // sellTicket(purchaseData);
+        setClientSeat();
+        setIsModalOpen(true);
     }
 
+    const closeModal = () => {
+        setIsModalOpen(false); // Cierra el modal
+    };
+
+    const ticketPurchase = async () => {
+        // Verifica que todos los asientos tengan datos de pasajeros
+        const incompleteSeats = selectedSeats.filter(seat => !seat.client?.dni || !seat.client.name || !seat.client.last_name);
+        if (incompleteSeats.length > 0) {
+            toast.error('Por favor complete los datos de los pasajeros');
+            return;
+        };
+        const localStorageData = localStorage.getItem('chaski-log');
+        const cooperative_id = localStorageData ? JSON.parse(localStorageData).cooperative : null;
+
+        const purchaseData: TicketClientInformationT = {
+            frequency_id: dataFrequency.id,
+            serial_id: Number(ticketSerialData.id),
+            serial_number: Number(ticketSerialData.serialNumber),
+            price: dataFrequency.price,
+            departure_station: dataFrequency.departure_station_id,
+            arrival_station: dataFrequency.arrival_station_id,
+            date: new Date(),
+            selectedSeats: selectedSeats,
+            cooperative_id,
+            payment_method:'CAS'
+        };
+        sellTicket(purchaseData);
+        toast.success('Venta realizada con éxito');
+        closeModal();
+    };
 
     return (
         <>
@@ -174,7 +197,6 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                     Frecuencia: {dataFrequency.id}
                 </label>
             </div>
-            <form>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <SelectGroupTwo label="Tipo de Documento" onChange={handledocumentTypeChange} value={documentType}>
@@ -259,8 +281,9 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                                     Procesar Pago
                                 </label>
                                 <button
-                                    type="submit"
+                                    type="button"
                                     className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    onClick={ticketPurchaseConfirmationModal}
                                 >
                                     Pagar
                                 </button>
@@ -272,7 +295,11 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                                 </label>
                                 <button
                                     type="button"
-                                    className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                    disabled={!documentNumber || !passengerData.name || !passengerData.lastName}
+                                    className={`w-full py-2 px-4 rounded-md ${documentNumber && passengerData.name && passengerData.lastName
+                                        ? 'bg-green-500 hover:bg-green-600 text-white'
+                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                        }`}
                                     onClick={() => setClientSeat()}
                                 >
                                     Agregar
@@ -302,7 +329,26 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                         </div>
                     )}
                 </div>
-            </form>
+            
+            {/* Popup de confirmacion */}
+            <ConfirmPopup
+                title="Confirmar Pago"
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onSave={ticketPurchase} // Procesa el pago al confirmar
+            > <div>
+                    <p className="font-semibold">Asientos seleccionados:</p>
+                    <ul className="list-disc ml-5">
+                        {selectedSeats.map(seat => (
+                            <li key={seat.seatId}>
+                                <span>Asiento: {seat.seatId}</span>,
+                                <span> Cliente: {seat.client?.name || 'Sin nombre'} {seat.client?.last_name || ''}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <p className="mt-4 font-semibold">Precio Total: ${totalPrice}</p>
+                </div>
+            </ConfirmPopup>
         </>
     );
 };

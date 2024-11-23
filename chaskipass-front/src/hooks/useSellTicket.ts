@@ -9,6 +9,7 @@ export const useSellTicket = () => {
 
     const sellTicket = async (purchaseData:TicketClientInformationT) => {
         setLoading(true);
+        console.log(purchaseData);
         try{
             const reponse= await fetch(`${API_BASE_URL}tickets/sell`,{
                 method: 'POST',

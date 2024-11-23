@@ -78,7 +78,7 @@ export const getSerialNumberByStationAndDNIService = async (cooperative_id: stri
             where: {
                 [Op.and]: [{ cooperative_id }, { user_id: dni }],
             },
-            attributes: ['serial_number']
+            attributes: ['serial_number', 'id']
         });
 
         const actualTicket = await Cooperatives.findOne({
@@ -86,7 +86,7 @@ export const getSerialNumberByStationAndDNIService = async (cooperative_id: stri
             attributes: ['ticket_counter']
         });
 
-        return { status: 200, json: { serialNumber: serialNumber?.serial_number, actualTicket: actualTicket?.ticket_counter } };
+        return { status: 200, json: { id: serialNumber?.id, serialNumber: serialNumber?.serial_number, actualTicket: actualTicket?.ticket_counter } };
     }catch(error){
         return handleSequelizeError(error);
     }

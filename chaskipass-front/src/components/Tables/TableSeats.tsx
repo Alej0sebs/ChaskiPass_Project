@@ -26,7 +26,7 @@ const TableSeats = ({ headerTable, displayData, onSelectSeat }: TableTicketsProp
                         >
                             <td>{val.seatId}</td>
                             <td>{val.additionalCost}</td>
-                            <td>{val.client?.name} {val.client?.lastName}</td>
+                            <td>{val.client?.name} {val.client?.last_name}</td>
                         </tr>
                     ))}
                 </tbody>

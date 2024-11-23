@@ -3,13 +3,14 @@ export type SeatConfigT = {
     type: string,
     name: string,
     position: { "x": number, "y": number },
-    additionalCost?:number
+    additionalCost?:number,
+    status?: string
 };
 
 export type ClientT={
     dni:string,
     name:string,
-    lastName:string,
+    last_name:string,
     exist?:boolean //uso para saber si el cliente fue encontrado en la BD para no hacer inserciones innecesarias o evitar errores
 }
 
@@ -124,12 +125,15 @@ export type FrequencyListObjectT = {
     price: number;
     status: boolean;
     bus_number: number;
+    departure_station_id: number;
     departure_station_name: string;
     departure_city_name: string;
     license_plate: string;
+    arrival_station_id: number;
     arrival_station_name: string;
     arrival_city_name: string;
     cooperative_name: string;
+    stop_station_ids: string;
     stop_station_names: string;
     stop_city_names: string;
 };
@@ -142,12 +146,15 @@ export type FrequencyListT = {
     price: number;
     status: boolean;
     bus_number: number;
+    departure_station_id: number;
     departure_station_name: string;
     departure_city_name: string;
     license_plate: string;
+    arrival_station_id: number;
     arrival_station_name: string;
     arrival_city_name: string;
     cooperative_name: string;
+    stop_station_ids: string;
     stop_station_names: string;
     stop_city_names: string;
 }[];
@@ -188,28 +195,18 @@ export type LinkCooperativesT = {
     cooperative_id: string,
 };
 
-type ClientSeatT = {
-    dni:string,
-    name:string,
-    last_name:string,
-    exist:boolean
-};
-
-type PurchasedSeatT={
-    seatId:string,
-    additionalCost:number
-    client:ClientSeatT
-};
 
 export type TicketClientInformationT = {
-    serial_station_id: number;
+    serial_id: number;
+    serial_number: number;
     frequency_id: string;
     price: number;
     departure_station: number;
     arrival_station: number;
     date: Date;
-    selectedSeats: PurchasedSeatT[];
+    selectedSeats: SelectedSeatT[];
     cooperative_id: string;
+    payment_method: string;
 };
 
 

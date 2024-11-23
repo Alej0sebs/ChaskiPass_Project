@@ -81,16 +81,6 @@ const TicketsalesRegistration = () => {
         return selectedSeats.some((seat) => seat.seatId === seatId);
     };
 
-    const handlePurchase = () => {
-        if (selectedSeats.length === 0) {
-            toast.error('Debe seleccionar al menos un asiento para continuar.');
-            return;
-        }
-
-        // Aquí enviarías los asientos seleccionados al backend para procesar la compra
-        toast.success(`Has reservado los siguientes asientos: ${selectedSeats.join(', ')}`);
-    };
-
     const tabsData = [
         { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData}/> },
         { title: 'Reservados', content: <TableOne /> },
@@ -101,7 +91,7 @@ const TicketsalesRegistration = () => {
     const statuses = [
         { label: 'Libre', count: 22, statusSeat: 'free', name: 'F' },
         { label: 'Reservados', count: 6, statusSeat: 'reserved', name: 'R' },
-        { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'V' },
+        { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'S' },
     ];
 
     // Estos datos vendrían de una consulta en una aplicación real
@@ -165,8 +155,7 @@ const TicketsalesRegistration = () => {
                                 <div
                                     key={element.id}
                                     id={element.id}
-                                    className={`absolute cursor-pointer ${element.type === 'seat' && isSeatSelected(element.id) ? 'border border-green-500' : ''
-                                        }`}
+                                    className={`absolute cursor-pointer ${element.type === 'seat' && isSeatSelected(element.id)}`}
                                     style={{
                                         left: `${element.position.x}%`,
                                         top: `${element.position.y}%`,
@@ -177,7 +166,7 @@ const TicketsalesRegistration = () => {
                                         <SvgSeatComponent
                                             name={element.name}
                                             isSelected={isSeatSelected(element.id)}
-                                            status="free" // Puedes ajustar el estado según tus datos
+                                            status= {element.status ? element.status.toLowerCase() : "f"} // Puedes ajustar el estado según tus datos
                                         />
                                     )}
                                     {element.type === 'bathroom' && <SvgBathroomComponent />}
@@ -193,7 +182,7 @@ const TicketsalesRegistration = () => {
                         <div className="flex p-4">
                             {statuses.map((statusSeat) => (
                                 <div key={statusSeat.label} className="flex items-center  mx-auto">
-                                    <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.statusSeat} />
+                                    <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.name.toLowerCase()} />
                                     <div className="flex flex-col">
                                         <span className="text-lg font-medium text-black dark:text-white">{statusSeat.label}</span>
                                         <span className="text-base text-black dark:text-white">{statusSeat.label.toLowerCase()}: {statusSeat.count}</span>

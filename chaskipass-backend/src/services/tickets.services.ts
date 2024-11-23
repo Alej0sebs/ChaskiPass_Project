@@ -20,6 +20,7 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
         serial_number,
         cooperative_id,
         payment_method,
+        serial_id
     } = ticket;
 
     try {
@@ -41,7 +42,7 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
             // Actualizar estado de asientos en lote
             const seatUpdates = selectedSeats.map((seat) => ({
                 seat_id: seat.seatId,
-                status: 'R',
+                status: 'r',
                 client_dni: seat.client?.dni || null,
                 reservation_date: new Date(),
             }));
@@ -58,8 +59,7 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
                         transaction,
                     }
                 );
-            }
-
+            };
 
             // Crear tickets en lote
             const ticketRecords = selectedSeats.map((tickets, index) => ({
@@ -68,11 +68,11 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
                 date,
                 departure_station,
                 frequency_id,
-                price: price + (tickets.additionalCost || 0),
+                price: Number(price) + (tickets.additionalCost || 0),
                 seat_id: tickets.seatId,
                 ticket_code: `${serial_number}-${(ticketCounter + index + 1).toString().padStart(6, '0')}`,
                 client_dni: tickets.client?.dni || '',
-                serial_station_id: serial_number,
+                serial_station_id: serial_id,
             }));
 
             //Creo los tickets y me retorna el id de los tickets creados

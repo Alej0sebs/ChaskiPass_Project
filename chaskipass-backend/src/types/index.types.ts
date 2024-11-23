@@ -111,6 +111,7 @@ export type TicketClientInformationT = {
     selectedSeats: PurchasedSeatT[];
     cooperative_id: string;
     payment_method: string;
+    serial_id: number;
 }
 
 export type ClientCooperativeT={

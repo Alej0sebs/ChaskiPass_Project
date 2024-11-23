@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
 import { TicketClientInformationT } from "../types/index.types";
 import { sellTicketService } from "../services/tickets.services";
-import { handleSequelizeError } from "../utils/helpers.utils";
 import { HandleMessages } from "../error/handleMessages.error";
 
 export const sellTicket = async (req: Request, res: Response) => {
     try{
-        const {serial_number, frequency_id, price, departure_station, arrival_station, date, selectedSeats, cooperative_id, payment_method} = req.body;
+        const {serial_number, frequency_id, price, departure_station, arrival_station, date, selectedSeats, cooperative_id, payment_method, serial_id} = req.body;
         const dataSellTicket:TicketClientInformationT = {
             id: 0,
             serial_number,
@@ -17,7 +16,8 @@ export const sellTicket = async (req: Request, res: Response) => {
             date,
             selectedSeats,
             cooperative_id,
-            payment_method
+            payment_method,
+            serial_id
         };
 
         //Call to service

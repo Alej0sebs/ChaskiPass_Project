@@ -8,8 +8,6 @@ export default function useUsers() {
     const [loading, setLoading] = useState(false);
     const [dataListUsers, setdataListUsers] = useState<UserT[]>([]);
 
-
-
     const getDrivers = async () => {
         setLoading(true);
         try {
@@ -31,17 +29,45 @@ export default function useUsers() {
         }
     };
 
+    const updateDriver = async (dni: string, updatedData: Partial<UserT>) => {
+        setLoading(true);
+        try {
+            const res: Response = await fetch(`${API_BASE_URL}users/update`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify(updatedData),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.error);
+            }
+            // Actualiza la lista de usuarios en el estado
+            setdataListUsers((prev) =>
+                prev.map((user) =>
+                    user.dni === dni ? { ...user, ...updatedData } : user
+                )
+            );
+            toast.success("Driver updated successfully");
+            return data.json;
+        } catch (error) {
+            console.error(error);
+            toast.error(verifyError(error));
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        getDrivers
-            ().then((data) => {
-                setdataListUsers(data); // Asigna la lista al estado selectSeller
-
-            });
+        getDrivers().then((data) => {
+            if (data) setdataListUsers(data); // Asigna la lista al estado selectSeller
+        });
     }, []);
 
     return {
         loading,
-        dataListUsers, getDrivers
+        dataListUsers,
+        getDrivers,
+        updateDriver,
     };
 }

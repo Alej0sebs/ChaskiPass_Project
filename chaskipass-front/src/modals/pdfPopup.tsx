@@ -2,150 +2,142 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
-import ChaskiLogoB from '../../images/chaski-logo/chaskilogoblack.svg';
+import ChaskiLogoB from '../images/chaski-logo/chaskilogoblack.png';
+import { TicketData } from '../types/ticket';
 
 Modal.setAppElement('#root');
 
-interface TicketData {
-  dia: string;
-  horaSalida: string;
-  horaLlegada: string;
-  placa: string;
-  terminal: string;
-  destino: string;
-  nombres: string;
-  apellidos: string;
-  tipoDocumento: string;
-  numeroDocumento: string;
-  price: number;
-  seats: string[];
-}
-
 interface PdfModalProps {
-  data: TicketData;
+    tickets: TicketData[];
 }
 
-const PdfModal: React.FC<PdfModalProps> = ({ data }) => {
+const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
     const [showPDF, setShowPDF] = useState(false);
     const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-  
+
     useEffect(() => {
-      if (data) {
-        generatePDF(data);
-      }
-    }, [data]);
-  
-    const generatePDF = async (data: TicketData) => {
-      const doc = new jsPDF({
-        format: [80, 180],
-        unit: 'mm',
-      });
-  
-      try {
-        const response = await fetch(ChaskiLogoB);
-        const svgText = await response.text();
-  
-        const svg = new DOMParser().parseFromString(svgText, 'image/svg+xml').documentElement;
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-  
-        canvas.width = 200;
-        canvas.height = 150;
-  
-        const svgImage = new Image();
-        const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
-  
-        svgImage.onload = async () => {
-          ctx?.drawImage(svgImage, 0, 0, 200, 150);
-          const pngBase64 = canvas.toDataURL('image/png');
-  
-          doc.addImage(pngBase64, 'PNG', 15, 0, 50, 40);
-  
-          await generateRestOfPDF(doc, data);
+        if (tickets.length > 0) {
+            generatePDF(tickets);
+        }
+    }, [tickets]);
+
+    const generatePDF = async (tickets: TicketData[]) => {
+        const doc = new jsPDF({
+            format: [80, 180],
+            unit: 'mm',
+        });
+
+        for (const ticket of tickets) {
+            await generateTicketPage(doc, ticket);
+
+            if (ticket !== tickets[tickets.length - 1]) {
+                doc.addPage();
+            }
+        }
+
+        const pdfBlob = doc.output('blob');
+        setPdfBlob(pdfBlob);
+        setShowPDF(true);
+    };
+
+    const generateTicketPage = async (doc: jsPDF, data: TicketData) => {
+        const addCenteredText = (text: string, y: number, fontSize: number = 10) => {
+            doc.setFontSize(fontSize);
+            doc.text(text, 40, y, { align: 'center' });
         };
-  
-        svgImage.src = svgUrl;
-      } catch (error) {
-        console.error('Error al procesar el logo:', error);
-        await generateRestOfPDF(doc, data);
-      }
-    };
-  
-    const generateRestOfPDF = async (doc: jsPDF, data: TicketData) => {
-      doc.setFontSize(10);
-      const centerX = 40;
-      let currentY = 22;
-      const lineHeight = 4;
-  
-      const addCenteredText = (text: string, y: number, fontSize: number = 10) => {
-        doc.setFontSize(fontSize);
-        doc.text(text, centerX, y, { align: 'center' });
-      };
-  
-      const addInfoLine = (label: string, value: string) => {
-        doc.setFontSize(8);
-        doc.text(`${label}: ${value}`, 5, currentY);
+
+        const lineHeight = 4;
+        doc.addImage(ChaskiLogoB, 'PNG', 15, 0, 50, 40);
+        let currentY = 25;
+        currentY += lineHeight*3;
+        addCenteredText('Av. Elhuesardo xD', currentY, 8);
         currentY += lineHeight;
-      };
-  
-      addCenteredText('Av. Elhuesardo xD', currentY, 8);
-      currentY += lineHeight;
-      addCenteredText('RUC: 1818181818001', currentY, 8);
-      currentY += lineHeight;
-      addCenteredText('Teléfono: (03) 2 742 358', currentY, 8);
-      currentY += lineHeight * 1.5;
-  
-      doc.setLineWidth(0.1);
-      doc.line(5, currentY, 75, currentY);
-      currentY += lineHeight;
-  
-      addCenteredText('BOLETO DE VIAJE', currentY, 10);
-      currentY += lineHeight;
-      addCenteredText('N° 100 - 000016', currentY, 10);
-      currentY += lineHeight * 1.5;
-  
-      addInfoLine('Fecha', data.dia);
-      addInfoLine('Hora Salida', data.horaSalida);
-      addInfoLine('Hora Llegada', data.horaLlegada);
-      addInfoLine('Bus', data.placa);
-      addInfoLine('Origen', data.terminal);
-      addInfoLine('Destino', data.destino);
-      addInfoLine('Asiento', data.seats.join(', '));
-      addInfoLine('Pasajero', `${data.nombres} ${data.apellidos}`);
-      addInfoLine(data.tipoDocumento, data.numeroDocumento);
-      addInfoLine('Total', `$${data.price.toFixed(2)}`);
-  
-      const qrData = `Ticket:100-000017,DNI:${data.numeroDocumento},Asiento:${data.seats.join(',')}`;
-      const qrCodeDataUrl = await QRCode.toDataURL(qrData);
-      doc.addImage(qrCodeDataUrl, 'PNG', 25, currentY, 30, 30);
-  
-      const pdfBlob = doc.output('blob');
-      setPdfBlob(pdfBlob);
-      setShowPDF(true);
+        addCenteredText('RUC: 1818181818001', currentY, 8);
+        currentY += lineHeight;
+        addCenteredText('Teléfono: (03) 2 742 358', currentY, 8);
+        currentY += lineHeight * 1.5;
+
+        doc.line(5, currentY, 75, currentY);
+        currentY += 6;
+
+        addCenteredText('BOLETO DE VIAJE', currentY, 10);
+        currentY += lineHeight;
+
+        doc.line(5, currentY, 75, currentY);
+        currentY += lineHeight;
+
+        doc.setFontSize(8);
+        doc.text(`${data.tipoDocumento}:  ${data.numeroDocumento}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Pasajero: ${data.nombres} ${data.apellidos}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Asiento: ${data.seats.join(', ')}`, 5, currentY)
+        currentY += lineHeight;
+        doc.text(`Fecha: ${data.dia}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Hora Salida: ${data.horaSalida}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Hora Llegada: ${data.horaLlegada}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Bus: ${data.placa}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Origen: ${data.terminal}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Destino: ${data.destino}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Hora de Emisión: ${new Date().getHours().toString()}:${new Date().getMinutes().toString()}`, 5, currentY);
+        currentY += lineHeight;
+        doc.text(`Total: $${data.price}`, 5, currentY);
+        currentY += 24;
+
+        const qrCodeDataUrl = await QRCode.toDataURL(`${data.numeroDocumento}-${data.frecuencia}-${data.dia}-${data.seats.join(',')}`);
+        doc.addImage(qrCodeDataUrl, 'PNG', 25, currentY, 30, 30);
+        currentY += 30;
+        doc.line(5, currentY, 75, currentY);
+        currentY += lineHeight;
+
+        doc.setFontSize(6);
+        addCenteredText('Este documento es un comprobante de pago válido.', currentY, 6);
+        currentY += lineHeight;
+        addCenteredText('Conserve este boleto para cualquier reclamo posterior.', currentY, 6);
+        currentY += lineHeight;
+        addCenteredText('Gracias por viajar con ChaskiPass', currentY, 6);
     };
-  
+
+    const closeModal = () => {
+        setShowPDF(false);
+        setPdfBlob(null);
+    };
+
     return (
-      <Modal
-        isOpen={showPDF}
-        onRequestClose={() => setShowPDF(false)}
-        style={{
-          content: {
-            width: '500px',
-            height: '800px',
-            margin: 'auto',
-            overflow: 'hidden',
-          },
-        }}
-      >
-        {pdfBlob && (
-          <iframe
-            src={URL.createObjectURL(pdfBlob)}
-            style={{ width: '100%', height: '100%', border: 'none' }}
-          />
-        )}
-      </Modal>
+        <>
+            {showPDF && pdfBlob && (
+                <div
+                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                    onClick={closeModal}
+                >
+                    <div
+                        className="bg-white dark:bg-boxdark p-4 rounded-md shadow-lg z-50"
+                        onClick={(e) => e.stopPropagation()} // Evitar que el clic dentro cierre el modal
+                    >
+                        <iframe
+                            src={URL.createObjectURL(pdfBlob)}
+                            width="350px"
+                            height="745px"
+                            title="Boleto PDF"
+                            className="border border-gray-300 rounded-md"
+                        ></iframe>
+                        <button
+                            onClick={closeModal}
+                            className="mt-4 w-full py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600"
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
     );
-  };
-  
-  export default PdfModal;
+};
+
+export default PDFPopup;

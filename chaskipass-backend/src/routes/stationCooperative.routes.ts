@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllStationCooperative, getStationCooperative, linkCooperativeStation } from "../controllers/stationCooperative.controller";
+import { getAllStationCooperative, getStationCooperative, linkCooperativeStation } from "../controllers/stationCooperative.controllers";
 import protectRoute from "../middleware/protectRoute.middleware";
 
 const router = Router();

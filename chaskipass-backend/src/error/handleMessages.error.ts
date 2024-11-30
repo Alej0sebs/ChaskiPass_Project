@@ -11,6 +11,7 @@ export enum HandleMessages{
     USER_NOT_FOUND= 'Usuario no encontrado',
     USER_CREATED_SUCCESSFULLY= 'Usuario creado con éxito',
     COOPERATIVE_CREATED_SUCCESSFULLY= 'Cooperativa creada con éxito',
+    COOPERATIVE_NOT_FOUND= 'Cooperativa no encontrada',
     EXISTING_BUS= 'El bus ya existe',
     BUS_CREATED_SUCCESSFULLY= 'Bus creado con éxito',
     BUS_NOT_FOUND= 'Bus no encontrado',
@@ -55,4 +56,9 @@ export enum HandleMessages{
     FREQUENCY_UPDATED_SUCCESSFULLY='Frecuencia actualizada con éxito',
     FREQUENCY_DELETED_SUCCESSFULLY='Frecuencia eliminada con éxito',
     NO_SEATS_FOUND='No se encontraron asientos',
+    CLIENT_COOPERATIVE_EXIST='El cliente ya está registrado en la cooperativa',
+    CLIENT_COOPERATIVE_NOT_FOUND='El cliente no está registrado en la cooperativa',
+    CLIENT_COOPERATIVE_CREATED='Cliente registrado en la cooperativa',
+    TICKET_SOLD_SUCESSFULLY='Ticket vendido con éxito',
+    PAYMENT_ERROR='Error al realizar el pago',
 }

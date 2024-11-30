@@ -90,7 +90,9 @@ export const filterFrequenciesService = async (conditions: FilterFrequenciesT, {
                 bs2.name AS arrival_station_name,
                 cit2.id AS arrival_city_id,
                 cit2.name AS arrival_city_name,
-                c.name AS cooperative_name
+                c.name AS cooperative_name,
+                bus.id AS bus_id,
+                bus.bus_structure_id AS structure_id
             FROM 
                 frequencies AS fr
             INNER JOIN 
@@ -103,6 +105,8 @@ export const filterFrequenciesService = async (conditions: FilterFrequenciesT, {
                 bus_stations AS bs2 ON bs2.id = r.arrival_station_id
             INNER JOIN 
                 cities AS cit2 ON cit2.id = bs2.city_id
+            INNER JOIN 
+                buses AS bus ON bus.id = fr.bus_id
             LEFT JOIN 
                 cooperatives AS c ON c.id = fr.cooperative_id
             ${whereClause}

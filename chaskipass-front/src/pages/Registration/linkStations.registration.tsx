@@ -1,38 +1,158 @@
-const LinkStationsRegistration = () => {
-    return (
-        <div className="mx-auto max-w-4xl p-6">
-            <h2 className="text-xl font-semibold mb-4">Registrar Series de Boletos</h2>
+import { useState, useEffect } from "react";
+import useBusStations from "../../hooks/useBusStations";
+import useLinkCooperativeStation from "../../hooks/useLinkCooperativeStation";
+import toast from "react-hot-toast";
+import PaginationDataTable from "../../components/Tables/PaginationDataTable";
 
-            {/* Formulario de registro */}
-            <div className="bg-white rounded shadow-md p-4 mb-6">
-                <form>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Vendedor:</label>
-                            <select className="w-full border rounded px-3 py-2">
-                                <option>Seleccione</option>
-                                {/* Opciones de vendedores */}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Sede:</label>
-                            <select className="w-full border rounded px-3 py-2">
-                                <option>Seleccione</option>
-                                {/* Opciones de sedes */}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">N° Serie:</label>
-                            <input type="text" className="w-full border rounded px-3 py-2" placeholder="Ingrese el número de serie" />
-                        </div>
-                    </div>
-                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Guardar</button>
-                </form>
+const LinkStations = () => {
+  const [selectedStations, setSelectedStations] = useState<any[]>([]);
+  const [currentPage, setCurrentPage] = useState(0); // Página actual para estaciones vinculadas
+  const [totalPages, setTotalPages] = useState(1); // Número total de páginas para estaciones vinculadas
+  const { allBusStations, loading: stationsLoading } = useBusStations();
+  const { linkStation, getLinkedStations, loading: saving, linkedStations } = useLinkCooperativeStation();
+
+  // Obtener estaciones vinculadas al cargar el componente
+  useEffect(() => {
+    const fetchLinkedStations = async () => {
+      try {
+        const result = await getLinkedStations();
+        if (result && result.length) {
+          setTotalPages(Math.ceil(result.length / 5)); // Actualizar total de páginas
+        }
+      } catch (error) {
+        toast.error("Error al obtener las estaciones vinculadas.");
+      }
+    };
+  
+    // Llamar a la función solo si no se ha hecho antes
+    if (linkedStations.length === 0) {
+      fetchLinkedStations();
+    }
+  }, [linkedStations, getLinkedStations]); // Dependencia en `linkedStations` para evitar bucles infinitos
+  
+  const handleStationSelection = (station: any) => {
+    setSelectedStations((prev) =>
+      prev.includes(station)
+        ? prev.filter((s) => s.id !== station.id) // Desmarcar si ya está seleccionada
+        : [...prev, station] // Añadir si no está seleccionada
+    );
+  };
+
+  const handleSave = async () => {
+    try {
+      if (selectedStations.length === 0) {
+        toast.error("Por favor, selecciona al menos una estación.");
+        return;
+      }
+
+      // Enlazar todas las estaciones seleccionadas
+      for (const station of selectedStations) {
+        const result = await linkStation(station.id);
+        if (result && result.status === "success") {
+          // Si es necesario, mostrar un toast de éxito por estación
+        } else {
+          // Si es necesario, mostrar un toast de error por estación
+        }
+      }
+
+      // Actualizar la lista de estaciones vinculadas si todas fueron exitosas
+      setSelectedStations([]); // Limpiar selección
+      const result = await getLinkedStations(); // Obtener nuevamente las estaciones vinculadas
+      if (result && result.length) {
+        setTotalPages(Math.ceil(result.length / 5)); // Actualizar total de páginas
+      }
+    } catch (error) {
+      toast.error("Error al guardar las estaciones.");
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedStations([]); // Restablecer selección
+  };
+
+  // Lógica para manejar el cambio de página para las estaciones vinculadas
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  // Datos de la página actual para la paginación de estaciones vinculadas
+  const paginatedLinkedStations = linkedStations.slice(
+    currentPage * 5,
+    (currentPage + 1) * 5
+  ); // 5 elementos por página
+
+  return (
+    <div className="mx-auto max-w-270">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="col-span-1 xl:col-span-2">
+          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
+              <h3 className="font-medium text-black dark:text-white">Enlazar rutas</h3>
             </div>
 
-            {/* Tabla de series por sucursal */}
+            <div className="p-7">
+              <h4 className="font-medium text-black dark:text-white mb-4">Link Stations</h4>
 
+              <div className="mb-5.5">
+                {stationsLoading ? (
+                  <p>Cargando estaciones...</p>
+                ) : (
+                  <div>
+                    {/* Aquí va la parte de los checkboxes */}
+                    <div className="mb-5">
+                      {allBusStations.map((station, index) => (
+                        <div key={index} className="flex items-center mb-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedStations.some((s) => s.id === station.id)}
+                            onChange={() => handleStationSelection(station)}
+                            className="mr-2"
+                          />
+                          <span>{station.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-4 mt-6">
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+                >
+                  {saving ? "Guardando..." : "Guardar"}
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="w-full cursor-pointer rounded-lg border border-gray-400 bg-gray-300 p-4 text-black transition hover:bg-opacity-90 dark:bg-gray-700 dark:text-white"
+                >
+                  Cancelar
+                </button>
+              </div>
+
+              {/* Aquí se muestra la lista de estaciones vinculadas con paginación */}
+              <div className="mt-6">
+                <h4 className="font-medium text-black dark:text-white mb-4">Estaciones vinculadas</h4>
+                <PaginationDataTable
+                  titles={["name"]} // Puedes agregar más títulos según sea necesario
+                  displayHeader={["Estación"]}
+                  data={paginatedLinkedStations} // Pasa los datos paginados de estaciones vinculadas
+                  totalPages={totalPages}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                  loading={saving}
+                  onRowClick={() => {}} // Aquí no es necesario seleccionar, ya que no estamos usando checkboxes para esta tabla
+                  dataHeaderToExpand={[]} // Si tienes datos para expandir
+                />
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
-export default LinkStationsRegistration;
+
+export default LinkStations;

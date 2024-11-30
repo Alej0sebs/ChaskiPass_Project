@@ -1,8 +1,8 @@
 import { Clients } from '../models/clients.models';
 import { ClientCooperatives } from '../models/clientCooperatives';
 import { HandleMessages } from '../error/handleMessages.error';
-import { Op } from 'sequelize';
-import { ClientsT, DataPaginationT } from '../types/index.types';
+import { Op, Transaction } from 'sequelize';
+import { ClientCooperativeT, ClientsT, DataPaginationT } from '../types/index.types';
 import { handleSequelizeError } from '../utils/helpers.utils';
 
 // Servicio para obtener clientes con paginación
@@ -33,13 +33,23 @@ export const getClientsService = async (dni: string, { page, limit }: DataPagina
     }
 };
 
-export const getClientByDNIService = async (dni:string) => {
+export const getClientCooperativeByDNIService = async (dni:string) => {
     try{
-        const client = await Clients.findOne({where:{dni}});
-        if(!client){
-            return {status:404, json:{error:HandleMessages.CLIENT_NOT_FOUND}}
+        const clientCooperative = await ClientCooperatives.findOne({where:{client_dni:dni}});
+        let client;
+        if(!clientCooperative){
+            // return {status:404, json:{error:HandleMessages.CLIENT_NOT_FOUND}};
+            client = await Clients.findOne({where:{dni}});
+            if(!client){
+                return {status:404, json:{error:HandleMessages.CLIENT_NOT_FOUND}}
+            }else{
+                return {status:200, json:{client, exist:false}};
+            }
+        }else{
+            client = await Clients.findOne({where:{dni}});
+            return {status:200, json:{client, exist:true}};
         }
-        return {status:200, json:{client}};
+
     }catch(error){
         return handleSequelizeError(error);
     }
@@ -47,7 +57,7 @@ export const getClientByDNIService = async (dni:string) => {
 
 
 // Servicio para crear un nuevo cliente
-export const createClientService = async ({ dni, name, last_name, email, phone, address }: ClientsT) => {
+export const createClientService = async ({ dni, name, last_name, email, phone, address }: ClientsT, transaction?: Transaction) => {
     try {
         const clientExists = await Clients.findOne({ where: { dni } });
 
@@ -114,3 +124,26 @@ export const deleteClientService = async (dni: string) => {
     }
 };
 
+
+export const createClientCooperativesService = async ({dni, cooperative_id}:ClientCooperativeT, transaction?:Transaction) => {
+    try{
+        const client = await Clients.findOne({where:{dni}});
+        if(!client){
+            return {status:404, json:{error:HandleMessages.CLIENT_NOT_FOUND}};
+        }
+
+        const clientCooperative = await ClientCooperatives.findOne({where:{client_dni:dni, cooperative_id}});
+        if(clientCooperative){
+            return {status:400, json:{error:HandleMessages.CLIENT_COOPERATIVE_EXIST}};
+        }
+
+        const id:string= `${dni}-${cooperative_id}`;
+
+        await ClientCooperatives.create({id,client_dni:dni, cooperative_id}, {transaction});
+
+        return {status:201, json:{message:HandleMessages.CLIENT_COOPERATIVE_CREATED}};
+
+    }catch(error){
+        return handleSequelizeError(error);
+    }
+};

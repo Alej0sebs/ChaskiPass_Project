@@ -119,10 +119,13 @@ export const getFrequenciesService = async (cooperative_id: string) => {
         bus.bus_structure_id,
         fr.price,
         fr.status,
+        bs1.id AS departure_station_id,
         bs1.name AS departure_station_name,
         cit1.name AS departure_city_name,
+        bs2.id AS arrival_station_id,
         bs2.name AS arrival_station_name,
         cit2.name AS arrival_city_name,
+        GROUP_CONCAT(stopStation.id ORDER BY stops.order SEPARATOR ', ') AS stop_station_ids,
         GROUP_CONCAT(stopStation.name ORDER BY stops.order SEPARATOR ', ') AS stop_station_names,
         GROUP_CONCAT(stopCity.name ORDER BY stops.order SEPARATOR ', ') AS stop_city_names
     FROM 

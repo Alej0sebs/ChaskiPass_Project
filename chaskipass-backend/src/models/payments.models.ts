@@ -5,8 +5,8 @@ export class Payments extends Model<
     InferAttributes<Payments>,
     InferCreationAttributes<Payments>
 > {
-    declare id: string;
-    declare ticket_id: string;
+    declare id: number;
+    declare ticket_id: number;
     declare payment_method: string;
     declare payment_date: Date;
     declare voucher: string;

@@ -2,282 +2,204 @@ import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 import TableSeats from '../Tables/TableSeats';
 import { useClient } from '../../hooks/useClient';
-import jsPDF from 'jspdf';
-import QRCode from 'qrcode';
-import ChaskiLogoB from '../../images/chaski-logo/chaskilogoblack.svg';
+import { FrequencyListObjectT, SelectedSeatT, TicketClientInformationT } from '../../types';
+import { useSelectedSeatsStore } from '../../Zustand/useSelectedSeats';
+import { useSellTicket } from '../../hooks/useSellTicket';
+import useSerialStation from '../../hooks/useSerialStation';
+import toast from 'react-hot-toast';
+import ConfirmPopup from '../../modals/confirmPopup.processes';
 
 interface SalesFormProps {
-    stopOvers: string;
-    stop_city_names: string;
-    seats: string[];
-    ticketData: {
-        placa: string,
-        piloto: string,
-        copiloto: string,
-        libres: string,
-        vendidos: string,
-        reservados: string,
-        total: string,
-        horaSalida: string,
-        dia: Date,
-        fechaViaje: Date,
-        horaLlegada: string
-        terminal: string
-    };
-}
+    dataFrequency: FrequencyListObjectT;
+};
 
 interface PassengerData {
-    nombres: string;
-    apellidos: string;
-}
+    name: string;
+    lastName: string;
+    exist?: boolean;
+};
 
-const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names, ticketData }) => {
+const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) => {
 
+    //Store seats
+    const { selectedSeats, updateSeatClient } = useSelectedSeatsStore();
     //Hooks
-    const { getClientByDNI, loading } = useClient();
-    
+    const { getClientByDNI } = useClient();
+    const { sellTicket } = useSellTicket();
+    const { getSerialStationByStationAndDNI } = useSerialStation()
+
+    //local state
     const [destinos, setDestinos] = useState<string[]>([]);
-    const [tipoDocumento, setTipoDocumento] = useState<string>('');
-    const [numeroDocumento, setNumeroDocumento] = useState<string>('');
-    const [nombres, setNombres] = useState<string>('');
-    const [apellidos, setApellidos] = useState<string>('');
-    const [isDocumentoValid, setIsDocumentoValid] = useState<boolean>(false);
+    const [documentType, setDocumentType] = useState<string>('');
+    const [documentNumber, setDocumentNumber] = useState<string>('');
+    const [passengerData, setPassengerData] = useState<PassengerData>({ name: '', lastName: '' });
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [selectedDestination, setSelectedDestination] = useState<string>('');
-    const [isFound, setIsFound] = useState<boolean>(false);
-    const [price, setPrice] = useState<number>();
-    const [selectedState, setSelectedState] = useState<string>('');
-    const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
-    const [showModal, setShowModal] = useState<boolean>(false);
+    const [ticketSerialData, setTicketSerialData] = useState<{ serialNumber: string, actualTicket: number, id: number }>({ serialNumber: '', actualTicket: 0, id: 0 });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    //total price
+    const [totalPrice, setTotalPrice] = useState<number>(0);
+    // Estado de los asientos para asignacion
+    const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
+
 
     useEffect(() => {
-        const cities = stop_city_names.split(',').map((city) => city.trim());
-        const destination = stopOvers.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`);
+        const cities = dataFrequency.stop_city_names.split(',').map((city) => city.trim());
+        const destination = dataFrequency.stop_station_names.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`);
         destination.unshift('Viaje Completo');
         setDestinos(destination);
-    }, [stopOvers, stop_city_names]);
 
-    // Función para simular la búsqueda en la base de datos
-    // const searchInDatabase = async (tipoDoc: string, numeroDoc: string): Promise<PassengerData | null> => {
-    //     // Simular un retraso
-    //     return new Promise((resolve) => {
-    //         setTimeout(() => {
-    //             // Simular datos encontrados
-    //             if (numeroDoc === '1234567890') {
-    //                 resolve({ nombres: 'Juan', apellidos: 'Pérez' });
-    //             } else {
-    //                 resolve(null);
-    //             }
-    //         }, 1000);
-    //     });
-    // };
+        //Datos para el ticket
+        const fetchData = async () => {
+            const data = await getSerialStationByStationAndDNI();
+            setTicketSerialData({
+                serialNumber: data.serialNumber,
+                actualTicket: data.actualTicket,
+                id: data.id
+            });
+        };
+        fetchData();
+    }, [dataFrequency]);
 
-    // Manejar cambio en "Tipo de Documento"
-    const handleTipoDocumentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        setTipoDocumento(value);
-        setNumeroDocumento('');
-        setNombres('');
-        setApellidos('');
-        setIsDocumentoValid(false);
-        setIsFound(false);
-    };
+    useEffect(() => {
+        const accumulativePrice: number = selectedSeats.reduce((acc, seat) => {
+            return acc + (Number(dataFrequency.price) + Number(seat.additionalCost));
+        }, 0);
+        setTotalPrice(Number(accumulativePrice.toFixed(2)));
+    }, [selectedSeats, dataFrequency.price]);
 
-    // Manejar cambio en "Número de Documento"
-    const handleNumeroDocumentoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ''); // Remover caracteres no numéricos
-        const maxLength = tipoDocumento === 'Cedula' ? 10 : 9;
-        if (value.length > maxLength) {
-            value = value.slice(0, maxLength);
-        }
-        setNumeroDocumento(value);
-        setIsDocumentoValid(value.length === maxLength);
-    };
-
-    const handleDestinationChange= (e:React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedDestination(e.target.value);
-    }
+    const isDocumentoValid = documentNumber.length === (documentType === 'Cedula' ? 10 : 9);
 
     // Usar efecto para desencadenar búsqueda cuando el documento es válido
     useEffect(() => {
         const fetchPassengerData = async () => {
-            if (isDocumentoValid) {
+            if (isDocumentoValid && documentNumber) {
                 setIsSearching(true);
-                const result = await getClientByDNI(numeroDocumento)
+                const result = await getClientByDNI(documentNumber)
                 if (result) {
-                    setNombres(result.nombres);
-                    setApellidos(result.apellidos);
-                    setIsFound(true);
-                } else {
-                    setIsFound(false);
-                    // Permitir entrada manual
+                    setPassengerData({
+                        name: result.client.name,
+                        lastName: result.client.last_name,
+                        exist: result.exist
+                    });
                 }
                 setIsSearching(false);
             } else {
-                setNombres('');
-                setApellidos('');
-                setIsFound(false);
+                setPassengerData({
+                    name: '',
+                    lastName: '',
+                    exist: false
+                });
             }
         };
         fetchPassengerData();
-    }, [isDocumentoValid, tipoDocumento, numeroDocumento]);
+    }, [isDocumentoValid, documentType, documentNumber]);
 
-    const handleEstadoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedState(e.target.value);
+
+    // Manejar cambio en "Tipo de Documento"
+    const handledocumentTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const value = e.target.value;
+        setDocumentType(value);
+        setDocumentNumber('');
+        setPassengerData({ name: '', lastName: '' });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (selectedState !== 'vender') return;
-
-        // Recolectar los datos del formulario
-        const data = {
-            tipoDocumento,
-            numeroDocumento,
-            nombres,
-            apellidos,
-            destino: selectedDestination,
-            asientos: seats,
-            price,
-        };
-
-        // Enviar datos al backend
-        try {
-            // const response = await fetch('http://localhost:3000/api/tickets', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(data),
-            // });
-
-            // if (!response.ok) throw new Error('Error al guardar los datos');
-
-            // Generar el PDF del boleto
-            generatePDF(data);
-        } catch (error) {
-            console.error('Error al enviar los datos:', error);
+    // Manejar cambio en "Número de Documento"
+    const handledocumentNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value.replace(/\D/g, ''); // Remover caracteres no numéricos
+        const maxLength = documentType === 'Cedula' ? 10 : 9;
+        if (value.length > maxLength) {
+            value = value.slice(0, maxLength);
         }
+        setDocumentNumber(value);
     };
 
-    const generatePDF = async (data: any) => {
-        const doc = new jsPDF({
-            format: [80, 180],
-            unit: 'mm'
+    // Manejo de cambios en los campos de pasajero
+    const handlePassengerChange = (field: keyof typeof passengerData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPassengerData((prev) => ({
+            ...prev,
+            [field]: e.target.value,
+        }));
+    };
+
+    const handleDestinationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedDestination(e.target.value);
+    };
+
+    const handleSelectSeat = (seat: SelectedSeatT) => {
+        setCurrentSeat(seat);
+        setDocumentType(''); // Opcional: limpiar inputs
+        setDocumentNumber('');
+        setPassengerData({
+            name: seat.client?.name || '',
+            lastName: seat.client?.last_name || '',
         });
+    };
 
-        try {
-            const response = await fetch(ChaskiLogoB);
-            const svgText = await response.text();
-            
-            const svg = new DOMParser().parseFromString(svgText, 'image/svg+xml').documentElement;
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = 200;
-            canvas.height = 150;
-            
-            const svgImage = new Image();
-            const svgBlob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
-            const svgUrl = URL.createObjectURL(svgBlob);
-            
-            svgImage.onload = () => {
-                ctx?.drawImage(svgImage, 0, 0, 200, 150);
-                const pngBase64 = canvas.toDataURL('image/png');
-                
-                doc.addImage(pngBase64, 'PNG', 15, 0, 50, 40);
-                
-                generateRestOfPDF(doc, data);
-            };
-            
-            svgImage.src = svgUrl;
-        } catch (error) {
-            console.error('Error al procesar el logo:', error);
-            generateRestOfPDF(doc, data);
+    //Agrego los datos del pasajero,  no necesito pasarle datos ya que manejare lo de passengerData
+    const setClientSeat = () => {
+        if (currentSeat) {
+            updateSeatClient(currentSeat.seatId, {
+                dni: documentNumber,
+                name: passengerData.name,
+                last_name: passengerData.lastName,
+                exist: passengerData.exist
+            });
+            setCurrentSeat(null);
         }
-    };
+    }
 
-    const generateRestOfPDF = async (doc: jsPDF, data: any) => {
-        doc.setFontSize(10);
-        const centerX = 40;
-        let currentY = 22;
-        const lineHeight = 4;
-        
-        const addCenteredText = (text: string, y: number, fontSize: number = 10) => {
-            doc.setFontSize(fontSize);
-            doc.text(text, centerX, y, { align: 'center' });
+    const ticketPurchaseConfirmationModal = async () => {
+        if (selectedSeats.length === 1 && !currentSeat) {
+            setCurrentSeat(selectedSeats[0]);
         };
 
-        const addInfoLine = (label: string, value: string) => {
-            doc.setFontSize(8);
-            doc.text(`${label}: ${value}`, 5, currentY);
-            currentY += lineHeight;
-        };
-
-        currentY += lineHeight*3;
-        addCenteredText('Av. Elhuesardo xD', currentY, 8);
-        currentY += lineHeight;
-        addCenteredText('RUC: 1818181818001', currentY, 8);
-        currentY += lineHeight;
-        addCenteredText('Teléfono: (03) 2 742 358', currentY, 8);
-        currentY += lineHeight * 1.5;
-
-        doc.setLineWidth(0.1);
-        doc.line(5, currentY, 75, currentY);
-        currentY += lineHeight;
-
-        addCenteredText('BOLETO DE VIAJE', currentY, 10);
-        currentY += lineHeight;
-        addCenteredText('N° 100 - 000016', currentY, 10);
-        currentY += lineHeight * 1.5;
-
-        doc.line(5, currentY, 75, currentY);
-        currentY += lineHeight;
-
-        addInfoLine('Fecha', ticketData.dia.toString());
-        addInfoLine('Hora Salida', ticketData.horaSalida);
-        addInfoLine('Hora Llegada', ticketData.horaLlegada);
-        addInfoLine('Bus', ticketData.placa);
-        addInfoLine('Origen', ticketData.terminal);
-        addInfoLine('Destino', data.destino);
-        addInfoLine('Asiento', seats.join(', '));
-        addInfoLine('Pasajero', `${data.nombres} ${data.apellidos}`);
-        addInfoLine(data.tipoDocumento, ` ${data.numeroDocumento}`);
-        addInfoLine('Fecha Emisión', `${new Date().getHours().toString()}:${new Date().getMinutes().toString()}`);
-        addInfoLine('Total', `$ ${data.price.toFixed(2)}`);
-
-        currentY += 25;
-
-        const qrData = `Ticket:100-000017,DNI:${data.numeroDocumento},Asiento:${seats.join(',')}`;
-        const qrCodeDataUrl = await QRCode.toDataURL(qrData);
-        doc.addImage(qrCodeDataUrl, 'PNG', 25, currentY, 30, 30);
-        currentY += 30;
-
-        doc.line(5, currentY, 75, currentY);
-        currentY += lineHeight;
-
-        doc.setFontSize(6);
-        addCenteredText('Este documento es un comprobante de pago válido.', currentY, 6);
-        currentY += lineHeight;
-        addCenteredText('Conserve este boleto para cualquier reclamo posterior.', currentY, 6);
-        currentY += lineHeight;
-        addCenteredText('Gracias por viajar con ChaskiPass', currentY, 6);
-
-        const pdfBlob = doc.output('blob');
-        setPdfBlob(pdfBlob);
-        setShowModal(true);
-    };
+        setClientSeat();
+        setIsModalOpen(true);
+    }
 
     const closeModal = () => {
-        setShowModal(false);
+        setIsModalOpen(false); // Cierra el modal
     };
 
+    const ticketPurchase = async () => {
+        // Verifica que todos los asientos tengan datos de pasajeros
+        const incompleteSeats = selectedSeats.filter(seat => !seat.client?.dni || !seat.client.name || !seat.client.last_name);
+        if (incompleteSeats.length > 0) {
+            toast.error('Por favor complete los datos de los pasajeros');
+            return;
+        };
+        const localStorageData = localStorage.getItem('chaski-log');
+        const cooperative_id = localStorageData ? JSON.parse(localStorageData).cooperative : null;
+
+        const purchaseData: TicketClientInformationT = {
+            frequency_id: dataFrequency.id,
+            serial_id: Number(ticketSerialData.id),
+            serial_number: Number(ticketSerialData.serialNumber),
+            price: dataFrequency.price,
+            departure_station: dataFrequency.departure_station_id,
+            arrival_station: dataFrequency.arrival_station_id,
+            date: new Date(),
+            selectedSeats: selectedSeats,
+            cooperative_id,
+            payment_method:'CAS'
+        };
+        sellTicket(purchaseData);
+        toast.success('Venta realizada con éxito');
+        closeModal();
+    };
 
     return (
         <>
-            <h2 className="text-2xl font-bold mb-6 text-center text-black dark:text-white">BOLETO: 100 - 000017</h2>
-            <form onSubmit={handleSubmit}>
+            <h2 className="text-2xl font-bold mb-6 text-center text-black dark:text-white">BOLETO: {`${ticketSerialData.serialNumber}-${ticketSerialData.actualTicket}`} </h2>
+            <div className="col-span-3">
+                <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
+                    Frecuencia: {dataFrequency.id}
+                </label>
+            </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <SelectGroupTwo label="Tipo de Documento" onChange={handleTipoDocumentoChange} value={tipoDocumento}>
+                        <SelectGroupTwo label="Tipo de Documento" onChange={handledocumentTypeChange} value={documentType}>
                             <option value="Cedula">Cédula</option>
                             <option value="Pasaporte">Pasaporte</option>
                         </SelectGroupTwo>
@@ -289,9 +211,9 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names
                         <input
                             type="text"
                             placeholder="Ingrese número de documento"
-                            value={numeroDocumento}
-                            onChange={handleNumeroDocumentoChange}
-                            disabled={!tipoDocumento}
+                            value={documentNumber}
+                            onChange={handledocumentNumberChange}
+                            disabled={!documentType}
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                         {isSearching && <p className="text-sm text-gray-500">Buscando...</p>}
@@ -300,27 +222,27 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names
                 <div className="grid grid-cols-2 gap-4 my-3">
                     <div>
                         <label className="mb-3 block text-black dark:text-white">
-                            Nombres
+                            Nombre
                         </label>
                         <input
                             type="text"
-                            placeholder="Ingrese los nombres"
-                            value={nombres}
-                            onChange={(e) => setNombres(e.target.value)}
-                            disabled={!tipoDocumento || isSearching}
+                            placeholder="Ingrese su nombre"
+                            value={passengerData.name}
+                            onChange={handlePassengerChange('name')}
+                            disabled={!documentType || isSearching}
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                     <div>
                         <label className="mb-3 block text-black dark:text-white">
-                            Apellidos
+                            Apellido
                         </label>
                         <input
                             type="text"
-                            placeholder="Ingrese los apellidos"
-                            value={apellidos}
-                            onChange={(e) => setApellidos(e.target.value)}
-                            disabled={!tipoDocumento || isSearching}
+                            placeholder="Ingrese su apellido"
+                            value={passengerData.lastName}
+                            onChange={handlePassengerChange('lastName')}
+                            disabled={!documentType || isSearching}
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
@@ -346,68 +268,87 @@ const SalesForm: React.FC<SalesFormProps> = ({ seats, stopOvers, stop_city_names
                             Precio
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             placeholder="Ingrese el precio"
-                            value={price}
-                            onChange={(e) => setPrice(parseFloat(e.target.value))}
-                            min="0"
-                            step="0.01"
+                            value={totalPrice}
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                     <div>
-                        <SelectGroupTwo label="Estado" value={selectedState} onChange={handleEstadoChange}>
-                            <option value="vender">Vender</option>
-                            <option value="reservar">Reservar</option>
-                        </SelectGroupTwo>
+                        {selectedSeats.length === 1 || selectedSeats.every(seat => seat.client) ? (
+                            <>
+                                <label className="mb-3 block text-black dark:text-white">
+                                    Procesar Pago
+                                </label>
+                                <button
+                                    type="button"
+                                    className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    onClick={ticketPurchaseConfirmationModal}
+                                >
+                                    Pagar
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <label className="mb-3 block text-black dark:text-white">
+                                    Agregar Pasajero
+                                </label>
+                                <button
+                                    type="button"
+                                    disabled={!documentNumber || !passengerData.name || !passengerData.lastName}
+                                    className={`w-full py-2 px-4 rounded-md ${documentNumber && passengerData.name && passengerData.lastName
+                                        ? 'bg-green-500 hover:bg-green-600 text-white'
+                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                        }`}
+                                    onClick={() => setClientSeat()}
+                                >
+                                    Agregar
+                                </button>
+                            </>
+                        )}
+                    </div>
+                    <div className="col-span-3">
+                        <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
+                            Asiento: {
+                                selectedSeats.length === 0
+                                    ? ''
+                                    : selectedSeats.length === 1
+                                        ? selectedSeats[0].seatId
+                                        : currentSeat?.seatId || 'No seleccionado'
+                            }
+
+                        </label>
                     </div>
                 </div>
                 <div className="flex justify-between items-center my-4">
-                    <button
-                        type="submit"
-                        disabled={seats.length === 0}
-                        className={`py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${selectedState === 'reservar'
-                            ? 'bg-orange-500 text-white hover:bg-orange-600 focus:ring-orange-500'
-                            : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500'
-                            }`}
-                    >
-                        {selectedState === 'reservar' ? 'Reservar' : 'Pagar'}
-                    </button>
-                    {seats.length > 0 ? (
-                        <TableSeats headerTable="Boletos" displayData={seats} />
+                    {selectedSeats.length > 0 ? (
+                        <TableSeats headerTable='Boletos' displayData={selectedSeats} onSelectSeat={handleSelectSeat} />
                     ) : (
                         <div className="text-xl text-gray-500 dark:text-gray-400">
                             No hay asientos seleccionados
                         </div>
                     )}
                 </div>
-            </form>
-
-            {showModal && pdfBlob && (
-                <div
-                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                    onClick={closeModal}
-                >
-                    <div
-                        className="bg-white dark:bg-boxdark p-4 rounded-md shadow-lg"
-                        onClick={(e) => e.stopPropagation()} // Evitar que el clic dentro cierre el modal
-                    >
-                        <iframe
-                            src={URL.createObjectURL(pdfBlob)}
-                            width="500px"
-                            height="800px"
-                            title="Boleto PDF"
-                            className="border border-gray-300 rounded-md"
-                        ></iframe>
-                        <button
-                            onClick={closeModal}
-                            className="mt-4 w-full py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600"
-                        >
-                            Cerrar
-                        </button>
-                    </div>
+            
+            {/* Popup de confirmacion */}
+            <ConfirmPopup
+                title="Confirmar Pago"
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onSave={ticketPurchase} // Procesa el pago al confirmar
+            > <div>
+                    <p className="font-semibold">Asientos seleccionados:</p>
+                    <ul className="list-disc ml-5">
+                        {selectedSeats.map(seat => (
+                            <li key={seat.seatId}>
+                                <span>Asiento: {seat.seatId}</span>,
+                                <span> Cliente: {seat.client?.name || 'Sin nombre'} {seat.client?.last_name || ''}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <p className="mt-4 font-semibold">Precio Total: ${totalPrice}</p>
                 </div>
-            )}
+            </ConfirmPopup>
         </>
     );
 };

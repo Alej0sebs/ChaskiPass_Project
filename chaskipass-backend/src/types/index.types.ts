@@ -56,9 +56,6 @@ export type DataPaginationT = {
     pattern?: string
 };
 
-export type TicketInformationT = InferAttributes<Tickets> & {
-};
-
 export type BusStructureT = InferAttributes<BusStructure>;
 
 export type BusStationT = InferAttributes<BusStations>;
@@ -88,4 +85,43 @@ export type SeatsStructureT = {
     frequency_id: string,
     bus_id: number,
     bus_structure_id: number
+}
+
+type ClientSeatT = {
+    dni:string,
+    name:string,
+    last_name:string,
+    exist:boolean
+};
+
+type PurchasedSeatT={
+    seatId:string,
+    additionalCost:number
+    client:ClientSeatT
+}
+
+export type TicketClientInformationT = {
+    id: number;
+    serial_number: number;
+    frequency_id: string;
+    price: number;
+    departure_station: number;
+    arrival_station: number;
+    date: Date;
+    selectedSeats: PurchasedSeatT[];
+    cooperative_id: string;
+    payment_method: string;
+    serial_id: number;
+}
+
+export type ClientCooperativeT={
+    dni:string,
+    cooperative_id:string
+}
+
+export type PaymentT = {
+    payment_method: string,
+    amount: number,
+    cooperative_id: string,
+    ticket_id: number,
 }

@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import { HandleMessages } from '../error/handleMessages.error';
 import { Users } from '../models/users.models';
+import { logoutUser } from '../controllers/auth.controllers';
 
 const protectRoute = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -13,15 +14,28 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction): Pr
             return;
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-        if (!decoded) {
-            res.status(401).json({
-                error: HandleMessages.INVALID_TOKEN
-            });
-            return;
+        let decoded;
+        try {
+            // Verificamos el token sin lanzar excepción si está expirado
+            decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+        } catch (error) {
+            if (error instanceof jwt.TokenExpiredError) {
+                // Si el token ha expirado, cerramos la sesión y retornamos una respuesta de sesión expirada
+                await logoutUser(req, res);
+                res.status(401).json({
+                    error: HandleMessages.SESSION_EXPIRED
+                });
+                return;
+            } else {
+                // Otro error de token (por ejemplo, firma inválida)
+                res.status(401).json({
+                    error: HandleMessages.INVALID_TOKEN
+                });
+                return;
+            }
         }
 
-        if (typeof decoded === 'object' && 'dni' in decoded) {
+        if (decoded && typeof decoded === 'object' && 'dni' in decoded) {
             const userInformation: Users = await Users.findByPk(decoded.dni, {
                 attributes: { exclude: ['password'] }
             }) as Users;
@@ -32,6 +46,7 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction): Pr
                 });
                 return;
             }
+
             req.userReq = {
                 dni: userInformation.dni,
                 cooperative_id: userInformation.cooperative_id
@@ -42,7 +57,6 @@ const protectRoute = async (req: Request, res: Response, next: NextFunction): Pr
                 error: HandleMessages.INTERNAL_SERVER_ERROR
             });
         }
-
     } catch (error) {
         console.log("Error en el middleware protectRoute: ", error);
         res.status(500).json({

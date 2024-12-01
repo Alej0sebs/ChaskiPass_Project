@@ -1,6 +1,7 @@
 export enum HandleMessages{
     UNAUTHORIZED = 'No autorizado - No se proporcionó token',
     INVALID_TOKEN= 'No autorizado - Token inválido',
+    SESSION_EXPIRED = 'Su sesión ha expirado, por favor inicie sesión nuevamente',
     INTERNAL_SERVER_ERROR = 'Error interno del servidor',
     INVALID_CREDENTIALS = 'Usuario o contraseña inválidos',
     EXISTING_USERNAME= 'El nombre de usuario ya está en uso',

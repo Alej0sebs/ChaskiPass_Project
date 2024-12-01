@@ -8,6 +8,8 @@ import { useSellTicket } from '../../hooks/useSellTicket';
 import useSerialStation from '../../hooks/useSerialStation';
 import toast from 'react-hot-toast';
 import ConfirmPopup from '../../modals/confirmPopup.processes';
+import PDFPopup from '../../modals/pdfPopup';
+import { TicketData } from '../../types/ticket';
 
 interface SalesFormProps {
     dataFrequency: FrequencyListObjectT;
@@ -41,6 +43,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
     const [totalPrice, setTotalPrice] = useState<number>(0);
     // Estado de los asientos para asignacion
     const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
+    const [ticketsData, setTicketsData] = useState<TicketData[]>([]);
+    const [showPdfModal, setShowPdfModal] = useState(false);
 
 
     useEffect(() => {
@@ -182,11 +186,29 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
             date: new Date(),
             selectedSeats: selectedSeats,
             cooperative_id,
-            payment_method:'CAS'
+            payment_method: 'CAS'
         };
         sellTicket(purchaseData);
         toast.success('Venta realizada con éxito');
         closeModal();
+        const preparedTickets = selectedSeats.map((seat) => ({
+            dia: purchaseData.date.toLocaleDateString(),
+            horaSalida: dataFrequency.departure_time,
+            horaLlegada: dataFrequency.arrival_time,
+            placa: dataFrequency.license_plate,
+            terminal: dataFrequency.departure_station_name,
+            destino: selectedDestination,
+            nombres: seat.client?.name || '',
+            apellidos: seat.client?.last_name || '',
+            tipoDocumento: documentType,
+            numeroDocumento: seat.client?.dni || '',
+            price: totalPrice,
+            seats: [seat.seatId],
+            frecuencia: dataFrequency.id
+        }));
+
+        setTicketsData(preparedTickets);
+        setShowPdfModal(true);
     };
 
     return (
@@ -197,139 +219,139 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                     Frecuencia: {dataFrequency.id}
                 </label>
             </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <SelectGroupTwo label="Tipo de Documento" onChange={handledocumentTypeChange} value={documentType}>
-                            <option value="Cedula">Cédula</option>
-                            <option value="Pasaporte">Pasaporte</option>
-                        </SelectGroupTwo>
-                    </div>
-                    <div className="relative">
-                        <label className="mb-3 block text-black dark:text-white">
-                            Número de Documento
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Ingrese número de documento"
-                            value={documentNumber}
-                            onChange={handledocumentNumberChange}
-                            disabled={!documentType}
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                        />
-                        {isSearching && <p className="text-sm text-gray-500">Buscando...</p>}
-                    </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <SelectGroupTwo label="Tipo de Documento" onChange={handledocumentTypeChange} value={documentType}>
+                        <option value="Cedula">Cédula</option>
+                        <option value="Pasaporte">Pasaporte</option>
+                    </SelectGroupTwo>
                 </div>
-                <div className="grid grid-cols-2 gap-4 my-3">
-                    <div>
-                        <label className="mb-3 block text-black dark:text-white">
-                            Nombre
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Ingrese su nombre"
-                            value={passengerData.name}
-                            onChange={handlePassengerChange('name')}
-                            disabled={!documentType || isSearching}
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                        />
-                    </div>
-                    <div>
-                        <label className="mb-3 block text-black dark:text-white">
-                            Apellido
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Ingrese su apellido"
-                            value={passengerData.lastName}
-                            onChange={handlePassengerChange('lastName')}
-                            disabled={!documentType || isSearching}
-                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                        />
-                    </div>
+                <div className="relative">
+                    <label className="mb-3 block text-black dark:text-white">
+                        Número de Documento
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Ingrese número de documento"
+                        value={documentNumber}
+                        onChange={handledocumentNumberChange}
+                        disabled={!documentType}
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    />
+                    {isSearching && <p className="text-sm text-gray-500">Buscando...</p>}
                 </div>
-                <div className="grid grid-cols-3 gap-4">
-                    <div>
-                        <SelectGroupTwo label="Destino" value={selectedDestination} onChange={handleDestinationChange}>
-                            {destinos.length > 0 ? (
-                                destinos.map((destino) => (
-                                    <option key={destino} value={destino}>
-                                        {destino}
-                                    </option>
-                                ))
-                            ) : (
-                                <option value="" disabled>
-                                    Cargando destinos...
+            </div>
+            <div className="grid grid-cols-2 gap-4 my-3">
+                <div>
+                    <label className="mb-3 block text-black dark:text-white">
+                        Nombre
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Ingrese su nombre"
+                        value={passengerData.name}
+                        onChange={handlePassengerChange('name')}
+                        disabled={!documentType || isSearching}
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    />
+                </div>
+                <div>
+                    <label className="mb-3 block text-black dark:text-white">
+                        Apellido
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Ingrese su apellido"
+                        value={passengerData.lastName}
+                        onChange={handlePassengerChange('lastName')}
+                        disabled={!documentType || isSearching}
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-gray-200 dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    />
+                </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+                <div>
+                    <SelectGroupTwo label="Destino" value={selectedDestination} onChange={handleDestinationChange}>
+                        {destinos.length > 0 ? (
+                            destinos.map((destino) => (
+                                <option key={destino} value={destino}>
+                                    {destino}
                                 </option>
-                            )}
-                        </SelectGroupTwo>
-                    </div>
-                    <div>
-                        <label className="mb-3 block text-black dark:text-white">
-                            Precio
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Ingrese el precio"
-                            value={totalPrice}
-                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                        />
-                    </div>
-                    <div>
-                        {selectedSeats.length === 1 || selectedSeats.every(seat => seat.client) ? (
-                            <>
-                                <label className="mb-3 block text-black dark:text-white">
-                                    Procesar Pago
-                                </label>
-                                <button
-                                    type="button"
-                                    className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                                    onClick={ticketPurchaseConfirmationModal}
-                                >
-                                    Pagar
-                                </button>
-                            </>
+                            ))
                         ) : (
-                            <>
-                                <label className="mb-3 block text-black dark:text-white">
-                                    Agregar Pasajero
-                                </label>
-                                <button
-                                    type="button"
-                                    disabled={!documentNumber || !passengerData.name || !passengerData.lastName}
-                                    className={`w-full py-2 px-4 rounded-md ${documentNumber && passengerData.name && passengerData.lastName
-                                        ? 'bg-green-500 hover:bg-green-600 text-white'
-                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                                        }`}
-                                    onClick={() => setClientSeat()}
-                                >
-                                    Agregar
-                                </button>
-                            </>
+                            <option value="" disabled>
+                                Cargando destinos...
+                            </option>
                         )}
-                    </div>
-                    <div className="col-span-3">
-                        <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
-                            Asiento: {
-                                selectedSeats.length === 0
-                                    ? ''
-                                    : selectedSeats.length === 1
-                                        ? selectedSeats[0].seatId
-                                        : currentSeat?.seatId || 'No seleccionado'
-                            }
-
-                        </label>
-                    </div>
+                    </SelectGroupTwo>
                 </div>
-                <div className="flex justify-between items-center my-4">
-                    {selectedSeats.length > 0 ? (
-                        <TableSeats headerTable='Boletos' displayData={selectedSeats} onSelectSeat={handleSelectSeat} />
+                <div>
+                    <label className="mb-3 block text-black dark:text-white">
+                        Precio
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Ingrese el precio"
+                        value={totalPrice}
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-not-allowed disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    />
+                </div>
+                <div>
+                    {selectedSeats.length === 1 || selectedSeats.every(seat => seat.client) ? (
+                        <>
+                            <label className="mb-3 block text-black dark:text-white">
+                                Procesar Pago
+                            </label>
+                            <button
+                                type="button"
+                                className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                onClick={ticketPurchaseConfirmationModal}
+                            >
+                                Pagar
+                            </button>
+                        </>
                     ) : (
-                        <div className="text-xl text-gray-500 dark:text-gray-400">
-                            No hay asientos seleccionados
-                        </div>
+                        <>
+                            <label className="mb-3 block text-black dark:text-white">
+                                Agregar Pasajero
+                            </label>
+                            <button
+                                type="button"
+                                disabled={!documentNumber || !passengerData.name || !passengerData.lastName}
+                                className={`w-full py-2 px-4 rounded-md ${documentNumber && passengerData.name && passengerData.lastName
+                                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                                    : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                    }`}
+                                onClick={() => setClientSeat()}
+                            >
+                                Agregar
+                            </button>
+                        </>
                     )}
                 </div>
-            
+                <div className="col-span-3">
+                    <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
+                        Asiento: {
+                            selectedSeats.length === 0
+                                ? ''
+                                : selectedSeats.length === 1
+                                    ? selectedSeats[0].seatId
+                                    : currentSeat?.seatId || 'No seleccionado'
+                        }
+
+                    </label>
+                </div>
+            </div>
+            <div className="flex justify-between items-center my-4">
+                {selectedSeats.length > 0 ? (
+                    <TableSeats headerTable='Boletos' displayData={selectedSeats} onSelectSeat={handleSelectSeat} />
+                ) : (
+                    <div className="text-xl text-gray-500 dark:text-gray-400">
+                        No hay asientos seleccionados
+                    </div>
+                )}
+            </div>
+
             {/* Popup de confirmacion */}
             <ConfirmPopup
                 title="Confirmar Pago"
@@ -349,6 +371,10 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                     <p className="mt-4 font-semibold">Precio Total: ${totalPrice}</p>
                 </div>
             </ConfirmPopup>
+
+            {showPdfModal && (
+                <PDFPopup tickets={ticketsData} />
+            )}
         </>
     );
 };

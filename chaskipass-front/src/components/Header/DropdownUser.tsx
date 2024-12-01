@@ -4,10 +4,12 @@ import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-01.png';
 import { CiLogout } from "react-icons/ci";
 import { useLogout } from '../../hooks/useLogout';
+import { useAuthContext } from '../../context/AuthContext';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const {loading, logout} = useLogout();
+  const { loading, logout } = useLogout();
+  const { authUser } = useAuthContext();
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -18,9 +20,11 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Compadres team
+            {authUser ? authUser.full_name : 'User'}
           </span>
-          <span className="block text-xs">Jefes</span>
+          <span className="block text-xs">
+            {authUser ? authUser.dni : 'Welcome'}
+          </span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -103,13 +107,13 @@ const DropdownUser = () => {
           </ul>
           {!loading ? (
             <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
-            onClick={logout}>
-            <CiLogout className='w-[22px] h-[22px]' />
+              onClick={logout}>
+              <CiLogout className='w-[22px] h-[22px]' />
               Log Out
             </button>
-            ):(
-              <span className="loading loading-spinner"></span>
-            )}
+          ) : (
+            <span className="loading loading-spinner"></span>
+          )}
         </div>
       )}
       {/* <!-- Dropdown End --> */}

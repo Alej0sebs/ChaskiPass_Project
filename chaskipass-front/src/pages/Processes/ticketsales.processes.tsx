@@ -93,7 +93,7 @@ const TicketsalesRegistration = () => {
         { label: 'Reservados', count: 6, statusSeat: 'reserved', name: 'R' },
         { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'S' },
     ];
-
+    
     // Estos datos vendrían de una consulta en una aplicación real
     const travelData = {
         placa: frequencyData.license_plate,

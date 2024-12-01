@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { MdEmail } from 'react-icons/md';
 
 const initialStateSignUp: CreateUserT = {
+  full_name:'',
   dni: '',
   name: '',
   last_name: '',

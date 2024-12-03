@@ -38,19 +38,23 @@ const TicketsalesRegistration = () => {
     const [floorElements, setFloorElements] = useState<{ [key: number]: SeatConfigT[] }>({}); // Almacenar los elementos del bus por piso
     const [numFloors, setNumFloors] = useState(1); // Número de pisos
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado para visualizar
-    // const [selectedSeats, setSelectedSeats] = useState<SelectedSeatT[]>([]);
-    const {selectedSeats, addSeat, removeSeat } = useSelectedSeatsStore();
+    const { selectedSeats, addSeat, removeSeat, clearSeats } = useSelectedSeatsStore();
 
+    //State para renderizar cuando haga la compra de un boleto
+    const [reloadBusConfigAfterSale, setReloadBusConfigAfterSale] = useState(false);
 
     //global variables
     let totalSeats: number = 0;
 
+
+
     //Tomo los valores de la frecuencia
     useEffect(() => {
+        //Traer los datos de la estructura de los asientos con sus respectivos ids
         const fetchBusConfiguration = async () => {
             try {
                 const { id: frequency_id, bus_id, bus_structure_id } = frequencyData;
-                const busData:BusData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
+                const busData: BusData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
                 if (busData) {
                     const numFloors = Object.keys(busData).length;
                     setNumFloors(numFloors);
@@ -67,13 +71,13 @@ const TicketsalesRegistration = () => {
             }
         };
         fetchBusConfiguration();
-    }, [frequencyData]);
+    }, [frequencyData, reloadBusConfigAfterSale]);
 
-    const handleSeatClick = ({seatId, additionalCost}:SelectedSeatT) => {
-        if(isSeatSelected(seatId)){
+    const handleSeatClick = ({ seatId, additionalCost }: SelectedSeatT) => {
+        if (isSeatSelected(seatId)) {
             removeSeat(seatId);
-        }else{
-            addSeat({seatId, additionalCost})
+        } else {
+            addSeat({ seatId, additionalCost })
         }
     };
 
@@ -81,8 +85,16 @@ const TicketsalesRegistration = () => {
         return selectedSeats.some((seat) => seat.seatId === seatId);
     };
 
+
+    //Funcion para renderizar la pagina principal
+
+    const toggleReload = () => {
+        setReloadBusConfigAfterSale((prev) => !prev);
+        clearSeats();
+    }
+
     const tabsData = [
-        { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData}/> },
+        { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData} onUpdateBus={toggleReload} /> },
         { title: 'Reservados', content: <TableOne /> },
         { title: 'Pasajeros', content: <TableOne /> }
     ];
@@ -93,7 +105,7 @@ const TicketsalesRegistration = () => {
         { label: 'Reservados', count: 6, statusSeat: 'reserved', name: 'R' },
         { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'S' },
     ];
-    
+
     // Estos datos vendrían de una consulta en una aplicación real
     const travelData = {
         placa: frequencyData.license_plate,
@@ -123,6 +135,7 @@ const TicketsalesRegistration = () => {
             />
         </div>
     );
+
 
 
     return (
@@ -160,13 +173,13 @@ const TicketsalesRegistration = () => {
                                         left: `${element.position.x}%`,
                                         top: `${element.position.y}%`,
                                     }}
-                                    onClick={() => element.type === 'seat' && handleSeatClick({seatId: element.id, additionalCost: element.additionalCost || 0})}
+                                    onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0 })}
                                 >
                                     {element.type === 'seat' && (
                                         <SvgSeatComponent
                                             name={element.name}
                                             isSelected={isSeatSelected(element.id)}
-                                            status= {element.status ? element.status.toLowerCase() : "f"} // Puedes ajustar el estado según tus datos
+                                            status={element.status ? element.status.toLowerCase() : "f"} // Puedes ajustar el estado según tus datos
                                         />
                                     )}
                                     {element.type === 'bathroom' && <SvgBathroomComponent />}

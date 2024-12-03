@@ -59,7 +59,7 @@ const FrequencyRegistration = () => {
             const busData = await getBuses();
             if (busData) setBuses(busData);
             const driverData = await getDrivers();
-            if (driverData) setDrivers(driverData);
+            if (driverData) setDrivers(driverData.json);
         };
 
         fetchBuses();

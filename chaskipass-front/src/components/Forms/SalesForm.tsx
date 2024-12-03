@@ -141,9 +141,12 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
     };
 
     //Agrego los datos del pasajero,  no necesito pasarle datos ya que manejare lo de passengerData
-    const setClientSeat = () => {
-        if (currentSeat) {
-            updateSeatClient(currentSeat.seatId, {
+    const setClientSeat = (temporalSeat?:SelectedSeatT) => {
+        
+        const seatToUse = temporalSeat || currentSeat;
+
+        if (seatToUse) {
+            updateSeatClient(seatToUse.seatId, {
                 dni: documentNumber,
                 name: passengerData.name,
                 last_name: passengerData.lastName,
@@ -151,16 +154,14 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
             });
             setCurrentSeat(null);
         }
-    }
+    };
 
     const ticketPurchaseConfirmationModal = async () => {
         if (selectedSeats.length === 1 && !currentSeat) {
-            setCurrentSeat(selectedSeats[0]);
+            setClientSeat(selectedSeats[0]);
         };
-
-        setClientSeat();
         setIsModalOpen(true);
-    }
+    };
 
     const closeModal = () => {
         setIsModalOpen(false); // Cierra el modal
@@ -364,7 +365,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency }: SalesFormProps) 
                         {selectedSeats.map(seat => (
                             <li key={seat.seatId}>
                                 <span>Asiento: {seat.seatId}</span>,
-                                <span> Cliente: {seat.client?.name || 'Sin nombre'} {seat.client?.last_name || ''}</span>
+                                <span> Cliente: {seat.client?.name || ''} {seat.client?.last_name || ''}</span>
                             </li>
                         ))}
                     </ul>

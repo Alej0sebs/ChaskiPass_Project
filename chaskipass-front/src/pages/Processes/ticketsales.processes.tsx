@@ -73,11 +73,11 @@ const TicketsalesRegistration = () => {
         fetchBusConfiguration();
     }, [frequencyData, reloadBusConfigAfterSale]);
 
-    const handleSeatClick = ({ seatId, additionalCost }: SelectedSeatT) => {
+    const handleSeatClick = ({ seatId, additionalCost, statusSeat }: SelectedSeatT) => {
         if (isSeatSelected(seatId)) {
             removeSeat(seatId);
         } else {
-            addSeat({ seatId, additionalCost })
+            addSeat({ seatId, additionalCost, statusSeat });
         }
     };
 
@@ -173,7 +173,7 @@ const TicketsalesRegistration = () => {
                                         left: `${element.position.x}%`,
                                         top: `${element.position.y}%`,
                                     }}
-                                    onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0 })}
+                                    onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0, statusSeat: element.status! })}
                                 >
                                     {element.type === 'seat' && (
                                         <SvgSeatComponent

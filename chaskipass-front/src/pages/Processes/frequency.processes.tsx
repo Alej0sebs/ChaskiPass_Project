@@ -41,10 +41,9 @@ const FrequencyRegistration = () => {
     const [selectedBus, setSelectedBus] = useState('');
     const [selectedDriver, setSelectedDriver] = useState('');
     const [routeID, setRouteID] = useState('');
-    const [price, setPrice] = useState(0);
+    const [price, setPrice] = useState('');
     const today = new Date().toISOString().split('T')[0]; //get today's date in the format YYYY-MM-DD
     const [selectedDateTime, setSelectedDateTime] = useState<timeDateT>(initialStateTimeDate);
-
     //hook
     const { getBuses } = useBusCreation();
     const { getDrivers } = useUsers();
@@ -91,10 +90,10 @@ const FrequencyRegistration = () => {
             date: selectedDateTime.date,
             arrival_time: selectedDateTime.arrival_time,
             driver_id: selectedDriver,
-            price: price,
+            price: parseFloat(price.replace(',', '.')),
             status: frequencyStatus
         };
-        if (!selectedBus || !routeID || !selectedDateTime.departure_time || !selectedDateTime.date || !selectedDateTime.arrival_time || !selectedDriver || price <= 0) {
+        if (!selectedBus || !routeID || !selectedDateTime.departure_time || !selectedDateTime.date || !selectedDateTime.arrival_time || !selectedDriver || parseFloat(price.replace(',', '.')) <= 0) {
             toast.error("Por favor, complete todos los campos.");
             return;
         };
@@ -115,7 +114,7 @@ const FrequencyRegistration = () => {
         setSelectedBus('');
         setRouteID('');
         setFrequencyStatus(false);
-        setPrice(0);
+        setPrice('');
     };
 
     return (
@@ -196,7 +195,8 @@ const FrequencyRegistration = () => {
                                                     id="price"
                                                     placeholder="7"
                                                     value={price}
-                                                    onChange={(e) => setPrice(Number(e.target.value))}
+                                                    step={0.01}
+                                                    onChange={(e) => setPrice(e.target.value)}
                                                 />
                                             </div>
                                         </div>

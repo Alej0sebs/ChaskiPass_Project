@@ -17,6 +17,7 @@ export type ClientT={
 export type SelectedSeatT={
     seatId:string,
     additionalCost:number,
+    statusSeat:string,
     client?:ClientT
 };
 

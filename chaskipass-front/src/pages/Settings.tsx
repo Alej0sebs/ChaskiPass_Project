@@ -1,42 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import useUsers from "../hooks/useUsers";
 import { FaIdCard, FaRegUser, FaUserTie, FaUserAstronaut } from "react-icons/fa";
+import { useAuthContext } from "../context/AuthContext"; // Asumiendo que tienes este contexto
 
 const Settings: React.FC = () => {
   const { getUsersByDni, updateUsers, loading } = useUsers();
-  const [dni, setDni] = useState("");
+  const { authUser } = useAuthContext(); // Obtener datos del usuario autenticado
+  const [dni, setDni] = useState(authUser?.dni || ""); // Inicializar con el DNI del usuario autenticado
   const [formData, setFormData] = useState({
     user_name: "",
     phone: "",
     password: "",
   });
-  const [isUserFound, setIsUserFound] = useState(false); // Indica si los datos se encontraron
-  const [isLoadingData, setIsLoadingData] = useState(false); // Para manejar la carga inicial de datos
+  const [isUserFound, setIsUserFound] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
-  // Maneja el cambio del input de DNI
+  useEffect(() => {
+    if (authUser) {
+      setFormData({
+        user_name: authUser.user_name || "",
+        phone: authUser.phone || "",
+        password: "", // No precargar la contraseña por seguridad
+      });
+    }
+  }, [authUser]); // Cuando cambia el usuario autenticado, actualizar el formulario
+
   const handleDniChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDni(e.target.value);
   };
 
-  // Busca datos del usuario por DNI
   const handleDniSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoadingData(true);
     try {
       console.log("Fetching user data for DNI:", dni);
-      const userData = await getUsersByDni(dni); // Llamar a la función actualizada
+      const userData = await getUsersByDni(dni);
       console.log("Fetched user data:", userData);
 
       if (userData) {
-        // Prellenar el formulario con los datos del usuario
         setFormData({
           user_name: userData.user_name || "",
           phone: userData.phone || "",
-          password: "", // No precargamos contraseñas por seguridad
+          password: "",
         });
         setIsUserFound(true);
-        toast.success("User data loaded. You can now edit it.");
+        toast.success("Usuario Cargado ahora puedes editarlo.");
       } else {
         setIsUserFound(false);
         toast.error("User not found. Please check the DNI.");
@@ -49,7 +58,6 @@ const Settings: React.FC = () => {
     }
   };
 
-  // Maneja los cambios en los campos del formulario
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -58,7 +66,6 @@ const Settings: React.FC = () => {
     }));
   };
 
-  // Enviar el formulario de actualización
   const handleUpdateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -72,16 +79,14 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="settings-container max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-semibold mb-6">Configuración del Usuario</h1>
+    <div className="settings-container max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <h1 className="text-2xl font-semibold mb-6 text-black dark:text-white">Configuración del Usuario</h1>
 
       {/* Formulario para buscar al usuario por DNI */}
-      <form onSubmit={handleDniSubmit} className="dni-form bg-gray-100 p-6 rounded-lg shadow-sm mb-6">
+      <form onSubmit={handleDniSubmit} className="dni-form bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-sm mb-6">
         <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
           <div className="mb-4">
-            <label className="mb-2.5 block font-medium text-black dark:text-white">
-              Cédula de Identidad
-            </label>
+            <label className="mb-2.5 block font-medium text-black dark:text-white">Cédula de Identidad</label>
             <div className="relative">
               <input
                 type="text"
@@ -98,19 +103,21 @@ const Settings: React.FC = () => {
             </div>
           </div>
         </div>
-        <button type="submit" disabled={loading || isLoadingData} className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition">
-          {isLoadingData ? "Buscando..." : "Buscar Usuario"}
+        <button
+          type="submit"
+          disabled={loading || isLoadingData}
+          className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition dark:bg-blue-700 dark:hover:bg-blue-600"
+        >
+          {isLoadingData ? "Buscando..." : "Editar Perfil"}
         </button>
       </form>
 
-      {/* Formulario para actualizar datos, bloqueado hasta que se encuentre al usuario */}
+      {/* Formulario para actualizar datos */}
       {isUserFound && (
-        <form onSubmit={handleUpdateSubmit} className="update-form bg-gray-100 p-6 rounded-lg shadow-sm">
+        <form onSubmit={handleUpdateSubmit} className="update-form bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-sm">
           <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
             <div className="mb-4">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
-                Nombre de usuario
-              </label>
+              <label className="mb-2.5 block font-medium text-black dark:text-white">Nombre de usuario</label>
               <div className="relative">
                 <input
                   type="text"
@@ -129,9 +136,7 @@ const Settings: React.FC = () => {
             </div>
 
             <div className="mb-4">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
-                Teléfono
-              </label>
+              <label className="mb-2.5 block font-medium text-black dark:text-white">Teléfono</label>
               <div className="relative">
                 <input
                   type="tel"
@@ -152,9 +157,7 @@ const Settings: React.FC = () => {
 
           <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
             <div className="mb-4">
-              <label className="mb-2.5 block font-medium text-black dark:text-white">
-                Contraseña
-              </label>
+              <label className="mb-2.5 block font-medium text-black dark:text-white">Contraseña</label>
               <div className="relative">
                 <input
                   type="password"
@@ -172,7 +175,11 @@ const Settings: React.FC = () => {
               </div>
             </div>
           </div>
-          <button type="submit" disabled={loading} className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 transition">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 transition dark:bg-green-700 dark:hover:bg-green-600"
+          >
             {loading ? "Actualizando..." : "Actualizar Perfil"}
           </button>
         </form>

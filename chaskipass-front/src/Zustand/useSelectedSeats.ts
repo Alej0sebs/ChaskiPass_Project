@@ -13,7 +13,7 @@ interface SeatStore {
 
 //Creacion del store de los asientos seleccionados
 export const useSelectedSeatsStore = create<SeatStore>()(
-    devtools((set, get) => ({
+    devtools((set) => ({
         selectedSeats: [],
 
         setSelectedSeats: (seats: SelectedSeatT[]) =>

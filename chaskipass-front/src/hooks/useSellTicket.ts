@@ -23,7 +23,8 @@ export const useSellTicket = () => {
             if(!reponse.ok){
                 throw new Error(data.error);
             }
-            return data.json;
+
+            return 200;
 
         }catch(error){
             toast.error(verifyError(error));

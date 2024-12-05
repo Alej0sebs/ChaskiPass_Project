@@ -1,4 +1,4 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 import { ClientT, SelectedSeatT } from '../types';
 import { devtools } from 'zustand/middleware';
 
@@ -13,14 +13,19 @@ interface SeatStore {
 
 //Creacion del store de los asientos seleccionados
 export const useSelectedSeatsStore = create<SeatStore>()(
-    devtools((set, get) => ({
+    devtools((set) => ({
         selectedSeats: [],
 
         setSelectedSeats: (seats: SelectedSeatT[]) =>
             set({ selectedSeats: seats }, false, 'setSelectedSeats'),
 
         addSeat: (seat: SelectedSeatT) =>
-            set((state) => ({ selectedSeats: [...state.selectedSeats, seat] }), false, 'addSeat'),
+            set((state) => {
+                if(seat.statusSeat === 'f'){
+                    return {selectedSeats:[...state.selectedSeats, seat]};
+                };
+                return state;
+            }),
 
         updateSeatClient: (seatId: string, client: ClientT) =>
             set(

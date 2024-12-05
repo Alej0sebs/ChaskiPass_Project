@@ -1,10 +1,8 @@
-import React from "react";
 import { BsFillTrashFill, BsFillPencilFill } from "react-icons/bs";
 import dataJSON from '../../public/data.json';
 
 export const Table = ({ rows, deleteRow, editRow }: any) => {
   const fields = Object.keys(Object.values(dataJSON)[0]).filter((item: any) => !(item.startsWith("delta_")));
-
   return (
 
     <div className="max-w-full overflow-x-auto table-wrapper">

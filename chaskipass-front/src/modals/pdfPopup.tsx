@@ -23,7 +23,7 @@ const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
 
     const generatePDF = async (tickets: TicketData[]) => {
         const doc = new jsPDF({
-            format: [80, 180],
+            format: [80, 160],
             unit: 'mm',
         });
 
@@ -49,7 +49,7 @@ const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
         const lineHeight = 4;
         doc.addImage(ChaskiLogoB, 'PNG', 15, 0, 50, 40);
         let currentY = 25;
-        currentY += lineHeight*3;
+        currentY += lineHeight * 3;
         addCenteredText('Av. Elhuesardo xD', currentY, 8);
         currentY += lineHeight;
         addCenteredText('RUC: 1818181818001', currentY, 8);
@@ -88,8 +88,7 @@ const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
         doc.text(`Hora de Emisión: ${new Date().getHours().toString()}:${new Date().getMinutes().toString()}`, 5, currentY);
         currentY += lineHeight;
         doc.text(`Total: $${data.price}`, 5, currentY);
-        currentY += 24;
-
+        currentY += 5;
         const qrCodeDataUrl = await QRCode.toDataURL(`${data.numeroDocumento}-${data.frecuencia}-${data.dia}-${data.seats.join(',')}`);
         doc.addImage(qrCodeDataUrl, 'PNG', 25, currentY, 30, 30);
         currentY += 30;
@@ -113,17 +112,21 @@ const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
         <>
             {showPDF && pdfBlob && (
                 <div
-                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                    onClick={closeModal}
+                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[101]"
                 >
                     <div
-                        className="bg-white dark:bg-boxdark p-4 rounded-md shadow-lg z-50"
-                        onClick={(e) => e.stopPropagation()} // Evitar que el clic dentro cierre el modal
+                        className="relative w-full max-w-screen-lg max-h-screen bg-white dark:bg-boxdark p-4 rounded-md shadow-lg overflow-auto"
+                        // style={{ width: '50vw', height: '70vh' }}
+                        style={{
+                            width: '50vw',
+                            height: '70vh',
+                            maxWidth: '50vw',
+                            maxHeight: '90vh',
+                        }}
                     >
                         <iframe
                             src={URL.createObjectURL(pdfBlob)}
-                            width="350px"
-                            height="745px"
+                            style={{ width: '100%', height: '90%' }}
                             title="Boleto PDF"
                             className="border border-gray-300 rounded-md"
                         ></iframe>

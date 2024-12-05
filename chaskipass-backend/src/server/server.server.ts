@@ -113,7 +113,7 @@ export default class Server {
                 await Provinces.sync(),
                 await Cities.sync(),
                 await Roles.sync(),
-                await Cooperatives.sync({alter: true}),        
+                await Cooperatives.sync(),        
                 await BusStructure.sync(),
                 await PaymentMethods.sync(),      
                 await Users.sync(),               

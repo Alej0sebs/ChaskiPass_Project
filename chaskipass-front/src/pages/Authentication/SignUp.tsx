@@ -44,7 +44,6 @@ const SignUp: React.FC = () => {
   return (
     <>
       <div className="flex h-screen items-center justify-center dark:bg-boxdark">
-        <div className="rounded-lg shadow-lg p-6 dark:border-strokedark dark:bg-boxdark w-[90%] my-auto">
           <div className="flex flex-wrap items-center">
             <div className="hidden w-full xl:block xl:w-1/2">
               <div className="py-10 px-12 text-center">
@@ -57,8 +56,8 @@ const SignUp: React.FC = () => {
               </div>
             </div>
 
-            <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
-              <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+            <div className="w-full border-stroke dark:border-none xl:w-1/2 xl:border-l-2">
+              <div className="w-full p-2 sm:p-10.5 xl:p-17.5">
                 <span className="mb-1.5 block font-medium">Registro</span>
                 <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                   ChaskiPass - Registro de Usuarios
@@ -252,7 +251,7 @@ const SignUp: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+
       </div>
     </>
   );

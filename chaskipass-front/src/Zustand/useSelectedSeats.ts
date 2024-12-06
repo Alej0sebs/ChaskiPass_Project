@@ -26,7 +26,7 @@ export const useSelectedSeatsStore = create<SeatStore>()(
                 };
                 return state;
             }),
-
+        //Poner el destino
         updateSeatClient: (seatId: string, client: ClientT) =>
             set(
                 (state) => ({

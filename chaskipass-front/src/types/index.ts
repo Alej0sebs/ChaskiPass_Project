@@ -18,6 +18,7 @@ export type SelectedSeatT={
     seatId:string,
     additionalCost:number,
     statusSeat:string,
+    destination?:string,
     client?:ClientT
 };
 

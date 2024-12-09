@@ -6,7 +6,7 @@ interface SeatStore {
     selectedSeats: SelectedSeatT[];
     setSelectedSeats: (seats: SelectedSeatT[]) => void;
     addSeat: (seat: SelectedSeatT) => void;
-    updateSeatClient: (seatId: string, client: ClientT) => void;
+    updateSeatClient: (seatId: string, client: ClientT, destination:string) => void;
     removeSeat: (seatId: string) => void;
     clearSeats: () => void;
 }
@@ -27,11 +27,11 @@ export const useSelectedSeatsStore = create<SeatStore>()(
                 return state;
             }),
         //Poner el destino
-        updateSeatClient: (seatId: string, client: ClientT) =>
+        updateSeatClient: (seatId: string, client: ClientT, destination:string) =>
             set(
                 (state) => ({
                     selectedSeats: state.selectedSeats.map((seat) =>
-                        seat.seatId === seatId ? { ...seat, client } : seat
+                        seat.seatId === seatId ? { ...seat, client, destination } : seat
                     ),
                 }),
                 false,

@@ -229,13 +229,15 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             payment_method: 'CAS'
         };
         const responseTicket = await sellTicket(purchaseData);
-        if (responseTicket !== 200) {
+        if (responseTicket?.status !== 200) {
             toast.success('Problema con la venta del boleto');
             return;
         }
-        toast.success('Boleto vendido con éxito');
+        toast.success('Compra completada');
         closeModal();
-        const preparedTickets = selectedSeats.map((seat) => ({
+        //Obtener los codigos de los tickets
+        const ticketCodes = responseTicket.message.tickets.map((ticket:any)=>{ return {ticketCode:ticket.ticket_code, ticketPrice:ticket.price}});
+        const preparedTickets = selectedSeats.map((seat, index) => ({
             dia: purchaseData.date.toLocaleDateString(),
             horaSalida: dataFrequency.departure_time,
             horaLlegada: dataFrequency.arrival_time,
@@ -246,9 +248,10 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             apellidos: seat.client?.last_name || '',
             tipoDocumento: documentType,
             numeroDocumento: seat.client?.dni || '',
-            price: totalPrice,
+            price: ticketCodes[index].ticketPrice,
             seats: [seat.seatId],
-            frecuencia: dataFrequency.id
+            frecuencia: dataFrequency.id,
+            ticketCode: ticketCodes[index].ticketCode
         }));
 
         setTicketsData(preparedTickets);

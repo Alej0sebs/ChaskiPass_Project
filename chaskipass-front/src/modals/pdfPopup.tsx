@@ -50,7 +50,7 @@ const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
         doc.addImage(ChaskiLogoB, 'PNG', 15, 0, 50, 40);
         let currentY = 25;
         currentY += lineHeight * 3;
-        addCenteredText('Av. Elhuesardo xD', currentY, 8);
+        addCenteredText('Av. Cevallos y Quito', currentY, 8);
         currentY += lineHeight;
         addCenteredText('RUC: 1818181818001', currentY, 8);
         currentY += lineHeight;
@@ -89,7 +89,7 @@ const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
         currentY += lineHeight;
         doc.text(`Total: $${data.price}`, 5, currentY);
         currentY += 5;
-        const qrCodeDataUrl = await QRCode.toDataURL(`${data.numeroDocumento}-${data.frecuencia}-${data.dia}-${data.seats.join(',')}`);
+        const qrCodeDataUrl = await QRCode.toDataURL(`${data.ticketCode}`);
         doc.addImage(qrCodeDataUrl, 'PNG', 25, currentY, 30, 30);
         currentY += 30;
         doc.line(5, currentY, 75, currentY);

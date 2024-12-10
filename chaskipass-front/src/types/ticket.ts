@@ -12,4 +12,5 @@ export type TicketData = {
     price: number;
     seats: string[];
     frecuencia: string;
+    ticketCode:string;
 }

@@ -25,6 +25,7 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
 
     try {
         const result = await connectionDb.transaction(async (transaction) => {
+            const dateToUse = new Date();
             // Obtener datos de la cooperativa
             const cooperativeData = await Cooperatives.findOne({
                 where: { id: cooperative_id },
@@ -44,7 +45,7 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
                 seat_id: seat.seatId,
                 status: 'r',
                 client_dni: seat.client?.dni || null,
-                reservation_date: new Date(),
+                reservation_date: dateToUse,
             }));
 
             for (const update of seatUpdates) {
@@ -70,7 +71,7 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
                 frequency_id,
                 price: Number(tickets.priceDestination) + (tickets.additionalCost || 0),
                 seat_id: tickets.seatId,
-                ticket_code: `${serial_number}-${(ticketCounter + index + 1).toString().padStart(6, '0')}`,
+                ticket_code: `${ticket.cooperative_id}-${serial_number}-${(ticketCounter + index + 1).toString()}-${dateToUse.getHours}-${dateToUse.getMinutes}`,
                 client_dni: tickets.client?.dni || '',
                 serial_station_id: serial_id,
             }));

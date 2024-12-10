@@ -9,7 +9,7 @@ export const useSellTicket = () => {
 
     const sellTicket = async (purchaseData:TicketClientInformationT) => {
         setLoading(true);
-        console.log(purchaseData);
+
         try{
             const reponse= await fetch(`${API_BASE_URL}tickets/sell`,{
                 method: 'POST',
@@ -23,8 +23,10 @@ export const useSellTicket = () => {
             if(!reponse.ok){
                 throw new Error(data.error);
             }
-
-            return 200;
+            return {
+                status:200,
+                message:data
+            };
 
         }catch(error){
             toast.error(verifyError(error));

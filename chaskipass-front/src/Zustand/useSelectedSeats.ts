@@ -1,12 +1,12 @@
 import { create } from 'zustand';
-import { ClientT, SelectedSeatT } from '../types';
+import { ClientT, SelectedSeatT, UpdateSeatClientT } from '../types';
 import { devtools } from 'zustand/middleware';
 
 interface SeatStore {
     selectedSeats: SelectedSeatT[];
     setSelectedSeats: (seats: SelectedSeatT[]) => void;
     addSeat: (seat: SelectedSeatT) => void;
-    updateSeatClient: (seatId: string, client: ClientT, destination:string) => void;
+    updateSeatClient: (updateSeatClient:UpdateSeatClientT) => void;
     removeSeat: (seatId: string) => void;
     clearSeats: () => void;
 }
@@ -27,11 +27,11 @@ export const useSelectedSeatsStore = create<SeatStore>()(
                 return state;
             }),
         //Poner el destino
-        updateSeatClient: (seatId: string, client: ClientT, destination:string) =>
+        updateSeatClient: ({seatId, client, destination, priceDestination}:UpdateSeatClientT) =>
             set(
                 (state) => ({
                     selectedSeats: state.selectedSeats.map((seat) =>
-                        seat.seatId === seatId ? { ...seat, client, destination } : seat
+                        seat.seatId === seatId ? { ...seat, client, destination, priceDestination } : seat
                     ),
                 }),
                 false,

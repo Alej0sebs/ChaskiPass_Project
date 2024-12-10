@@ -211,6 +211,13 @@ export type TicketClientInformationT = {
     payment_method: string;
 };
 
+export type UpdateSeatClientT = {
+    seatId: string,
+    client: ClientT,
+    destination: string,
+    priceDestination: number
+};
+
 
 
 

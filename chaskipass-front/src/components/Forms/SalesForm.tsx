@@ -10,7 +10,6 @@ import toast from 'react-hot-toast';
 import ConfirmPopup from '../../modals/confirmPopup.processes';
 import PDFPopup from '../../modals/pdfPopup';
 import { TicketData } from '../../types/ticket';
-
 interface SalesFormProps {
     dataFrequency: FrequencyListObjectT;
     onUpdateBus: () => void;
@@ -42,7 +41,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     const [isModalOpen, setIsModalOpen] = useState(false);
     //total price
     const [totalPrice, setTotalPrice] = useState<number>(0);
-    const [updatePrice, setUpdatePrice] = useState<boolean>(false);
+    const [isDataReady, setIsDataReady] = useState<boolean>(false);
+    const [pricesPerStop, setPricesPerStop] = useState<number[]>([]);
     // Estado de los asientos para asignacion
     const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
     const [ticketsData, setTicketsData] = useState<TicketData[]>([]);
@@ -65,20 +65,39 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             });
         };
         fetchData();
+        setIsDataReady(true);
     }, [dataFrequency]);
+
+    //UseEffect para calcular el precio por parada
+    useEffect(() => {
+        const calculatedPricesPerStop = () => {
+            const temporalDestinations = destinations.slice(1);
+            const prices = temporalDestinations.map((_, index) => {
+                const pricePerStop = dataFrequency.price / (temporalDestinations.length + index + 0.5);
+                return pricePerStop;
+            });
+            return prices;
+        };
+        ;
+        setPricesPerStop(calculatedPricesPerStop());
+    }, [isDataReady, destinations, ticketSerialData]);
 
     useEffect(() => {
         let accumulativePrice: number = 0;
         if (selectedSeats.length > 0 && destinations.length > 1 && selectedSeats[0].destination !== null) {
             const temporalDestinations = destinations.slice(1);
             accumulativePrice = selectedSeats.reduce((acc, seat) => {
-                const destinationIndex = temporalDestinations.findIndex((destination) => destination === seat.destination);
-                let calculatedDiscount: number = 1;
-                if (destinationIndex !== -1) {
-                    calculatedDiscount = (temporalDestinations.length + destinationIndex) + 0.5;
-                };
-                return acc + ((Number(dataFrequency.price) / calculatedDiscount) + Number(seat.additionalCost));
-            }, 0)
+                //Indice del destino actual
+                const seatDestinationIndex = temporalDestinations.findIndex((destination) => destination === seat.destination);
+                let priceToUse: number = 0;
+                if (seatDestinationIndex !== -1) {
+                    //Indice de pricePerStop
+                    priceToUse = Number(pricesPerStop[seatDestinationIndex]);
+                } else {
+                    priceToUse = Number(dataFrequency.price);
+                }
+                return acc + (priceToUse + Number(seat.additionalCost));
+            }, 0);
         } else {
             accumulativePrice = selectedSeats.reduce((acc, seat) => {
                 return acc + (Number(dataFrequency.price) + Number(seat.additionalCost));
@@ -159,12 +178,12 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     const setClientSeat = (temporalSeat?: SelectedSeatT) => {
         const seatToUse = temporalSeat || currentSeat;
         if (seatToUse) {
-            updateSeatClient(seatToUse.seatId, {
-                dni: documentNumber,
-                name: passengerData.name,
-                last_name: passengerData.lastName,
-                exist: passengerData.exist,
-            }, selectedDestination);
+            // updateSeatClient(seatToUse.seatId, {
+            //     dni: documentNumber,
+            //     name: passengerData.name,
+            //     last_name: passengerData.lastName,
+            //     exist: passengerData.exist,
+            // }, selectedDestination, );
             setCurrentSeat(null);
         }
     };

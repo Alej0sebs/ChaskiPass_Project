@@ -19,7 +19,8 @@ export type SelectedSeatT={
     additionalCost:number,
     statusSeat:string,
     destination?:string,
-    client?:ClientT
+    client?:ClientT,
+    priceDestination?: number
 };
 
 export type LayoutBusT = {

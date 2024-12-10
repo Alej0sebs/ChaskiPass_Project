@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 import TableSeats from '../Tables/TableSeats';
 import { useClient } from '../../hooks/useClient';
-import { FrequencyListObjectT, SelectedSeatT, TicketClientInformationT } from '../../types';
+import { FrequencyListObjectT, SelectedSeatT, TicketClientInformationT, UpdateSeatClientT } from '../../types';
 import { useSelectedSeatsStore } from '../../Zustand/useSelectedSeats';
 import { useSellTicket } from '../../hooks/useSellTicket';
 import useSerialStation from '../../hooks/useSerialStation';
@@ -178,12 +178,21 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     const setClientSeat = (temporalSeat?: SelectedSeatT) => {
         const seatToUse = temporalSeat || currentSeat;
         if (seatToUse) {
-            // updateSeatClient(seatToUse.seatId, {
-            //     dni: documentNumber,
-            //     name: passengerData.name,
-            //     last_name: passengerData.lastName,
-            //     exist: passengerData.exist,
-            // }, selectedDestination, );
+            const temporalDestinations = destinations.slice(1);
+            const index = temporalDestinations.findIndex((destination) => destination === selectedDestination);
+            const updatePassengerData: UpdateSeatClientT = {
+                seatId: seatToUse.seatId,
+                client: {
+                    dni: documentNumber,
+                    name: passengerData.name,
+                    last_name: passengerData.lastName,
+                    exist: passengerData.exist,
+                },
+                destination: selectedDestination,
+                priceDestination: Number(pricesPerStop[index].toFixed(2))
+            };
+            console.log("Dolamon",Number(pricesPerStop[index]));
+            updateSeatClient(updatePassengerData);
             setCurrentSeat(null);
         }
     };

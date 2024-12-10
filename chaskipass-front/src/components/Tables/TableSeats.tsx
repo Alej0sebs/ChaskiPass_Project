@@ -13,9 +13,11 @@ const TableSeats = ({ headerTable, displayData, onSelectSeat }: TableTicketsProp
                 <thead>
                     <tr>
                         <th>{headerTable}</th>
-                        <th>Costo Adicional</th>
                         <th>Pasajero</th>
                         <th>Destino de viaje final</th>
+                        <th>C. Adicional</th>
+                        <th>C. Trayecto</th>
+                        <th>C. Final</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,9 +28,11 @@ const TableSeats = ({ headerTable, displayData, onSelectSeat }: TableTicketsProp
                             className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700" // Agregar feedback visual
                         >
                             <td>{val.seatId}</td>
-                            <td>${val.additionalCost}</td>
                             <td>{val.client?.name} {val.client?.last_name}</td>
                             <td>{val.destination}</td>
+                            <td>${val.additionalCost}</td>
+                            <td>${val.priceDestination}</td>
+                            <td>{(val.priceDestination ? val.priceDestination : 0) + val.additionalCost}</td>
                         </tr>
                     ))}
                 </tbody>

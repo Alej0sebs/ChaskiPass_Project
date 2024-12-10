@@ -96,8 +96,9 @@ type ClientSeatT = {
 
 type PurchasedSeatT={
     seatId:string,
-    additionalCost:number
-    client:ClientSeatT
+    additionalCost:number,
+    client:ClientSeatT,
+    priceDestination:number
 }
 
 export type TicketClientInformationT = {

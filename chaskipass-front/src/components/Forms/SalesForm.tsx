@@ -78,7 +78,6 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             });
             return prices;
         };
-        ;
         setPricesPerStop(calculatedPricesPerStop());
     }, [isDataReady, destinations, ticketSerialData]);
 
@@ -191,7 +190,6 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
                 destination: selectedDestination,
                 priceDestination: Number(pricesPerStop[index].toFixed(2))
             };
-            console.log("Dolamon",Number(pricesPerStop[index]));
             updateSeatClient(updatePassengerData);
             setCurrentSeat(null);
         }

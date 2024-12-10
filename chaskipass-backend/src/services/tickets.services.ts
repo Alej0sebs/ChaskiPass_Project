@@ -68,7 +68,7 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
                 date,
                 departure_station,
                 frequency_id,
-                price: Number(price) + (tickets.additionalCost || 0),
+                price: Number(tickets.priceDestination) + (tickets.additionalCost || 0),
                 seat_id: tickets.seatId,
                 ticket_code: `${serial_number}-${(ticketCounter + index + 1).toString().padStart(6, '0')}`,
                 client_dni: tickets.client?.dni || '',
@@ -121,7 +121,6 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
                 email: '',
             }));
             await Clients.bulkCreate(newClients, { transaction, ignoreDuplicates: true });
-
             const newRelations = clientsFilter.map((client) => ({
                 id: `${client.client.dni}-${cooperative_id}`,
                 client_dni: client.client.dni,

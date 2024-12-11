@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SelectGroupTwo from './SelectGroup/SelectGroupTwo';
 import TableSeats from '../Tables/TableSeats';
 import { useClient } from '../../hooks/useClient';
-import { FrequencyListObjectT, SelectedSeatT, TicketClientInformationT } from '../../types';
+import { FrequencyListObjectT, SelectedSeatT, TicketClientInformationT, UpdateSeatClientT } from '../../types';
 import { useSelectedSeatsStore } from '../../Zustand/useSelectedSeats';
 import { useSellTicket } from '../../hooks/useSellTicket';
 import useSerialStation from '../../hooks/useSerialStation';
@@ -10,7 +10,6 @@ import toast from 'react-hot-toast';
 import ConfirmPopup from '../../modals/confirmPopup.processes';
 import PDFPopup from '../../modals/pdfPopup';
 import { TicketData } from '../../types/ticket';
-
 interface SalesFormProps {
     dataFrequency: FrequencyListObjectT;
     onUpdateBus: () => void;
@@ -32,7 +31,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     const { getSerialStationByStationAndDNI } = useSerialStation()
 
     //local state
-    const [destinos, setDestinos] = useState<string[]>([]);
+    const [destinations, setDestinations] = useState<string[]>([]);
     const [documentType, setDocumentType] = useState<string>('');
     const [documentNumber, setDocumentNumber] = useState<string>('');
     const [passengerData, setPassengerData] = useState<PassengerData>({ name: '', lastName: '' });
@@ -42,6 +41,8 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     const [isModalOpen, setIsModalOpen] = useState(false);
     //total price
     const [totalPrice, setTotalPrice] = useState<number>(0);
+    const [isDataReady, setIsDataReady] = useState<boolean>(false);
+    const [pricesPerStop, setPricesPerStop] = useState<number[]>([]);
     // Estado de los asientos para asignacion
     const [currentSeat, setCurrentSeat] = useState<SelectedSeatT | null>(null);
     const [ticketsData, setTicketsData] = useState<TicketData[]>([]);
@@ -52,7 +53,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         const cities = dataFrequency.stop_city_names.split(',').map((city) => city.trim());
         const destination = dataFrequency.stop_station_names.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`);
         destination.unshift('Viaje Completo');
-        setDestinos(destination);
+        setDestinations(destination);
 
         //Datos para el ticket
         const fetchData = async () => {
@@ -64,12 +65,43 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             });
         };
         fetchData();
+        setIsDataReady(true);
     }, [dataFrequency]);
 
+    //UseEffect para calcular el precio por parada
     useEffect(() => {
-        const accumulativePrice: number = selectedSeats.reduce((acc, seat) => {
-            return acc + (Number(dataFrequency.price) + Number(seat.additionalCost));
-        }, 0);
+        const calculatedPricesPerStop = () => {
+            const temporalDestinations = destinations.slice(1);
+            const prices = temporalDestinations.map((_, index) => {
+                const pricePerStop = dataFrequency.price / (temporalDestinations.length + index + 0.5);
+                return pricePerStop;
+            });
+            return prices;
+        };
+        setPricesPerStop(calculatedPricesPerStop());
+    }, [isDataReady, destinations, ticketSerialData]);
+
+    useEffect(() => {
+        let accumulativePrice: number = 0;
+        if (selectedSeats.length > 0 && destinations.length > 1 && selectedSeats[0].destination !== null) {
+            const temporalDestinations = destinations.slice(1);
+            accumulativePrice = selectedSeats.reduce((acc, seat) => {
+                //Indice del destino actual
+                const seatDestinationIndex = temporalDestinations.findIndex((destination) => destination === seat.destination);
+                let priceToUse: number = 0;
+                if (seatDestinationIndex !== -1) {
+                    //Indice de pricePerStop
+                    priceToUse = Number(pricesPerStop[seatDestinationIndex]);
+                } else {
+                    priceToUse = Number(dataFrequency.price);
+                }
+                return acc + (priceToUse + Number(seat.additionalCost));
+            }, 0);
+        } else {
+            accumulativePrice = selectedSeats.reduce((acc, seat) => {
+                return acc + (Number(dataFrequency.price) + Number(seat.additionalCost));
+            }, 0);
+        }
         setTotalPrice(Number(accumulativePrice.toFixed(2)));
     }, [selectedSeats, dataFrequency.price]);
 
@@ -143,16 +175,22 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
 
     //Agrego los datos del pasajero,  no necesito pasarle datos ya que manejare lo de passengerData
     const setClientSeat = (temporalSeat?: SelectedSeatT) => {
-
         const seatToUse = temporalSeat || currentSeat;
-
         if (seatToUse) {
-            updateSeatClient(seatToUse.seatId, {
-                dni: documentNumber,
-                name: passengerData.name,
-                last_name: passengerData.lastName,
-                exist: passengerData.exist
-            });
+            const temporalDestinations = destinations.slice(1);
+            const index = temporalDestinations.findIndex((destination) => destination === selectedDestination);
+            const updatePassengerData: UpdateSeatClientT = {
+                seatId: seatToUse.seatId,
+                client: {
+                    dni: documentNumber,
+                    name: passengerData.name,
+                    last_name: passengerData.lastName,
+                    exist: passengerData.exist,
+                },
+                destination: selectedDestination,
+                priceDestination: Number(pricesPerStop[index].toFixed(2))
+            };
+            updateSeatClient(updatePassengerData);
             setCurrentSeat(null);
         }
     };
@@ -191,13 +229,15 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             payment_method: 'CAS'
         };
         const responseTicket = await sellTicket(purchaseData);
-        if (responseTicket !== 200) {
+        if (responseTicket?.status !== 200) {
             toast.success('Problema con la venta del boleto');
             return;
         }
-        toast.success('Boleto vendido con éxito');
+        toast.success('Compra completada');
         closeModal();
-        const preparedTickets = selectedSeats.map((seat) => ({
+        //Obtener los codigos de los tickets
+        const ticketCodes = responseTicket.message.tickets.map((ticket:any)=>{ return {ticketCode:ticket.ticket_code, ticketPrice:ticket.price}});
+        const preparedTickets = selectedSeats.map((seat, index) => ({
             dia: purchaseData.date.toLocaleDateString(),
             horaSalida: dataFrequency.departure_time,
             horaLlegada: dataFrequency.arrival_time,
@@ -208,17 +248,17 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             apellidos: seat.client?.last_name || '',
             tipoDocumento: documentType,
             numeroDocumento: seat.client?.dni || '',
-            price: totalPrice,
+            price: ticketCodes[index].ticketPrice,
             seats: [seat.seatId],
-            frecuencia: dataFrequency.id
+            frecuencia: dataFrequency.id,
+            ticketCode: ticketCodes[index].ticketCode
         }));
 
         setTicketsData(preparedTickets);
         setShowPdfModal(true);
-        
+
         //Renderizar de nuevo el bus
         onUpdateBus();
-
     };
 
     return (
@@ -282,10 +322,10 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             <div className="grid grid-cols-3 gap-4">
                 <div>
                     <SelectGroupTwo label="Destino" value={selectedDestination} onChange={handleDestinationChange}>
-                        {destinos.length > 0 ? (
-                            destinos.map((destino) => (
-                                <option key={destino} value={destino}>
-                                    {destino}
+                        {destinations.length > 0 ? (
+                            destinations.map((destination) => (
+                                <option key={destination} value={destination}>
+                                    {destination}
                                 </option>
                             ))
                         ) : (

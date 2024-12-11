@@ -19,7 +19,8 @@ export type SelectedSeatT={
     additionalCost:number,
     statusSeat:string,
     destination?:string,
-    client?:ClientT
+    client?:ClientT,
+    priceDestination?: number
 };
 
 export type LayoutBusT = {
@@ -209,6 +210,13 @@ export type TicketClientInformationT = {
     selectedSeats: SelectedSeatT[];
     cooperative_id: string;
     payment_method: string;
+};
+
+export type UpdateSeatClientT = {
+    seatId: string,
+    client: ClientT,
+    destination: string,
+    priceDestination: number
 };
 
 

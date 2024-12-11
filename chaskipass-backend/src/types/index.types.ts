@@ -85,7 +85,7 @@ export type SeatsStructureT = {
     frequency_id: string,
     bus_id: number,
     bus_structure_id: number
-}
+};
 
 type ClientSeatT = {
     dni:string,
@@ -96,9 +96,10 @@ type ClientSeatT = {
 
 type PurchasedSeatT={
     seatId:string,
-    additionalCost:number
-    client:ClientSeatT
-}
+    additionalCost:number,
+    client:ClientSeatT,
+    priceDestination:number
+};
 
 export type TicketClientInformationT = {
     id: number;
@@ -112,16 +113,16 @@ export type TicketClientInformationT = {
     cooperative_id: string;
     payment_method: string;
     serial_id: number;
-}
+};
 
 export type ClientCooperativeT={
     dni:string,
     cooperative_id:string
-}
+};
 
 export type PaymentT = {
     payment_method: string,
     amount: number,
     cooperative_id: string,
     ticket_id: number,
-}
+};

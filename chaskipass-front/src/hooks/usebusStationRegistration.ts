@@ -26,7 +26,7 @@ export default function createBusStation(){
                 throw new Error(data.error);
             }
             
-            toast.success(data.msg);
+            toast.success("Terminal creada con éxito");
         } catch (error) {
             toast.error(verifyError(error));
         }finally{

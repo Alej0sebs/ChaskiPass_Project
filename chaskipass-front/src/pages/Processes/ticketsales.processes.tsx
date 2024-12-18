@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import { BusLayoutConfigurationT, SeatConfigT, SelectedSeatT } from "../../types";
+import { BusLayoutConfigurationT, clientTicketT, SeatConfigT, SelectedSeatT } from "../../types";
 import toast from "react-hot-toast";
 import Accordion from "../../components/Accordion";
 import Tabs from "../../components/Tabs";
@@ -14,6 +14,8 @@ import SvgBathroomComponent from "../../components/busElements/svgBathroom.compo
 import SvgStairsComponent from "../../components/busElements/svgStairs.components";
 import BusTemplate from "../../components/Bus";
 import { useSelectedSeatsStore } from "../../Zustand/useSelectedSeats";
+import PaginationDataTable from "../../components/Tables/PaginationDataTable";
+import { useSellTicket } from "../../hooks/useSellTicket";
 
 interface InputFieldProps {
     label: string;
@@ -42,6 +44,9 @@ const TicketsalesRegistration = () => {
 
     //State para renderizar cuando haga la compra de un boleto
     const [reloadBusConfigAfterSale, setReloadBusConfigAfterSale] = useState(false);
+    //Datos de los clientes que han comprado boletos en la frecuencia
+    const [clientList, setClientList] = useState<clientTicketT[]>([]);
+    const { getTicketsClientFrequency } = useSellTicket();
 
     //global variables
     let totalSeats: number = 0;
@@ -70,6 +75,21 @@ const TicketsalesRegistration = () => {
                 toast.error('Error al obtener la estructura del bus');
             }
         };
+
+        //Traer los datos de los clientes de la frecuencia
+        const fetchTicketsClientFrequency = async () => {
+            try{
+                const {id: frequency_id} = frequencyData;
+                const response = await getTicketsClientFrequency(frequency_id);
+                console.log("mensaje"+response);
+                // if(response){
+                //     setClientList(response);
+                // }
+            }catch(err){
+                toast.error('Error al obtener los datos de los clientes');
+            }
+        };
+        fetchTicketsClientFrequency();
         fetchBusConfiguration();
     }, [frequencyData, reloadBusConfigAfterSale]);
 
@@ -95,8 +115,20 @@ const TicketsalesRegistration = () => {
 
     const tabsData = [
         { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData} onUpdateBus={toggleReload} /> },
-        { title: 'Reservados', content: <TableOne /> },
-        { title: 'Pasajeros', content: <TableOne /> }
+        //{
+            //title: 'Pasajeros',
+            //content: 
+            // <PaginationDataTable
+            //     titles={['station_name', 'user_name', 'serial_number']} // Claves ajustadas a los datos aplanados
+            //     displayHeader={['Sede', 'Vendedor', 'Número de Serie']} // Encabezados de columnas
+            //     data={serialStations} 
+            //     totalPages={totalPages} 
+            //     currentPage={currentPage} 
+            //     onPageChange={handlePageChange}
+            //     loading={loading} 
+            //     dataHeaderToExpand={[]} 
+            // />
+        //}
     ];
 
     //Contabilizar los datos de los asientos segun la estructura
@@ -173,7 +205,7 @@ const TicketsalesRegistration = () => {
                                         left: `${element.position.x}%`,
                                         top: `${element.position.y}%`,
                                     }}
-                                    onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0, statusSeat: element.status!})}
+                                    onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0, statusSeat: element.status! })}
                                 >
                                     {element.type === 'seat' && (
                                         <SvgSeatComponent

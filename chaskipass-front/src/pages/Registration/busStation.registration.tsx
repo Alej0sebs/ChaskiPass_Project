@@ -5,7 +5,7 @@ import { createBusStationT } from '../../types';
 import createBusStation from '../../hooks/usebusStationRegistration';
 import { useState } from 'react';
 import { useCity } from '../../hooks/useCity';
-
+import DataList from '../../components/DataList/datalist.components';
 
 const initialStateBusStation: createBusStationT = {
   city_id: '',
@@ -16,38 +16,29 @@ const initialStateBusStation: createBusStationT = {
   close_time: '',
 };
 
-
 const BusStationRegistration: React.FC = () => {
-
   const { loading: loadingBusStation, station } = createBusStation();
   const [inputBusStation, setInputBusStation] = useState<createBusStationT>(initialStateBusStation);
-  const { selectCity } = useCity();
-  const [selectedCity, setSelectCity] = useState<string>("");
-
+  const { selectCity } = useCity(); // Hook para obtener las ciudades
+  const [selectedCity, setSelectCity] = useState<string>('');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
-    // Actualiza el estado seleccionado del bus si es el select de buses
-    if (name === 'city_id') {
-      setSelectCity(value);
-    }
-
     setInputBusStation({
       ...inputBusStation,
       [name]:
-        // Convertimos a número para campos específicos
         name === 'year' || name === 'capacity' || name === 'city_id'
           ? Number(value)
           : value,
     });
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await station(inputBusStation);
-
   };
 
   const handleCancel = () => {
@@ -69,37 +60,24 @@ const BusStationRegistration: React.FC = () => {
               <div className="p-7">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-
-
                     <div className="w-full sm:w-1/2">
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="city_id"
-                      >
-                        Ciudad
-                      </label>
-                      <select
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                        name="city_id"
+                      <DataList
                         id="city_id"
+                        label="Ciudad"
+                        placeholder="Seleccione o busque una ciudad"
+                        options={selectCity} // Lista de ciudades
                         value={selectedCity}
-                        onChange={handleChange}
-                      >
-                        <option value="" disabled>
-                          Seleccione la Ciudad
-                        </option>
-                        {!selectedCity && (
-                          <option value="">Ciudades</option>
-                        )}
-                        {selectCity.map((city) => (
-                          <option key={city.id} value={city.id}>
-                            {city.name}
-                          </option>
-                        ))}
-                        ;
-                      </select>
+                        onSelect={(value) => {
+                          setSelectCity(value); // Actualiza la ciudad seleccionada
+                          setInputBusStation({ ...inputBusStation, city_id: value }); // Sincroniza con el estado del formulario
+                        }}
+                        iconP={FaCity}
+                        className=""
+                        opKey="id" // Identificador único
+                        opValue="name" // Nombre mostrado en el campo
+                        optionP="name" // Nombre mostrado en las opciones
+                      />
                     </div>
-
 
                     <div className="w-full sm:w-1/2">
                       <label

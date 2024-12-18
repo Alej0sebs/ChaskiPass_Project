@@ -189,7 +189,7 @@ const Settings: React.FC = () => {
             <div className="relative">
               <input
                 type="password"
-                placeholder="Ingrese su nueva contraseña"
+                placeholder="Nueva contraseña"
                 id="password"
                 name="password"
                 value={formData.password}

@@ -42,6 +42,11 @@ const TicketsalesRegistration = () => {
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado para visualizar
     const { selectedSeats, addSeat, removeSeat, clearSeats } = useSelectedSeatsStore();
 
+    //state para paginas
+    const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+
     //State para renderizar cuando haga la compra de un boleto
     const [reloadBusConfigAfterSale, setReloadBusConfigAfterSale] = useState(false);
     //Datos de los clientes que han comprado boletos en la frecuencia
@@ -78,19 +83,23 @@ const TicketsalesRegistration = () => {
 
         //Traer los datos de los clientes de la frecuencia
         const fetchTicketsClientFrequency = async () => {
-            try{
-                const {id: frequency_id} = frequencyData;
+            try {
+                const { id: frequency_id } = frequencyData;
                 const response = await getTicketsClientFrequency(frequency_id);
-                console.log("mensaje"+response);
-                // if(response){
-                //     setClientList(response);
-                // }
-            }catch(err){
+
+                if (response) {
+                    setClientList(response.message.clientList);
+                    setTotalPages(response.message.totalPages);
+
+                }
+            } catch (err) {
                 toast.error('Error al obtener los datos de los clientes');
             }
         };
+        setLoading(true); //puede esto ser opcional.
         fetchTicketsClientFrequency();
         fetchBusConfiguration();
+        setLoading(false);
     }, [frequencyData, reloadBusConfigAfterSale]);
 
     const handleSeatClick = ({ seatId, additionalCost, statusSeat }: SelectedSeatT) => {
@@ -115,20 +124,20 @@ const TicketsalesRegistration = () => {
 
     const tabsData = [
         { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData} onUpdateBus={toggleReload} /> },
-        //{
-            //title: 'Pasajeros',
-            //content: 
-            // <PaginationDataTable
-            //     titles={['station_name', 'user_name', 'serial_number']} // Claves ajustadas a los datos aplanados
-            //     displayHeader={['Sede', 'Vendedor', 'Número de Serie']} // Encabezados de columnas
-            //     data={serialStations} 
-            //     totalPages={totalPages} 
-            //     currentPage={currentPage} 
-            //     onPageChange={handlePageChange}
-            //     loading={loading} 
-            //     dataHeaderToExpand={[]} 
-            // />
-        //}
+        {
+            title: 'Clientes',
+            content:
+                <PaginationDataTable
+                    titles={['client_dni', 'client_name', 'ticket_code', 'seat_id']} // Claves ajustadas a los datos aplanados
+                    displayHeader={['DNI', 'Nombre', 'Codigo', 'Asiento']} // Encabezados de columnas
+                    data={clientList}
+                    totalPages={totalPages}
+                    currentPage={0}
+                    onPageChange={setCurrentPage}//funciona para cambiar y enviar los datos que quiero traer a la tabla.
+                    loading={loading}
+                    dataHeaderToExpand={[]}
+                />
+        }
     ];
 
     //Contabilizar los datos de los asientos segun la estructura

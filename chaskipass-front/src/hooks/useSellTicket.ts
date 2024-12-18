@@ -39,7 +39,7 @@ export const useSellTicket = () => {
     const getTicketsClientFrequency = async (frequencyID:string) => {
         //Enviar los datos de la paginacion
         try{
-            const response = await fetch(`${API_BASE_URL}tickets/frequency/${frequencyID}`,{
+            const response = await fetch(`${API_BASE_URL}tickets/clients/${frequencyID}`,{
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

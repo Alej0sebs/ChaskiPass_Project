@@ -151,7 +151,8 @@ export const getFrecuencyClientsService = async (frequency_id: string, { page, l
     From Tickets AS t
     INNER JOIN 
     Clients AS c ON t.client_dni = c.dni
-    WHERE t.frequency_id= :frequency_id;
+    WHERE t.frequency_id= :frequency_id
+    LIMIT :limit OFFSET :offset;
     `;
 
         const [clientList] = await connectionDb.query(query, {

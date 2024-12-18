@@ -36,8 +36,34 @@ export const useSellTicket = () => {
         }
     };
 
+    const getTicketsClientFrequency = async (frequencyID:string) => {
+        //Enviar los datos de la paginacion
+        try{
+            const response = await fetch(`${API_BASE_URL}tickets/clients/${frequencyID}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if(!response.ok){
+                throw new Error(data.error);
+            }
+            return {
+                status:200,
+                message:data
+            };
+        }catch(error){
+            toast.error(verifyError(error));
+            return;
+        }finally{
+            setLoading(false);
+        }
+    };
+
     return {
-        loading, sellTicket
+        loading, sellTicket, getTicketsClientFrequency
     };
 
 };

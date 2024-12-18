@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import { BusLayoutConfigurationT, SeatConfigT, SelectedSeatT } from "../../types";
+import { BusLayoutConfigurationT, clientTicketT, SeatConfigT, SelectedSeatT } from "../../types";
 import toast from "react-hot-toast";
 import Accordion from "../../components/Accordion";
 import Tabs from "../../components/Tabs";
@@ -14,6 +14,8 @@ import SvgBathroomComponent from "../../components/busElements/svgBathroom.compo
 import SvgStairsComponent from "../../components/busElements/svgStairs.components";
 import BusTemplate from "../../components/Bus";
 import { useSelectedSeatsStore } from "../../Zustand/useSelectedSeats";
+import PaginationDataTable from "../../components/Tables/PaginationDataTable";
+import { useSellTicket } from "../../hooks/useSellTicket";
 
 interface InputFieldProps {
     label: string;
@@ -40,8 +42,16 @@ const TicketsalesRegistration = () => {
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado para visualizar
     const { selectedSeats, addSeat, removeSeat, clearSeats } = useSelectedSeatsStore();
 
+    //state para paginas
+    const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+
     //State para renderizar cuando haga la compra de un boleto
     const [reloadBusConfigAfterSale, setReloadBusConfigAfterSale] = useState(false);
+    //Datos de los clientes que han comprado boletos en la frecuencia
+    const [clientList, setClientList] = useState<clientTicketT[]>([]);
+    const { getTicketsClientFrequency } = useSellTicket();
 
     //global variables
     let totalSeats: number = 0;
@@ -70,7 +80,26 @@ const TicketsalesRegistration = () => {
                 toast.error('Error al obtener la estructura del bus');
             }
         };
+
+        //Traer los datos de los clientes de la frecuencia
+        const fetchTicketsClientFrequency = async () => {
+            try {
+                const { id: frequency_id } = frequencyData;
+                const response = await getTicketsClientFrequency(frequency_id);
+
+                if (response) {
+                    setClientList(response.message.clientList);
+                    setTotalPages(response.message.totalPages);
+
+                }
+            } catch (err) {
+                toast.error('Error al obtener los datos de los clientes');
+            }
+        };
+        setLoading(true); //puede esto ser opcional.
+        fetchTicketsClientFrequency();
         fetchBusConfiguration();
+        setLoading(false);
     }, [frequencyData, reloadBusConfigAfterSale]);
 
     const handleSeatClick = ({ seatId, additionalCost, statusSeat }: SelectedSeatT) => {
@@ -95,8 +124,20 @@ const TicketsalesRegistration = () => {
 
     const tabsData = [
         { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData} onUpdateBus={toggleReload} /> },
-        { title: 'Reservados', content: <TableOne /> },
-        { title: 'Pasajeros', content: <TableOne /> }
+        {
+            title: 'Clientes',
+            content:
+                <PaginationDataTable
+                    titles={['client_dni', 'client_name', 'ticket_code', 'seat_id']} // Claves ajustadas a los datos aplanados
+                    displayHeader={['DNI', 'Nombre', 'Codigo', 'Asiento']} // Encabezados de columnas
+                    data={clientList}
+                    totalPages={totalPages}
+                    currentPage={0}
+                    onPageChange={setCurrentPage}//funciona para cambiar y enviar los datos que quiero traer a la tabla.
+                    loading={loading}
+                    dataHeaderToExpand={[]}
+                />
+        }
     ];
 
     //Contabilizar los datos de los asientos segun la estructura
@@ -173,7 +214,7 @@ const TicketsalesRegistration = () => {
                                         left: `${element.position.x}%`,
                                         top: `${element.position.y}%`,
                                     }}
-                                    onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0, statusSeat: element.status!})}
+                                    onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0, statusSeat: element.status! })}
                                 >
                                     {element.type === 'seat' && (
                                         <SvgSeatComponent

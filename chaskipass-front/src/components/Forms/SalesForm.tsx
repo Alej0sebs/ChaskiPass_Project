@@ -179,6 +179,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         if (seatToUse) {
             const temporalDestinations = destinations.slice(1);
             const index = temporalDestinations.findIndex((destination) => destination === selectedDestination);
+            
             const updatePassengerData: UpdateSeatClientT = {
                 seatId: seatToUse.seatId,
                 client: {
@@ -188,7 +189,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
                     exist: passengerData.exist,
                 },
                 destination: selectedDestination,
-                priceDestination: Number(pricesPerStop[index].toFixed(2))
+                priceDestination: pricesPerStop[index] ? Number(pricesPerStop[index].toFixed(2)) : dataFrequency.price,
             };
             updateSeatClient(updatePassengerData);
             setCurrentSeat(null);
@@ -337,7 +338,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
                 </div>
                 <div>
                     <label className="mb-3 block text-black dark:text-white">
-                        Precio
+                        Total a Pagar
                     </label>
                     <input
                         type="text"

@@ -59,8 +59,6 @@ const TicketSeriesRegistration = () => {
     const fetchSerialStations = async () => {
         try {
             const data = await getSerialStation(); // Obtén la respuesta de la API
-            console.log("Respuesta completa de la API:", data); // Imprime los datos para verificar la respuesta
-
             if (Array.isArray(data)) {
                 // Si la respuesta es un arreglo, mapeamos los datos
                 const formattedData = data.map((item: any) => ({

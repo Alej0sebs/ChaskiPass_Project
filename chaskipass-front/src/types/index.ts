@@ -220,6 +220,13 @@ export type UpdateSeatClientT = {
 };
 
 
+export type clientTicketT = {
+    client_dni: string,
+    client_name: string,
+    ticket_code: string,
+    seat_id: string,
+}
+
 
 
 

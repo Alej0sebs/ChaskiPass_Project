@@ -7,7 +7,8 @@ import { handleSequelizeError } from '../utils/helpers.utils';
 // Servicio para obtener las ciudades con paginación
 export const getCitiesService = async ({ page, limit }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
         const { rows: citiesList, count: totalItems } = await Cities.findAndCountAll({
             limit: parseInt(limit.toString()),
@@ -35,7 +36,8 @@ export const getCitiesService = async ({ page, limit }: DataPaginationT) => {
 // Servicio para buscar ciudades por filtro
 export const searchCitiesByFilterService = async ({ page, limit, pattern }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
         const { rows: citiesList, count: totalItems } = await Cities.findAndCountAll({
             where: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { IoIosArrowDown } from 'react-icons/io';
 
 interface PaginationDataTableProps {
@@ -34,13 +34,13 @@ const PaginationDataTable: React.FC<PaginationDataTableProps> = ({
   };
 
   const handlePrevious = () => {
-    if (currentPage > 0) {
+    if (currentPage > 1) {
       onPageChange(currentPage - 1);
     }
   };
 
   const handleNext = () => {
-    if (currentPage < totalPages - 1) {
+    if (currentPage < totalPages) {
       onPageChange(currentPage + 1);
     }
   };
@@ -70,41 +70,50 @@ const PaginationDataTable: React.FC<PaginationDataTableProps> = ({
               </tr>
             </thead>
             <tbody>
-              {data.map((row, rowIndex) => (
-                <React.Fragment key={rowIndex}>
-                  <tr
-                    onClick={() => onRowClick?.(row)}
-                    className="cursor-pointer border-b border-stroke dark:border-strokedark hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    {/* Mostrar el botón de expansión solo si hay datos a expandir */}
-                    {dataHeaderToExpand.length > 0 && (
-                      <td className="p-2.5 text-center">
-                        <button onClick={() => toggleExpandRow(rowIndex)}>
-                          <IoIosArrowDown className={`right-4 top-1/2 translate-y-1/2 fill-current ${expandedRow === rowIndex && 'rotate-180'}`} />
-                        </button>
-                      </td>
-                    )}
-                    {titles.map((title, colIndex) => (
-                      <td key={colIndex} className="p-2.5 text-center text-black dark:text-white">
-                        {row[title] !== undefined ? row[title] : '-'}
-                      </td>
-                    ))}
-                  </tr>
-                  {/* Renderizar la fila expandible solo si hay datos y la fila está expandida */}
-                  {expandedRow === rowIndex && dataHeaderToExpand.length > 0 && (
-                    <tr>
-                      <td colSpan={titles.length + 1} className="p-4 bg-gray-100 dark:bg-gray-700">
-                        {/* Contenido expandido de la fila */}
-                        <div>{dataHeaderToExpand.map((expandedTitle, expandedColIndex) => (
-                          <span key={expandedColIndex} className="block p-2">
-                            {row[expandedTitle] !== undefined ? row[expandedTitle] : '-'}
-                          </span>
-                        ))}</div>
-                      </td>
+              {data.length === 0 ? (
+                <tr>
+                  <td colSpan={titles.length} className="text-center">
+                    No hay datos disponibles.
+                  </td>
+                </tr>
+              ) :
+                (data.map((row, rowIndex) => (
+                  <React.Fragment key={rowIndex}>
+                    <tr
+                      onClick={() => onRowClick?.(row)}
+                      className="cursor-pointer border-b border-stroke dark:border-strokedark hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >
+                      {/* Mostrar el botón de expansión solo si hay datos a expandir */}
+                      {dataHeaderToExpand.length > 0 && (
+                        <td className="p-2.5 text-center">
+                          <button onClick={() => toggleExpandRow(rowIndex)}>
+                            <IoIosArrowDown className={`right-4 top-1/2 translate-y-1/2 fill-current ${expandedRow === rowIndex && 'rotate-180'}`} />
+                          </button>
+                        </td>
+                      )}
+                      {titles.map((title, colIndex) => (
+                        <td key={colIndex} className="p-2.5 text-center text-black dark:text-white">
+                          {row[title] !== undefined ? row[title] : '-'}
+                        </td>
+                      ))}
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
+                    {/* Renderizar la fila expandible solo si hay datos y la fila está expandida */}
+                    {expandedRow === rowIndex && dataHeaderToExpand.length > 0 && (
+                      <tr>
+                        <td colSpan={titles.length + 1} className="p-4 bg-gray-100 dark:bg-gray-700">
+                          {/* Contenido expandido de la fila */}
+                          <div>{dataHeaderToExpand.map((expandedTitle, expandedColIndex) => (
+                            <span key={expandedColIndex} className="block p-2">
+                              {row[expandedTitle] !== undefined ? row[expandedTitle] : '-'}
+                            </span>
+                          ))}</div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                )))
+
+              }
             </tbody>
           </table>
         </div>
@@ -112,17 +121,17 @@ const PaginationDataTable: React.FC<PaginationDataTableProps> = ({
       <div className="flex justify-between items-center mt-4">
         <button
           onClick={handlePrevious}
-          disabled={currentPage === 0}
+          disabled={currentPage === 1}
           className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 dark:bg-gray-700"
         >
           Anterior
         </button>
         <span className="text-sm text-gray-700 dark:text-white">
-          Página {currentPage + 1} de {totalPages}
+          Página {currentPage} de {totalPages}
         </span>
         <button
           onClick={handleNext}
-          disabled={currentPage === totalPages - 1}
+          disabled={currentPage === totalPages}
           className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 dark:bg-gray-700"
         >
           Siguiente

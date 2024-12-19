@@ -3,11 +3,9 @@ import { useAuthContext } from "../context/AuthContext";
 import { API_BASE_URL } from "../helpers/Constants";
 import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
-import { LinkCooperativesT } from "../types";
 
 export default function useLinkCooperativeStation() {
     const [loading, setLoading] = useState(false);
-    const [linkedStations, setLinkedStations] = useState<LinkCooperativesT[]>([]); // Guardar estaciones vinculadas
     const { authUser } = useAuthContext(); // Obtener el usuario autenticado para usar su token o datos
 
     const linkStation = async (stationId: number) => {
@@ -29,7 +27,7 @@ export default function useLinkCooperativeStation() {
             const data = await response.json();
 
             if (!response.ok) {
-               throw new Error(`${data?.msg || "Error al asociar la estación "}`);
+                throw new Error(`${data?.msg || "Error al asociar la estación "}`);
             }
 
             toast.success("Estación asociada correctamente.");
@@ -42,14 +40,14 @@ export default function useLinkCooperativeStation() {
     };
 
     // Método para obtener todas las estaciones vinculadas
-    const getLinkedStations = async () => {
+    const getLinkedStations = async (page: number) => {
         setLoading(true);
         try {
             if (!authUser) {
                 throw new Error("Usuario no autenticado.");
             }
 
-            const response: Response = await fetch(`${API_BASE_URL}linkedStations/allLinkedCooperatives/`, {
+            const response: Response = await fetch(`${API_BASE_URL}linkedStations/allLinkedCooperatives?page=${page}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -62,10 +60,8 @@ export default function useLinkCooperativeStation() {
             if (!response.ok) {
                 throw new Error(`${data?.msg || "Error al obtener las estaciones vinculadas"}`);
             }
-
             // Acceder a `data.json.list` y guardar las estaciones vinculadas en el estado
-            setLinkedStations(data.json.list); // Guardamos las estaciones vinculadas en el estado
-            return data.json.list;
+            return data.json;
         } catch (error) {
             toast.error(verifyError(error));
         } finally {
@@ -73,5 +69,5 @@ export default function useLinkCooperativeStation() {
         }
     };
 
-    return { loading, linkStation, getLinkedStations, linkedStations };
+    return { loading, linkStation, getLinkedStations};
 }

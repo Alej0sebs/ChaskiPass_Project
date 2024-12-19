@@ -8,7 +8,8 @@ import { handleSequelizeError } from '../utils/helpers.utils';
 // Servicio para obtener clientes con paginación
 export const getClientsService = async (dni: string, { page, limit }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
         const { rows: clientsList, count: totalItems } = await Clients.findAndCountAll({
             where: { dni: { [Op.ne]: dni } },

@@ -137,8 +137,8 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
 export const getFrecuencyClientsService = async (frequency_id: string, { page, limit }: DataPaginationT) => {
 
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
-
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
         // Asegúrate de esperar el resultado de la consulta de conteo
         const totalItems = await Tickets.count({ where: { frequency_id } });
 

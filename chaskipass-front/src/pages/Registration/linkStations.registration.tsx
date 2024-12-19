@@ -3,37 +3,34 @@ import useBusStations from '../../hooks/useBusStations';
 import useLinkCooperativeStation from '../../hooks/useLinkCooperativeStation';
 import toast from 'react-hot-toast';
 import PaginationDataTable from '../../components/Tables/PaginationDataTable';
+import { LinkCooperativesT } from '../../types';
 
 const LinkStations = () => {
   const [selectedStations, setSelectedStations] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(0); // Página actual para estaciones vinculadas
-  const [totalPages, setTotalPages] = useState(1); // Número total de páginas para estaciones vinculadas
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const { allBusStations, loading: stationsLoading } = useBusStations();
   const {
     linkStation,
     getLinkedStations,
     loading: saving,
-    linkedStations,
   } = useLinkCooperativeStation();
+  const [linkedStations, setLinkedStations] = useState<LinkCooperativesT[]>([]);
+
+  const fetchLinkedStations = async (page: number) => {
+    try {
+      const result = await getLinkedStations(page);
+      setTotalPages(result.totalPages);
+      setLinkedStations(result.list);
+    } catch (error) {
+      toast.error('Error al obtener las estaciones vinculadas.');
+    }
+  };
 
   // Obtener estaciones vinculadas al cargar el componente
   useEffect(() => {
-    const fetchLinkedStations = async () => {
-      try {
-        const result = await getLinkedStations();
-        if (result && result.length) {
-          setTotalPages(Math.ceil(result.length / 5)); // Actualizar total de páginas
-        }
-      } catch (error) {
-        toast.error('Error al obtener las estaciones vinculadas.');
-      }
-    };
-
-    // Llamar a la función solo si no se ha hecho antes
-    if (linkedStations.length === 0) {
-      fetchLinkedStations();
-    }
-  }, [linkedStations, getLinkedStations]); // Dependencia en `linkedStations` para evitar bucles infinitos
+      fetchLinkedStations(currentPage);
+  }, [currentPage]); // Dependencia en `linkedStations` para evitar bucles infinitos
 
   const handleStationSelection = (station: any) => {
     setSelectedStations(
@@ -63,7 +60,7 @@ const LinkStations = () => {
 
       // Actualizar la lista de estaciones vinculadas si todas fueron exitosas
       setSelectedStations([]); // Limpiar selección
-      const result = await getLinkedStations(); // Obtener nuevamente las estaciones vinculadas
+      const result = await getLinkedStations(currentPage); // Obtener nuevamente las estaciones vinculadas
       if (result && result.length) {
         setTotalPages(Math.ceil(result.length / 5)); // Actualizar total de páginas
       }
@@ -75,17 +72,6 @@ const LinkStations = () => {
   const handleCancel = () => {
     setSelectedStations([]); // Restablecer selección
   };
-
-  // Lógica para manejar el cambio de página para las estaciones vinculadas
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-  };
-
-  // Datos de la página actual para la paginación de estaciones vinculadas
-  const paginatedLinkedStations = linkedStations.slice(
-    currentPage * 5,
-    (currentPage + 1) * 5,
-  ); // 5 elementos por página
 
   return (
     <div className="mx-auto max-w-270">
@@ -104,29 +90,29 @@ const LinkStations = () => {
               </h4>
 
               <div className="mb-5.5">
-  {stationsLoading ? (
-    <p className="text-gray-500">Cargando estaciones...</p>
-  ) : (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {allBusStations.map((station, index) => (
-          <label
-            key={index}
-            className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 transition cursor-pointer"
-          >
-            <input
-              type="checkbox"
-              checked={selectedStations.some((s) => s.id === station.id)}
-              onChange={() => handleStationSelection(station)}
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <span className="text-gray-800">{station.name}</span>
-          </label>
-        ))}
-      </div>
-    </div>
-  )}
-</div>
+                {stationsLoading ? (
+                  <p className="text-gray-500">Cargando estaciones...</p>
+                ) : (
+                  <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {allBusStations.map((station, index) => (
+                        <label
+                          key={index}
+                          className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 transition cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedStations.some((s) => s.id === station.id)}
+                            onChange={() => handleStationSelection(station)}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          />
+                          <span className="text-gray-800">{station.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
 
               <div className="flex gap-4 mt-6">
@@ -153,12 +139,15 @@ const LinkStations = () => {
                 <PaginationDataTable
                   titles={['name']} // Puedes agregar más títulos según sea necesario
                   displayHeader={['Estación']}
-                  data={paginatedLinkedStations} // Pasa los datos paginados de estaciones vinculadas
+                  data={linkedStations} // Pasa los datos paginados de estaciones vinculadas
                   totalPages={totalPages}
                   currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                  loading={saving}
-                  onRowClick={() => {}} // Aquí no es necesario seleccionar, ya que no estamos usando checkboxes para esta tabla
+                  onPageChange={(newPage) => {
+                    setCurrentPage(newPage);
+                    fetchLinkedStations(newPage);
+                  }}
+                  loading={false}
+                  onRowClick={() => { }} // Aquí no es necesario seleccionar, ya que no estamos usando checkboxes para esta tabla
                   dataHeaderToExpand={[]} // Si tienes datos para expandir
                 />
               </div>

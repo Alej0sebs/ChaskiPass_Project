@@ -33,10 +33,11 @@ const initialStateTimeDate: timeDateT = {
 const FrequencyRegistration = () => {
     const [frequencyStatus, setFrequencyStatus] = useState(false);
     //PaginationDataTable data
-    const { loading, listRoutes } = useRoutes();
-    const [currentPage, setCurrentPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const rowsPerPage = 6;
+    const { loading, getRoutes } = useRoutes();
+    //Listado de las rutas
+    const [listRoutes, setListRoutes] = useState<any[]>([]);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [currentPage, setCurrentPage] = useState<number>(1);
     //state of inputs
     const [selectedBus, setSelectedBus] = useState('');
     const [selectedDriver, setSelectedDriver] = useState('');
@@ -52,22 +53,30 @@ const FrequencyRegistration = () => {
     const [buses, setBuses] = useState([]);
     const [drivers, setDrivers] = useState([]);
 
+    const fetchBuses = async () => {
+        const busData = await getBuses();
+        if (busData) setBuses(busData);
+        const driverData = await getDrivers();
+        if (driverData) setDrivers(driverData.json);
+    };
+
+    const fetchRoutes = async (page: number = 1) => {
+        const response = await getRoutes(page);
+        if (response.listRoutes.length > 0) {
+            setListRoutes(response.listRoutes);
+            setTotalPages(response.totalPages);
+        } else {
+            setListRoutes([]);
+        }
+    }
 
     useEffect(() => {
-        const fetchBuses = async () => {
-            const busData = await getBuses();
-            if (busData) setBuses(busData);
-            const driverData = await getDrivers();
-            if (driverData) setDrivers(driverData.json);
-        };
-
         fetchBuses();
     }, []);
 
     useEffect(() => {
-        // Actualizar totalPages basado en el tamaño de listRoutes
-        setTotalPages(Math.ceil(listRoutes.length / rowsPerPage));
-    }, [listRoutes]);
+        fetchRoutes(currentPage);
+    }, [currentPage]);
 
 
     //Para el switcher
@@ -129,7 +138,10 @@ const FrequencyRegistration = () => {
                             data={listRoutes}
                             totalPages={totalPages}
                             currentPage={currentPage}
-                            onPageChange={setCurrentPage}
+                            onPageChange={(newPage) => {
+                                setCurrentPage(newPage);
+                                fetchRoutes(newPage);
+                            }}
                             loading={loading}
                             onRowClick={(row) => setRouteID(row.id)}
                             dataHeaderToExpand={expandTitles}

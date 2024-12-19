@@ -32,7 +32,7 @@ const TableSeats = ({ headerTable, displayData, onSelectSeat }: TableTicketsProp
                             <td>{val.destination}</td>
                             <td>${val.additionalCost}</td>
                             <td>${val.priceDestination}</td>
-                            <td>{(val.priceDestination ? val.priceDestination : 0) + val.additionalCost}</td>
+                            <td>${(val.priceDestination ? Number(val.priceDestination) : 0) + Number(val.additionalCost)}</td>
                         </tr>
                     ))}
                 </tbody>

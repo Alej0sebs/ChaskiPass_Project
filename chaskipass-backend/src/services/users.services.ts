@@ -9,7 +9,8 @@ import { handleSequelizeError } from '../utils/helpers.utils';
 // Servicio para obtener usuarios con paginación
 export const getUsersService = async (cooperative_id: string, dni: string, { page, limit }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
         const { rows: usersList, count: totalItems } = await Users.findAndCountAll({
             where: {

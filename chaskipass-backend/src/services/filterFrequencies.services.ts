@@ -54,7 +54,8 @@ const buildDynamicWhereClause = (filters: filterConditionsT) => {
 
 export const filterFrequenciesService = async (conditions: FilterFrequenciesT, { page, limit, pattern }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
         // Construir la cláusula WHERE y los reemplazos
         const { whereClause, replacements } = buildDynamicWhereClause(conditions);
 

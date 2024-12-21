@@ -10,23 +10,25 @@ import useRoutes from "../../hooks/useRoutes";
 import useBusCreation from "../../hooks/useBusCreation";
 import DataList from "../../components/DataList/datalist.components";
 import useUsers from "../../hooks/useUsers";
-import { FrequencyT, timeDateT } from "../../types";
+import { FrequencyT, timeDatePriceT } from "../../types";
 import toast from "react-hot-toast";
 import useFrequency from "../../hooks/useFrequency";
 
 // DATOS DE PRUEBA RENDERIZADO
 const titles = ['id', 'departure_station_name',
     'departure_city_name', 'arrival_station_name',
-    'arrival_city_name'];
+    'arrival_city_name', 'time'];
 const expandTitles = ['stop_station_names', 'stop_city_names'];
 const displayHeader = ['Identificador', 'Estación de salida', 'Ciudad de salida',
-    'Estación de llegada', 'Ciudad de llegada'];
+    'Estación de llegada', 'Ciudad de llegada', 'Horario'];
 
 //Estado inicial Datos
-const initialStateTimeDate: timeDateT = {
+const initialStateTimeDate: timeDatePriceT = {
     date: '',
     departure_time: '',
-    arrival_time: ''
+    arrival_time: '',
+    routeID: '',
+    price: '0',
 }
 
 // DATOS DE PRUEBA RENDERIZADO
@@ -41,10 +43,11 @@ const FrequencyRegistration = () => {
     //state of inputs
     const [selectedBus, setSelectedBus] = useState('');
     const [selectedDriver, setSelectedDriver] = useState('');
-    const [routeID, setRouteID] = useState('');
-    const [price, setPrice] = useState('');
+    // const [routeID, setRouteID] = useState('');
+    const [fillDataTable, setFillDataTable] = useState<timeDatePriceT>(initialStateTimeDate);
+    // const [price, setPrice] = useState('');
     const today = new Date().toISOString().split('T')[0]; //get today's date in the format YYYY-MM-DD
-    const [selectedDateTime, setSelectedDateTime] = useState<timeDateT>(initialStateTimeDate);
+    // const [selectedDateTime, setSelectedDateTime] = useState<timeDateT>(initialStateTimeDate);
     //hook
     const { getBuses } = useBusCreation();
     const { getDrivers } = useUsers();
@@ -62,6 +65,7 @@ const FrequencyRegistration = () => {
 
     const fetchRoutes = async (page: number = 1) => {
         const response = await getRoutes(page);
+        console.log(response);
         if (response.listRoutes.length > 0) {
             setListRoutes(response.listRoutes);
             setTotalPages(response.totalPages);
@@ -85,24 +89,27 @@ const FrequencyRegistration = () => {
     };
 
     const handleTimeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectedDateTime({
-            ...selectedDateTime,
+        setFillDataTable({
+            ...fillDataTable,
             [e.target.id]: e.target.value
         });
     };
+
+
     const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         const frequencyData: FrequencyT = {
             bus_id: selectedBus,
-            route_id: routeID,
-            departure_time: selectedDateTime.departure_time,
-            date: selectedDateTime.date,
-            arrival_time: selectedDateTime.arrival_time,
+            route_id: fillDataTable.routeID || "",
+            departure_time: fillDataTable.departure_time,
+            date: fillDataTable.date,
+            arrival_time: fillDataTable.arrival_time,
             driver_id: selectedDriver,
-            price: parseFloat(price.replace(',', '.')),
+            // price: parseFloat(price.replace(',', '.')),
+            price: parseFloat(fillDataTable.price.replace(',', '.')),
             status: frequencyStatus
         };
-        if (!selectedBus || !routeID || !selectedDateTime.departure_time || !selectedDateTime.date || !selectedDateTime.arrival_time || !selectedDriver || parseFloat(price.replace(',', '.')) <= 0) {
+        if (!selectedBus || !fillDataTable.routeID || !fillDataTable.departure_time || !fillDataTable.date || !fillDataTable.arrival_time || !selectedDriver || parseFloat(fillDataTable.price.replace(',', '.')) <= 0) {
             toast.error("Por favor, complete todos los campos.");
             return;
         };
@@ -118,12 +125,17 @@ const FrequencyRegistration = () => {
     };
 
     const cleanData = () => {
-        setSelectedDateTime(initialStateTimeDate);
         setSelectedDriver('');
         setSelectedBus('');
-        setRouteID('');
+        setFillDataTable({
+            date: '',
+            departure_time: '',
+            arrival_time: '',
+            routeID: '',
+            price: '0',
+        });
         setFrequencyStatus(false);
-        setPrice('');
+        // setPrice('');
     };
 
     return (
@@ -143,7 +155,13 @@ const FrequencyRegistration = () => {
                                 fetchRoutes(newPage);
                             }}
                             loading={loading}
-                            onRowClick={(row) => setRouteID(row.id)}
+                            onRowClick={(row) => setFillDataTable((prev) => ({
+                                ...prev,
+                                routeID: row.id,
+                                departure_time: row.departure_time || '', 
+                                arrival_time: row.arrival_time || '',
+                                price: row.default_price.toString(),    
+                            }))}
                             dataHeaderToExpand={expandTitles}
                         />
                     </div>
@@ -206,9 +224,9 @@ const FrequencyRegistration = () => {
                                                     name="price"
                                                     id="price"
                                                     placeholder="7"
-                                                    value={price}
+                                                    value={fillDataTable.price}
                                                     step={0.01}
-                                                    onChange={(e) => setPrice(e.target.value)}
+                                                    onChange={handleTimeDateChange}
                                                 />
                                             </div>
                                         </div>
@@ -246,7 +264,7 @@ const FrequencyRegistration = () => {
                                                     name="route_id"
                                                     id="route_id"
                                                     placeholder="Jer2-1622-4"
-                                                    value={routeID}
+                                                    value={fillDataTable.routeID}
                                                 />
                                             </div>
                                         </div>
@@ -266,7 +284,7 @@ const FrequencyRegistration = () => {
                                                     name="date"
                                                     id="date"
                                                     onChange={handleTimeDateChange}
-                                                    value={selectedDateTime.date}
+                                                    value={fillDataTable.date}
                                                     min={today}
                                                 />
                                             </div>
@@ -286,7 +304,7 @@ const FrequencyRegistration = () => {
                                                     name="departure_time"
                                                     id="departure_time"
                                                     onChange={handleTimeDateChange}
-                                                    value={selectedDateTime.departure_time}
+                                                    value={fillDataTable.departure_time}
                                                 />
                                             </div>
                                         </div>
@@ -303,7 +321,7 @@ const FrequencyRegistration = () => {
                                                     name="arrival_time"
                                                     id="arrival_time"
                                                     onChange={handleTimeDateChange}
-                                                    value={selectedDateTime.arrival_time}
+                                                    value={fillDataTable.arrival_time}
                                                 />
                                             </div>
                                         </div>

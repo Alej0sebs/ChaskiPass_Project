@@ -9,15 +9,18 @@ import { createFrequencyService, deleteFrequencyByIDService, editFrequencyServic
 export const createRoute = async (req: Request, res: Response) => {
     try {
         const { cooperative_id, dni } = req.userReq ?? {};
-        const { departure_station_id, arrival_station_id, stopOverList } = req.body;
+        const { departure_station_id, arrival_station_id, stopOverList, arrival_time, departure_time, default_price} = req.body;
         const routeInformation: RoutesT = {
             id: '',
             dni: dni || '',
             cooperative_id: cooperative_id || '',
             departure_station_id,
             arrival_station_id,
-            stopOverList
-        }
+            stopOverList,
+            arrival_time,
+            departure_time,
+            default_price
+        };
         const result = await createRouteService(routeInformation);
 
         res.status(201).json(result);

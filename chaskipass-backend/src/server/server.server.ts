@@ -119,7 +119,7 @@ export default class Server {
                 await Users.sync(),               
                 await Buses.sync(),
                 await BusStations.sync(),
-                await Routes.sync(),
+                await Routes.sync({alter: true}),
                 await TypeSeats.sync(),
                 await Seats.sync(),               
                 await StopOvers.sync(),

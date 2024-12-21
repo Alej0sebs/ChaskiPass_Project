@@ -44,7 +44,8 @@ export const getStationCooperative = async (req: Request, res: Response) => {
 export const getAllStationCooperative = async (req: Request, res: Response) => {
     try{
         const { cooperative_id } = req.userReq ?? {};
-        const result = await getAllStationCooperativeService(cooperative_id!);
+        const paginationData = getPaginationData(req.query);
+        const result = await getAllStationCooperativeService(cooperative_id!, paginationData);
         res.status(201).json(result);
         return;
     }catch(error){

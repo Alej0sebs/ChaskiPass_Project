@@ -38,7 +38,8 @@ export const linkCooperativeStationService = async ({ cooperative_id, station_id
 
 export const getStationCooperativeService = async (cooperative_id: string, { page, limit }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
         const { rows: linkedCooperativesList, count: totalItems } = await BusStations.findAndCountAll({
             attributes: ['id', 'name'],
             include: [
@@ -49,10 +50,10 @@ export const getStationCooperativeService = async (cooperative_id: string, { pag
                     required: true
                 },
                 {
-                    model:Cities,
-                    as:'city_bus_station',
-                    attributes:['id','name'],
-                    required:true
+                    model: Cities,
+                    as: 'city_bus_station',
+                    attributes: ['id', 'name'],
+                    required: true
                 }
             ],
             limit: parseInt(limit.toString()),
@@ -75,9 +76,12 @@ export const getStationCooperativeService = async (cooperative_id: string, { pag
     }
 };
 
-export const getAllStationCooperativeService = async (cooperative_id: string) => {
+export const getAllStationCooperativeService = async (cooperative_id: string, { page, limit }: DataPaginationT) => {
     try {
-        const linkedCooperativesList = await BusStations.findAll({
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
+
+        const { rows: linkedCooperativesList, count: totalItems } = await BusStations.findAndCountAll({
             attributes: ['id', 'name'],
             include: [
                 {
@@ -87,17 +91,25 @@ export const getAllStationCooperativeService = async (cooperative_id: string) =>
                     required: true
                 },
                 {
-                    model:Cities,
-                    as:'city_bus_station',
-                    attributes:['id','name'],
-                    required:true
+                    model: Cities,
+                    as: 'city_bus_station',
+                    attributes: ['id', 'name'],
+                    required: true
                 }
             ],
+            limit: parseInt(limit.toString()),
+            offset
         });
+
+        const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
+
 
         return {
             status: 200,
             json: {
+                totalItems,
+                totalPages,
+                currentPage: parseInt(page.toString()),
                 list: linkedCooperativesList
             }
         };

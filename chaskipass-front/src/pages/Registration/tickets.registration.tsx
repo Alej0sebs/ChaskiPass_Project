@@ -15,8 +15,8 @@ const TicketSeriesRegistration = () => {
     const [selectedStation, setSelectedStation] = useState<number | null>(null);
     const [serial_number, setSerie] = useState<string>('');
     const [serialStations, setSerialStations] = useState<TicketsListT[]>([]); // Estado para las series de boletos
-    const [totalPages, setTotalPages] = useState<number>(0); // Total de páginas
-    const [currentPage, setCurrentPage] = useState(0); // Página inicial en 1, no en 0
+    const [totalPages, setTotalPages] = useState<number>(0); 
+    const [currentPage, setCurrentPage] = useState<number>(1); 
 
 
     // Manejadores para guardar el id de la selección
@@ -56,9 +56,10 @@ const TicketSeriesRegistration = () => {
     };
 
 
-    const fetchSerialStations = async () => {
+    const fetchSerialStations = async (page:number = 1) => {
         try {
-            const data = await getSerialStation(); // Obtén la respuesta de la API
+            const response = await getSerialStation(page); // Obtén la respuesta de la API
+            const data = response.list
             if (Array.isArray(data)) {
                 // Si la respuesta es un arreglo, mapeamos los datos
                 const formattedData = data.map((item: any) => ({
@@ -72,9 +73,8 @@ const TicketSeriesRegistration = () => {
 
                 // Actualiza los estados con los datos formateados
                 setSerialStations(formattedData);
-                setTotalPages(1); // Solo una página, ya que no hay paginación en la respuesta
+                setTotalPages(response.totalPages);
             } else {
-                console.error("Estructura de datos inesperada: la respuesta no es un arreglo", data);
                 throw new Error("Estructura de datos inesperada: la respuesta no es un arreglo");
             }
         } catch (error) {
@@ -88,13 +88,8 @@ const TicketSeriesRegistration = () => {
 
     // Cargar las series de boletos cuando cambia la página
     useEffect(() => {
-        fetchSerialStations();
+        fetchSerialStations(currentPage);
     }, [currentPage]);
-
-    // Manejar el cambio de página
-    const handlePageChange = (newPage: number) => {
-        setCurrentPage(newPage);
-    };
 
     return (
         <div className="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -102,7 +97,6 @@ const TicketSeriesRegistration = () => {
             <h2 className="text-xl font-semibold mb-4 text-black dark:text-white">
                 Registrar Series de Boletos
             </h2>
-
 
             {/* Formulario de registro */}
             <div className="col-span-8 xl:col-span-3">
@@ -187,7 +181,10 @@ const TicketSeriesRegistration = () => {
                 data={serialStations} // Datos formateados de series de boletos
                 totalPages={totalPages} // Total de páginas para la paginación
                 currentPage={currentPage} // Página actual
-                onPageChange={handlePageChange} // Función para manejar el cambio de página
+                onPageChange={(newPage) => {
+                    setCurrentPage(newPage);
+                    fetchSerialStations(newPage);
+                }}
                 loading={loading} // Indicador de carga
                 dataHeaderToExpand={[]} // No hay datos adicionales para expandir en este ejemplo
             />

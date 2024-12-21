@@ -112,7 +112,8 @@ export const verifyRoute = async ({ dni, cooperative_id, departure_station_id, a
 
 export const getRoutesService = async (cooperative_id: string, { page, limit, pattern }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
         // Asegúrate de esperar el resultado de la consulta de conteo
         const totalItems = await Routes.count({ where: { cooperative_id } });

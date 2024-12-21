@@ -6,7 +6,6 @@ import Accordion from "../../components/Accordion";
 import Tabs from "../../components/Tabs";
 import SalesForm from "../../components/Forms/SalesForm";
 import { AlertCircle } from "lucide-react";
-import TableOne from "../../components/Tables/TableOne";
 import { useLocation } from "react-router-dom";
 import SvgSeatComponent from "../../components/busElements/svgSeats.components";
 import useSeatStructure from "../../hooks/useSeatStructure";
@@ -43,8 +42,7 @@ const TicketsalesRegistration = () => {
     const { selectedSeats, addSeat, removeSeat, clearSeats } = useSelectedSeatsStore();
 
     //state para paginas
-    const [loading, setLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
 
     //State para renderizar cuando haga la compra de un boleto
@@ -56,50 +54,46 @@ const TicketsalesRegistration = () => {
     //global variables
     let totalSeats: number = 0;
 
+    //Traer los datos de la estructura de los asientos con sus respectivos ids
+    const fetchBusConfiguration = async () => {
+        try {
+            const { id: frequency_id, bus_id, bus_structure_id } = frequencyData;
+            const busData: BusData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
+            if (busData) {
+                const numFloors = Object.keys(busData).length;
+                setNumFloors(numFloors);
+                setFloorElements(busData);
 
+                // Calcula el número total de asientos
+                totalSeats = Object.values(busData).reduce((acc, floor) => {
+                    const seatCount = floor.filter((element: any) => element.type === "seat").length;
+                    return acc + seatCount;
+                }, 0);
+            }
+        } catch (err) {
+            toast.error('Error al obtener la estructura del bus');
+        }
+    };
+
+    //Traer los datos de los clientes de la frecuencia
+    const fetchTicketsClientFrequency = async (page = 1) => {
+        try {
+            const { id: frequency_id } = frequencyData;
+            const response = await getTicketsClientFrequency(frequency_id, page);
+
+            if (response) {
+                setClientList(response.message.clientList);
+                setTotalPages(response.message.totalPages);
+            }
+        } catch (err) {
+            toast.error('Error al obtener los datos de los clientes');
+        }
+    };
 
     //Tomo los valores de la frecuencia
     useEffect(() => {
-        //Traer los datos de la estructura de los asientos con sus respectivos ids
-        const fetchBusConfiguration = async () => {
-            try {
-                const { id: frequency_id, bus_id, bus_structure_id } = frequencyData;
-                const busData: BusData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
-                if (busData) {
-                    const numFloors = Object.keys(busData).length;
-                    setNumFloors(numFloors);
-                    setFloorElements(busData);
-
-                    // Calcula el número total de asientos
-                    totalSeats = Object.values(busData).reduce((acc, floor) => {
-                        const seatCount = floor.filter((element: any) => element.type === "seat").length;
-                        return acc + seatCount;
-                    }, 0);
-                }
-            } catch (err) {
-                toast.error('Error al obtener la estructura del bus');
-            }
-        };
-
-        //Traer los datos de los clientes de la frecuencia
-        const fetchTicketsClientFrequency = async () => {
-            try {
-                const { id: frequency_id } = frequencyData;
-                const response = await getTicketsClientFrequency(frequency_id);
-
-                if (response) {
-                    setClientList(response.message.clientList);
-                    setTotalPages(response.message.totalPages);
-
-                }
-            } catch (err) {
-                toast.error('Error al obtener los datos de los clientes');
-            }
-        };
-        setLoading(true); //puede esto ser opcional.
-        fetchTicketsClientFrequency();
+        fetchTicketsClientFrequency(currentPage);
         fetchBusConfiguration();
-        setLoading(false);
     }, [frequencyData, reloadBusConfigAfterSale]);
 
     const handleSeatClick = ({ seatId, additionalCost, statusSeat }: SelectedSeatT) => {
@@ -120,7 +114,8 @@ const TicketsalesRegistration = () => {
     const toggleReload = () => {
         setReloadBusConfigAfterSale((prev) => !prev);
         clearSeats();
-    }
+        fetchTicketsClientFrequency(currentPage);
+    };
 
     const tabsData = [
         { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData} onUpdateBus={toggleReload} /> },
@@ -132,9 +127,12 @@ const TicketsalesRegistration = () => {
                     displayHeader={['DNI', 'Nombre', 'Codigo', 'Asiento']} // Encabezados de columnas
                     data={clientList}
                     totalPages={totalPages}
-                    currentPage={0}
-                    onPageChange={setCurrentPage}//funciona para cambiar y enviar los datos que quiero traer a la tabla.
-                    loading={loading}
+                    currentPage={currentPage}
+                    onPageChange={(newPage) => {
+                        setCurrentPage(newPage);
+                        fetchTicketsClientFrequency(newPage);
+                    }}
+                    loading={false}
                     dataHeaderToExpand={[]}
                 />
         }

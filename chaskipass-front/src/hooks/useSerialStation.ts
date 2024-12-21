@@ -30,10 +30,10 @@ export default function useSerialStation() {
         }
     };
 
-    const getSerialStation = async () => {
+    const getSerialStation = async (page:number) => {
         setLoading(true);
         try {
-            const response: Response = await fetch(`${API_BASE_URL}serialNumbers?page=1&&limit=10`, {
+            const response: Response = await fetch(`${API_BASE_URL}serialNumbers?page=${page}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ export default function useSerialStation() {
                 throw new Error('Los datos no contienen la propiedad "json.list"');
             }
 
-            return data.json.list;
+            return data.json;
         } catch (error) {
             toast.error(verifyError(error));
         } finally {

@@ -4,6 +4,8 @@ import useLinkCooperativeStation from '../../hooks/useLinkCooperativeStation';
 import toast from 'react-hot-toast';
 import PaginationDataTable from '../../components/Tables/PaginationDataTable';
 import { LinkCooperativesT } from '../../types';
+import { HiX } from 'react-icons/hi';
+import DataList from '../../components/DataList/datalist.components';
 
 const LinkStations = () => {
   const [selectedStations, setSelectedStations] = useState<any[]>([]);
@@ -27,18 +29,23 @@ const LinkStations = () => {
     }
   };
 
-  // Obtener estaciones vinculadas al cargar el componente
   useEffect(() => {
-      fetchLinkedStations(currentPage);
+    fetchLinkedStations(currentPage);
   }, [currentPage]);
 
-  const handleStationSelection = (station: any) => {
-    setSelectedStations(
-      (prev) =>
-        prev.includes(station)
-          ? prev.filter((s) => s.id !== station.id) // Desmarcar si ya está seleccionada
-          : [...prev, station], // Añadir si no está seleccionada
-    );
+  const handleStationSelection = (stationId: string) => {
+    const selectedStation = allBusStations.find((station) => station.id === stationId);
+    if (selectedStation) {
+      setSelectedStations((prev) =>
+        prev.includes(selectedStation)
+          ? prev.filter((s) => s.id !== stationId)
+          : [...prev, selectedStation]
+      );
+    }
+  };
+
+  const handleRemoveStation = (stationId: string) => {
+    setSelectedStations((prev) => prev.filter((s) => s.id !== stationId));
   };
 
   const handleSave = async () => {
@@ -48,21 +55,19 @@ const LinkStations = () => {
         return;
       }
 
-      // Enlazar todas las estaciones seleccionadas
       for (const station of selectedStations) {
         const result = await linkStation(station.id);
         if (result && result.status === 'success') {
-          // Si es necesario, mostrar un toast de éxito por estación
+          // Éxito por estación
         } else {
-          // Si es necesario, mostrar un toast de error por estación
+          // Error por estación
         }
       }
 
-      // Actualizar la lista de estaciones vinculadas si todas fueron exitosas
-      setSelectedStations([]); // Limpiar selección
-      const result = await getLinkedStations(currentPage); // Obtener nuevamente las estaciones vinculadas
+      setSelectedStations([]);
+      const result = await getLinkedStations(currentPage);
       if (result && result.length) {
-        setTotalPages(Math.ceil(result.length / 5)); // Actualizar total de páginas
+        setTotalPages(Math.ceil(result.length / 5));
       }
     } catch (error) {
       toast.error('Error al guardar las estaciones.');
@@ -70,76 +75,99 @@ const LinkStations = () => {
   };
 
   const handleCancel = () => {
-    setSelectedStations([]); // Restablecer selección
+    setSelectedStations([]);
   };
 
   return (
-    <div className="mx-auto max-w-270">
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <div className="col-span-1 xl:col-span-2">
-          <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-            <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
+    <div className="flex items-start justify-center h-screen bg-gray-100">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 mt-12 max-w-full px-10 w-full">
+        {/* Panel izquierdo */}
+        <div className="col-span-1 w-full">
+          <div className="rounded-xl border border-stroke bg-white shadow-xl dark:border-strokedark dark:bg-boxdark w-full">
+            <div className="border-b border-stroke py-6 px-9 dark:border-strokedark">
+              <h3 className="font-semibold text-2xl text-black dark:text-white">
                 Enlazar rutas
               </h3>
             </div>
-
-            <div className="p-7">
-              <h4 className="font-medium text-black dark:text-white mb-4">
-                Link Stations
-              </h4>
-
-              <div className="mb-5.5">
+            <div className="p-10">
+              <div className="mb-6">
                 {stationsLoading ? (
-                  <p className="text-gray-500">Cargando estaciones...</p>
+                  <p className="text-gray-500 text-lg">Cargando estaciones...</p>
                 ) : (
-                  <div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {allBusStations.map((station, index) => (
-                        <label
-                          key={index}
-                          className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 transition cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedStations.some((s) => s.id === station.id)}
-                            onChange={() => handleStationSelection(station)}
-                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          />
-                          <span className="text-gray-800">{station.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+                  <DataList
+                    id="station-selector"
+                    label="Selecciona una estación:"
+                    options={allBusStations}
+                    placeholder="Escribe para buscar..."
+                    onSelect={handleStationSelection}
+                    value={selectedStations.map((station) => station.name).join(', ')}
+                    opKey="id"
+                    opValue="name"
+                    optionP="name"
+                    className="custom-class"
+                  />
                 )}
               </div>
+              {selectedStations.length > 0 && (
+  <div className="mt-4">
+    <h4 className="font-medium text-lg text-black dark:text-white mb-3">
+      Estaciones seleccionadas
+    </h4>
+    <div className="space-y-2">
+      {selectedStations.map((station) => (
+        <div
+          key={station.id}
+          className="flex justify-between items-center p-3 rounded-md border border-gray-300 bg-gray-50 shadow-sm dark:bg-gray-700 dark:border-strokedark"
+        >
+          <span className="text-base text-gray-800 dark:text-white">
+            {station.name}
+          </span>
+          <button
+            onClick={() => handleRemoveStation(station.id)}
+            className="text-red-500 hover:text-red-700 transition-colors"
+          >
+            <HiX size={18} />
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
-
-              <div className="flex gap-4 mt-6">
+              <div className="flex gap-8 mt-10">
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
+                  className="w-full rounded-md border border-primary bg-primary py-3 text-lg text-white transition hover:bg-opacity-90"
                 >
                   {saving ? 'Guardando...' : 'Guardar'}
                 </button>
                 <button
                   onClick={handleCancel}
-                  className="w-full cursor-pointer rounded-lg border border-gray-400 bg-gray-300 p-4 text-black transition hover:bg-opacity-90 dark:bg-gray-700 dark:text-white"
+                  className="w-full rounded-md border border-gray-400 bg-gray-300 py-3 text-lg text-black transition hover:bg-opacity-90 dark:bg-gray-700 dark:text-white"
                 >
                   Cancelar
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
 
-              {/* Aquí se muestra la lista de estaciones vinculadas con paginación */}
-              <div className="mt-6">
-                <h4 className="font-medium text-black dark:text-white mb-4">
-                  Estaciones vinculadas
-                </h4>
+        {/* Panel derecho con DataTable más grande */}
+        <div className="col-span-1 w-full">
+          <div className="rounded-xl border border-stroke bg-white shadow-xl dark:border-strokedark dark:bg-boxdark w-full">
+            <div className="border-b border-stroke py-6 px-9 dark:border-strokedark">
+              <h3 className="font-semibold text-2xl text-black dark:text-white">
+                Estaciones vinculadas
+              </h3>
+            </div>
+            <div className="p-10">
+              {/* Aquí agregamos un contenedor con altura y tamaño de la tabla ajustado */}
+              <div className="w-full h-[600px] overflow-x-auto">
                 <PaginationDataTable
-                  titles={['name']} // Puedes agregar más títulos según sea necesario
+                  titles={['name']}
                   displayHeader={['Estación']}
-                  data={linkedStations} // Pasa los datos paginados de estaciones vinculadas
+                  data={linkedStations}
                   totalPages={totalPages}
                   currentPage={currentPage}
                   onPageChange={(newPage) => {
@@ -147,8 +175,8 @@ const LinkStations = () => {
                     fetchLinkedStations(newPage);
                   }}
                   loading={false}
-                  onRowClick={() => { }} // Aquí no es necesario seleccionar, ya que no estamos usando checkboxes para esta tabla
-                  dataHeaderToExpand={[]} // Si tienes datos para expandir
+                  onRowClick={() => {}}
+                  dataHeaderToExpand={[]}
                 />
               </div>
             </div>

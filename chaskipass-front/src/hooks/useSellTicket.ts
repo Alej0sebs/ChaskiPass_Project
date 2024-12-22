@@ -36,6 +36,30 @@ export const useSellTicket = () => {
         }
     };
 
+    const sendData = async (ticketData:string) => {
+        try{
+            const response = await fetch(`${API_BASE_URL}tickets/sellData`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: ticketData,
+            });
+            const data = await response.json();
+            if(!response.ok){
+                throw new Error(data.error);
+            }
+            return {
+                status:200,
+                message:data
+            };
+        }catch(error){
+            toast.error(verifyError(error));
+            return;
+        }
+    }
+
     const getTicketsClientFrequency = async (frequencyID:string, page:number) => {
         //Enviar los datos de la paginacion
         try{
@@ -62,8 +86,31 @@ export const useSellTicket = () => {
         }
     };
 
+    const getTicketBySeat = async (frequency_id:string, seatID:string) => {
+        try{
+            const response = await fetch(`${API_BASE_URL}tickets/data?seat=${seatID}&frequency=${frequency_id}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+            const data = await response.json();
+            if(!response.ok){
+                throw new Error(data.error);
+            }
+            return {
+                status:200,
+                message:data
+            };
+        }catch(error){
+            toast.error(verifyError(error));
+            return;
+        }
+    }
+
     return {
-        loading, sellTicket, getTicketsClientFrequency
+        loading, sellTicket, getTicketsClientFrequency, getTicketBySeat, sendData
     };
 
 };

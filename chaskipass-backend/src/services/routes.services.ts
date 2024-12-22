@@ -10,7 +10,7 @@ import connectionDb from '../db/connection.db';
 
 
 // Servicio para crear una nueva ruta
-export const createRouteService = async ({ dni, arrival_station_id, departure_station_id, cooperative_id, stopOverList }: RoutesT) => {
+export const createRouteService = async ({ dni, arrival_station_id, departure_station_id, cooperative_id, stopOverList, arrival_time, departure_time }: RoutesT) => {
     try {
         let routeExists;
         if (stopOverList && stopOverList.length > 0) {
@@ -62,7 +62,10 @@ export const createRouteService = async ({ dni, arrival_station_id, departure_st
             id: id as string,
             cooperative_id: cooperative_id || '',
             departure_station_id,
-            arrival_station_id
+            arrival_station_id,
+            departure_time,
+            arrival_time,
+            default_price: 0
         });
 
         // Si hay paradas intermedias, crear las paradas
@@ -125,6 +128,10 @@ export const getRoutesService = async (cooperative_id: string, { page, limit, pa
                 departureCity.name AS departure_city_name,
                 arrivalStation.name AS arrival_station_name,
                 arrivalCity.name AS arrival_city_name,
+                r.departure_time AS departure_time,
+                r.arrival_time AS arrival_time,
+                r.default_price AS default_price,
+                CONCAT(r.departure_time, '-', r.arrival_time) AS time,
                 GROUP_CONCAT(stopStation.name ORDER BY stops.order SEPARATOR ', ') AS stop_station_names,
                 GROUP_CONCAT(stopCity.name ORDER BY stops.order SEPARATOR ', ') AS stop_city_names
             FROM 

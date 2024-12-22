@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { API_BASE_URL } from "../helpers/Constants";
 import toast from "react-hot-toast";
 import { verifyError } from "../helpers/VerifyErrors";
@@ -7,13 +7,16 @@ interface RouteI{
     departure_station_id: number;
     arrival_station_id: number;
     stopOverList:number[];
+    departure_time: string;
+    arrival_time: string;
+    default_price: number;
 }
 
 export default function useRoutes() {
     const [loading, setLoading] = useState(false);
     
-
     const createRoute= async(routeData: RouteI)=>{  
+        console.log(routeData);
         setLoading(true);
         try {
             const response:Response = await fetch(`${API_BASE_URL}frequency/route`,{

@@ -27,7 +27,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     const { selectedSeats, updateSeatClient } = useSelectedSeatsStore();
     //Hooks
     const { getClientByDNI } = useClient();
-    const { sellTicket } = useSellTicket();
+    const { sellTicket, sendData } = useSellTicket();
     const { getSerialStationByStationAndDNI } = useSerialStation()
 
     //local state
@@ -256,6 +256,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         }));
 
         setTicketsData(preparedTickets);
+        sendData(JSON.stringify(preparedTickets));
         setShowPdfModal(true);
 
         //Renderizar de nuevo el bus

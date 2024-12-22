@@ -103,10 +103,18 @@ export type CreateBusT = Pick<TypeBusT, 'bus_number' | 'license_plate' | 'chassi
 
 export type createBusStationT = Omit<TypeBusStationT, 'id'>;
 
-export type timeDateT = {
+export type timeDatePriceT = {
     date: string,
     departure_time: string,
-    arrival_time: string
+    arrival_time: string,
+    routeID: string,
+    price: string,
+};
+
+export type timeAndPriceT = {
+    departure_time: string,
+    arrival_time: string,
+    price: number,
 };
 
 export type FrequencyT = {

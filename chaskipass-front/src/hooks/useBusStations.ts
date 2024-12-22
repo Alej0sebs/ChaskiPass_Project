@@ -24,7 +24,7 @@ export default function useBusStations() {
             if (!response.ok) {
                 throw new Error(data.error);
             }
-            return data.stations;
+            return data.json.stations;
         } catch (error) {
             toast.error(verifyError(error));
             return [];  // Retorna una lista vacía en caso de error
@@ -75,7 +75,6 @@ export default function useBusStations() {
         const fetchData = async () => {
             const linkedStations = await getBusStations();
             const allStations = await getAllBusStations();
-            
             setDataListBusStations(linkedStations);
             setAllBusStations(allStations);
         };

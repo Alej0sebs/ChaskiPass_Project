@@ -47,7 +47,7 @@ export default function useLinkCooperativeStation() {
                 throw new Error("Usuario no autenticado.");
             }
 
-            const response: Response = await fetch(`${API_BASE_URL}linkedStations/allLinkedCooperatives?page=${page}`, {
+            const response: Response = await fetch(`${API_BASE_URL}linkedStations?page=${page}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -59,7 +59,6 @@ export default function useLinkCooperativeStation() {
             if (!response.ok) {
                 throw new Error(`${data?.msg || "Error al obtener las estaciones vinculadas"}`);
             }
-            // Acceder a `data.json.list` y guardar las estaciones vinculadas en el estado
             return data.json;
         } catch (error) {
             toast.error(verifyError(error));
@@ -68,5 +67,32 @@ export default function useLinkCooperativeStation() {
         }
     };
 
-    return { loading, linkStation, getLinkedStations};
+    const getAllLinkedStations = async () => {
+        setLoading(true);
+        try {
+            if (!authUser) {
+                throw new Error("Usuario no autenticado.");
+            }
+
+            const response: Response = await fetch(`${API_BASE_URL}linkedStations`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(`${data?.msg || "Error al obtener las estaciones vinculadas"}`);
+            }
+            return data.json;
+        } catch (error) {
+            toast.error(verifyError(error));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { loading, linkStation, getLinkedStations, getAllLinkedStations};
 }

@@ -30,7 +30,8 @@ export const linkCooperativeStation = async (req: Request, res: Response) => {
 
 export const getStationCooperative = async (req: Request, res: Response) => {
     try{
-        const cooperative_id=req.params.cooperative_id;
+        // const cooperative_id=req.params.cooperative_id;
+        const { cooperative_id } = req.userReq ?? {};
         const paginationData = getPaginationData(req.query);
         const result = await getStationCooperativeService(cooperative_id!, paginationData);
         res.status(201).json(result);
@@ -44,9 +45,7 @@ export const getStationCooperative = async (req: Request, res: Response) => {
 export const getAllStationCooperative = async (req: Request, res: Response) => {
     try{
         const { cooperative_id } = req.userReq ?? {};
-        const paginationData = getPaginationData(req.query);
-        const result = await getAllStationCooperativeService(cooperative_id!, paginationData);
-        // const result = await getAllStationCooperativeService(cooperative_id!);
+        const result = await getAllStationCooperativeService(cooperative_id!);
         res.status(201).json(result);
         return;
     }catch(error){

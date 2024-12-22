@@ -76,13 +76,11 @@ export const getStationCooperativeService = async (cooperative_id: string, { pag
     }
 };
 
-export const getAllStationCooperativeService = async (cooperative_id: string, { page, limit }: DataPaginationT) => {
-// export const getAllStationCooperativeService = async (cooperative_id: string) => {
-    try {
-        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
-        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
-        const { rows: linkedCooperativesList, count: totalItems } = await BusStations.findAndCountAll({
+export const getAllStationCooperativeService = async (cooperative_id: string) => {
+    try {
+
+        const linkedCooperativesList = await BusStations.findAll({
             attributes: ['id', 'name'],
             include: [
                 {
@@ -98,22 +96,13 @@ export const getAllStationCooperativeService = async (cooperative_id: string, { 
                     required: true
                 }
             ],
-            limit: parseInt(limit.toString()),
-            offset
         });
-
-        const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
-
 
         return {
             status: 200,
             json: {
-                totalItems,
-                totalPages,
-                currentPage: parseInt(page.toString()),
-                list: linkedCooperativesList
-            },
-            stations:linkedCooperativesList
+                stations: linkedCooperativesList
+            }
         };
     } catch (error) {
         return handleSequelizeError(error);

@@ -85,7 +85,7 @@ const TicketsalesRegistration = () => {
         try {
             const { id: frequency_id } = frequencyData;
             const response = await getTicketsClientFrequency(frequency_id, page);
-
+            
             if (response) {
                 setClientList(response.message.clientList);
                 setTotalPages(response.message.totalPages);

@@ -76,13 +76,13 @@ export const getStationCooperativeService = async (cooperative_id: string, { pag
     }
 };
 
-// export const getAllStationCooperativeService = async (cooperative_id: string, { page, limit }: DataPaginationT) => {
-export const getAllStationCooperativeService = async (cooperative_id: string) => {
+export const getAllStationCooperativeService = async (cooperative_id: string, { page, limit }: DataPaginationT) => {
+// export const getAllStationCooperativeService = async (cooperative_id: string) => {
     try {
-        // const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
-        // const offset = (pageIndex - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
-        /*const { rows: linkedCooperativesList, count: totalItems } = await BusStations.findAndCountAll({
+        const { rows: linkedCooperativesList, count: totalItems } = await BusStations.findAndCountAll({
             attributes: ['id', 'name'],
             include: [
                 {
@@ -100,37 +100,19 @@ export const getAllStationCooperativeService = async (cooperative_id: string) =>
             ],
             limit: parseInt(limit.toString()),
             offset
-        });*/
-
-        const linkedCooperativesList = await BusStations.findAll({
-            attributes: ['id', 'name'],
-            include: [
-                {
-                    model: StationCooperative,
-                    attributes: [],
-                    where: { cooperative_id },
-                    required: true
-                },
-                {
-                    model: Cities,
-                    as: 'city_bus_station',
-                    attributes: ['id', 'name'],
-                    required: true
-                }
-            ],
         });
 
-        // const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
+        const totalPages = Math.ceil(totalItems / parseInt(limit.toString()));
 
 
         return {
             status: 200,
-            // json: {
-            //     totalItems,
-            //     totalPages,
-            //     currentPage: parseInt(page.toString()),
-            //     list: linkedCooperativesList
-            // }
+            json: {
+                totalItems,
+                totalPages,
+                currentPage: parseInt(page.toString()),
+                list: linkedCooperativesList
+            },
             stations:linkedCooperativesList
         };
     } catch (error) {

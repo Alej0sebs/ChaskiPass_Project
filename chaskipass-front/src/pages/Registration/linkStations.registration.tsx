@@ -79,11 +79,11 @@ const LinkStations = () => {
   };
 
   return (
-    <div className="flex items-start justify-center h-screen bg-gray-100">
+    <div className="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark"> {/* Fondo oscuro para dark mode */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 mt-12 max-w-full px-10 w-full">
         {/* Panel izquierdo */}
         <div className="col-span-1 w-full">
-          <div className="rounded-xl border border-stroke bg-white shadow-xl dark:border-strokedark dark:bg-boxdark w-full">
+          <div className="rounded-xl border border-stroke bg-white dark:bg-gray-800 shadow-xl dark:border-strokedark w-full">
             <div className="border-b border-stroke py-6 px-9 dark:border-strokedark">
               <h3 className="font-semibold text-2xl text-black dark:text-white">
                 Enlazar rutas
@@ -104,35 +104,35 @@ const LinkStations = () => {
                     opKey="id"
                     opValue="name"
                     optionP="name"
-                    className="custom-class"
+                    className="dark:bg-gray-700 dark:text-white" // Dark mode class here
                   />
                 )}
               </div>
               {selectedStations.length > 0 && (
-  <div className="mt-4">
-    <h4 className="font-medium text-lg text-black dark:text-white mb-3">
-      Estaciones seleccionadas
-    </h4>
-    <div className="space-y-2">
-      {selectedStations.map((station) => (
-        <div
-          key={station.id}
-          className="flex justify-between items-center p-3 rounded-md border border-gray-300 bg-gray-50 shadow-sm dark:bg-gray-700 dark:border-strokedark"
-        >
-          <span className="text-base text-gray-800 dark:text-white">
-            {station.name}
-          </span>
-          <button
-            onClick={() => handleRemoveStation(station.id)}
-            className="text-red-500 hover:text-red-700 transition-colors"
-          >
-            <HiX size={18} />
-          </button>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+                <div className="mt-4">
+                  <h4 className="font-medium text-lg text-black dark:text-white mb-3">
+                    Estaciones seleccionadas
+                  </h4>
+                  <div className="space-y-2">
+                    {selectedStations.map((station) => (
+                      <div
+                        key={station.id}
+                        className="flex justify-between items-center p-3 rounded-md border border-gray-300 bg-gray-50 shadow-sm dark:bg-gray-700 dark:border-strokedark"
+                      >
+                        <span className="text-base text-gray-800 dark:text-white">
+                          {station.name}
+                        </span>
+                        <button
+                          onClick={() => handleRemoveStation(station.id)}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                        >
+                          <HiX size={18} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex gap-8 mt-10">
                 <button
@@ -155,7 +155,7 @@ const LinkStations = () => {
 
         {/* Panel derecho con DataTable más grande */}
         <div className="col-span-1 w-full">
-          <div className="rounded-xl border border-stroke bg-white shadow-xl dark:border-strokedark dark:bg-boxdark w-full">
+          <div className="rounded-xl border border-stroke bg-white dark:bg-gray-800 shadow-xl dark:border-strokedark w-full">
             <div className="border-b border-stroke py-6 px-9 dark:border-strokedark">
               <h3 className="font-semibold text-2xl text-black dark:text-white">
                 Estaciones vinculadas

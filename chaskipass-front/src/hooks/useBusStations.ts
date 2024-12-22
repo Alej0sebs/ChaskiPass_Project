@@ -24,19 +24,7 @@ export default function useBusStations() {
             if (!response.ok) {
                 throw new Error(data.error);
             }
-
-            // Verifica si la respuesta tiene la propiedad que necesitas
-            const formattedData = Array.isArray(data.json?.list)
-                ? data.json.list.map((station: BusStationT) => ({
-                      id: station.id,
-                      name: station.name,
-                      city_bus_station: {
-                          id: station.city_bus_station.id,
-                          name: station.city_bus_station.name,
-                      },
-                  }))
-                : []; // Devuelve un array vacío si no es un array
-            return formattedData;
+            return data.stations;
         } catch (error) {
             toast.error(verifyError(error));
             return [];  // Retorna una lista vacía en caso de error

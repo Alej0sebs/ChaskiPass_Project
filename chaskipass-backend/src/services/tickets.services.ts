@@ -6,7 +6,7 @@ import Clients from "../models/clients.models";
 import Cooperatives from "../models/cooperatives.models";
 import { SeatStatus } from "../models/seatStatus.models";
 import Tickets from "../models/tickets.models";
-import { DataPaginationT, TicketClientInformationT } from "../types/index.types";
+import { DataPaginationT, TicketClientInformationT, TicketData } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
 import { paymentService } from "./payment.services";
 
@@ -133,6 +133,51 @@ export const sellTicketService = async (ticket: TicketClientInformationT) => {
     }
 };
 
+export const sellTicketDataService = async (ticketsData: TicketData[]) => {
+    try {
+        const responses = [];
+
+        for (const ticketData of ticketsData) {
+            const { ticketCode } = ticketData;
+
+            // Busca el ticket en la base de datos según el ticketCode
+            const ticketInfo = await Tickets.findOne({
+                where: { ticket_code: ticketCode }
+            });
+
+            if (!ticketInfo) {
+                responses.push({
+                    status: 404,
+                    json: { msg: `Ticket with code ${ticketCode} not found` }
+                });
+                continue;
+            }
+
+            // Actualiza el campo `data` con el objeto TicketData
+            await Tickets.update(
+                { data: JSON.stringify(ticketData) },
+                { where: { ticket_code: ticketCode } }
+            );
+
+            responses.push({
+                status: 201,
+                json: { msg: `Ticket with code ${ticketCode} updated successfully` }
+            });
+        }
+
+        return {
+            status: 201,
+            json: responses
+        };
+    } catch (error) {
+        console.error("Error updating tickets:", error);
+        return {
+            status: 500,
+            json: { msg: "Internal Server Error" }
+        };
+    }
+};
+
 
 export const getFrecuencyClientsService = async (frequency_id: string, { page, limit }: DataPaginationT) => {
 
@@ -174,6 +219,18 @@ export const getFrecuencyClientsService = async (frequency_id: string, { page, l
     }
 };
 
-
+export const getTicketDataService = async (seat: string, frequency: string) => {
+    try {
+        const ticket = await Tickets.findOne({
+            where: { seat_id: seat, frequency_id: frequency }
+        });        
+        return {
+            status: 200,
+            json: ticket?.data
+        };
+    } catch (error) {
+        return handleSequelizeError(error);
+    }
+}
 
 

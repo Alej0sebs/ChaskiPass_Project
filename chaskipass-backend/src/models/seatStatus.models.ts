@@ -38,7 +38,7 @@ SeatStatus.init({
     client_dni: {
         type: DataTypes.STRING(10),
         allowNull: true,
-    }
+    },
 }, {
     sequelize: connectionDb,
     tableName: 'Seat_status',

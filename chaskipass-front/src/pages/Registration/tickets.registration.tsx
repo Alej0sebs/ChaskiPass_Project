@@ -140,11 +140,12 @@ const TicketSeriesRegistration = () => {
                                         />
                                     )}
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 dark:text-white">N° Serie:</label>
+                                <div >
+                                    <label className="block text-sm font-medium mb-1 dark:text-white">Número de  Serie:</label>
                                     <input
                                         type="text"
-                                        className="w-full border rounded px-3 py-3 dark:bg-boxdark dark:border-strokedark dark:text-white"
+                                        className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+
                                         placeholder="Ingrese el número de serie"
                                         value={serial_number}
                                         onChange={(e) => setSerie(e.target.value)}

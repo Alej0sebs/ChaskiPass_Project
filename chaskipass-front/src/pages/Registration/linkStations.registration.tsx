@@ -20,6 +20,7 @@ const LinkStations = () => {
   const fetchLinkedStations = async (page: number) => {
     try {
       const result = await getLinkedStations(page);
+      console.log(result);
       setTotalPages(result.totalPages);
       setLinkedStations(result.list);
     } catch (error) {

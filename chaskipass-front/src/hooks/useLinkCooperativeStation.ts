@@ -56,7 +56,6 @@ export default function useLinkCooperativeStation() {
             });
 
             const data = await response.json();
-
             if (!response.ok) {
                 throw new Error(`${data?.msg || "Error al obtener las estaciones vinculadas"}`);
             }

@@ -100,7 +100,8 @@ const TicketsalesRegistration = () => {
         fetchTicketsClientFrequency(currentPage);
         fetchBusConfiguration();
     }, [frequencyData, reloadBusConfigAfterSale]);
-
+    
+    //Funcion para traer los datos de los tickets 
     const handleSeatClick = async (seat: SelectedSeatT) => {
         if (seat.statusSeat === "r") {
             try {

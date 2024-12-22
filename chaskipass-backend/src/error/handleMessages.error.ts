@@ -61,4 +61,5 @@ export enum HandleMessages{
     CLIENT_COOPERATIVE_CREATED='Cliente registrado en la cooperativa',
     TICKET_SOLD_SUCESSFULLY='Ticket vendido con éxito',
     PAYMENT_ERROR='Error al realizar el pago',
+    TICKET_NOT_FOUND = "No se encontraron tickets",
 }

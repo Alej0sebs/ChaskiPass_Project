@@ -15,6 +15,8 @@ import BusTemplate from "../../components/Bus";
 import { useSelectedSeatsStore } from "../../Zustand/useSelectedSeats";
 import PaginationDataTable from "../../components/Tables/PaginationDataTable";
 import { useSellTicket } from "../../hooks/useSellTicket";
+import { TicketData } from "../../types/ticket";
+import PDFPopup from "../../modals/pdfPopup";
 
 interface InputFieldProps {
     label: string;
@@ -49,7 +51,10 @@ const TicketsalesRegistration = () => {
     const [reloadBusConfigAfterSale, setReloadBusConfigAfterSale] = useState(false);
     //Datos de los clientes que han comprado boletos en la frecuencia
     const [clientList, setClientList] = useState<clientTicketT[]>([]);
-    const { getTicketsClientFrequency } = useSellTicket();
+    const { getTicketsClientFrequency, getTicketBySeat } = useSellTicket();
+
+    const [ticketsData, setTicketsData] = useState<TicketData[]>([]);
+    const [showPdfModal, setShowPdfModal] = useState(false);
 
     //global variables
     let totalSeats: number = 0;
@@ -96,13 +101,27 @@ const TicketsalesRegistration = () => {
         fetchBusConfiguration();
     }, [frequencyData, reloadBusConfigAfterSale]);
 
-    const handleSeatClick = ({ seatId, additionalCost, statusSeat }: SelectedSeatT) => {
-        if (isSeatSelected(seatId)) {
-            removeSeat(seatId);
+    const handleSeatClick = async (seat: SelectedSeatT) => {
+        if (seat.statusSeat === "r") {
+            try {
+                const ticket = await getTicketBySeat(frequencyData.id, seat.seatId);
+
+                if (ticket) {
+                    setTicketsData([JSON.parse(ticket.message)]);
+                    setShowPdfModal(true);
+                } else {
+                    toast.error("No se encontró información para este asiento.");
+                }
+            } catch {
+                toast.error("Error al obtener los datos del ticket.");
+            }
+        } else if (isSeatSelected(seat.seatId)) {
+            removeSeat(seat.seatId);
         } else {
-            addSeat({ seatId, additionalCost, statusSeat });
+            addSeat(seat);
         }
     };
+
 
     const isSeatSelected = (seatId: string) => {
         return selectedSeats.some((seat) => seat.seatId === seatId);
@@ -178,108 +197,113 @@ const TicketsalesRegistration = () => {
 
 
     return (
-        <div className="mx-auto max-w-7xl p-4">
-            <Breadcrumb pageName="Selección de asientos" />
-            <div className="flex flex-col md:flex-row gap-15 mt-4">
+        <>
+            <div className="mx-auto max-w-7xl p-4">
+                <Breadcrumb pageName="Selección de asientos" />
+                <div className="flex flex-col md:flex-row gap-15 mt-4">
 
-                <div className="max-w-[350px] min-w-[256px] md:w-[300px] flex-shrink-0">
-                    <div className="controls mb-4">
-                        <label className="mr-4">Piso actual:</label>
-                        <select
-                            value={selectedFloor}
-                            onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
-                            className="border border-gray-300 rounded px-2 py-1 bg-transparent transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                    <div className="max-w-[350px] min-w-[256px] md:w-[300px] flex-shrink-0">
+                        <div className="controls mb-4">
+                            <label className="mr-4">Piso actual:</label>
+                            <select
+                                value={selectedFloor}
+                                onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
+                                className="border border-gray-300 rounded px-2 py-1 bg-transparent transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                            >
+                                {Array.from({ length: numFloors }, (_, i) => i + 1).map((floor) => (
+                                    <option key={floor} value={floor}>
+                                        Piso {floor}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div
+                            id={`bus-container-${selectedFloor}`}
+                            className="relative h-[600px] w-full border-4 border-gray-700 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-100 shadow-lg"
                         >
-                            {Array.from({ length: numFloors }, (_, i) => i + 1).map((floor) => (
-                                <option key={floor} value={floor}>
-                                    Piso {floor}
-                                </option>
-                            ))}
-                        </select>
+                            <BusTemplate floorNumber={selectedFloor}>
+                                {floorElements[selectedFloor]?.map((element) => (
+                                    <div
+                                        key={element.id}
+                                        id={element.id}
+                                        className={`absolute cursor-pointer ${element.type === 'seat' && isSeatSelected(element.id)}`}
+                                        style={{
+                                            left: `${element.position.x}%`,
+                                            top: `${element.position.y}%`,
+                                        }}
+                                        onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0, statusSeat: element.status! })}
+                                    >
+                                        {element.type === 'seat' && (
+                                            <SvgSeatComponent
+                                                name={element.name}
+                                                isSelected={isSeatSelected(element.id)}
+                                                status={element.status ? element.status.toLowerCase() : "f"} // Puedes ajustar el estado según tus datos
+                                            />
+                                        )}
+                                        {element.type === 'bathroom' && <SvgBathroomComponent />}
+                                        {element.type === 'stairs' && <SvgStairsComponent />}
+                                    </div>
+                                ))}
+                            </BusTemplate>
+                        </div>
                     </div>
 
-                    <div
-                        id={`bus-container-${selectedFloor}`}
-                        className="relative h-[600px] w-full border-4 border-gray-700 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-100 shadow-lg"
-                    >
-                        <BusTemplate floorNumber={selectedFloor}>
-                            {floorElements[selectedFloor]?.map((element) => (
-                                <div
-                                    key={element.id}
-                                    id={element.id}
-                                    className={`absolute cursor-pointer ${element.type === 'seat' && isSeatSelected(element.id)}`}
-                                    style={{
-                                        left: `${element.position.x}%`,
-                                        top: `${element.position.y}%`,
-                                    }}
-                                    onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0, statusSeat: element.status! })}
-                                >
-                                    {element.type === 'seat' && (
-                                        <SvgSeatComponent
-                                            name={element.name}
-                                            isSelected={isSeatSelected(element.id)}
-                                            status={element.status ? element.status.toLowerCase() : "f"} // Puedes ajustar el estado según tus datos
-                                        />
-                                    )}
-                                    {element.type === 'bathroom' && <SvgBathroomComponent />}
-                                    {element.type === 'stairs' && <SvgStairsComponent />}
-                                </div>
-                            ))}
-                        </BusTemplate>
-                    </div>
-                </div>
+                    <div className="flex-grow">
+                        <Accordion title="Descripción" color="#4A90E2">
+                            <div className="flex p-4">
+                                {statuses.map((statusSeat) => (
+                                    <div key={statusSeat.label} className="flex items-center  mx-auto">
+                                        <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.name.toLowerCase()} />
+                                        <div className="flex flex-col">
+                                            <span className="text-lg font-medium text-black dark:text-white">{statusSeat.label}</span>
+                                            <span className="text-base text-black dark:text-white">{statusSeat.label.toLowerCase()}: {statusSeat.count}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </Accordion>
+                        <Accordion title="Detalle de Bus Baños - Quito" color="#f4c05c">
+                            <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                                <InputField label="PLACA DE BUS" value={travelData.placa} />
+                                <InputField label="LIBRES" value={travelData.libres} />
+                                <InputField label="PILOTO" value={travelData.piloto} />
+                                <InputField label="VENDIDOS" value={travelData.vendidos} />
+                                <InputField label="COPILOTO" value={travelData.copiloto} />
+                                <InputField label="RESERVADOS" value={travelData.reservados} />
 
-                <div className="flex-grow">
-                    <Accordion title="Descripción" color="#4A90E2">
-                        <div className="flex p-4">
-                            {statuses.map((statusSeat) => (
-                                <div key={statusSeat.label} className="flex items-center  mx-auto">
-                                    <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.name.toLowerCase()} />
-                                    <div className="flex flex-col">
-                                        <span className="text-lg font-medium text-black dark:text-white">{statusSeat.label}</span>
-                                        <span className="text-base text-black dark:text-white">{statusSeat.label.toLowerCase()}: {statusSeat.count}</span>
+                                <div className="my-auto">
+                                    <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
+                                        {travelData.terminal}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </Accordion>
-                    <Accordion title="Detalle de Bus Baños - Quito" color="#f4c05c">
-                        <div className="grid grid-cols-3 gap-x-6 gap-y-2">
-                            <InputField label="PLACA DE BUS" value={travelData.placa} />
-                            <InputField label="LIBRES" value={travelData.libres} />
-                            <InputField label="PILOTO" value={travelData.piloto} />
-                            <InputField label="VENDIDOS" value={travelData.vendidos} />
-                            <InputField label="COPILOTO" value={travelData.copiloto} />
-                            <InputField label="RESERVADOS" value={travelData.reservados} />
 
-                            <div className="my-auto">
-                                <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
-                                    {travelData.terminal}
+                                <div className="flex items-center space-x-2">
+                                    <span className="font-medium">TOTAL:</span>
+                                    <input
+                                        type="text"
+                                        value={travelData.total}
+                                        disabled
+                                        className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
+                                    />
+                                    <AlertCircle className="text-red-500 w-5 h-5" />
                                 </div>
+
+                                <InputField label="HORA SALIDA" value={travelData.horaSalida} />
+                                <InputField label="DIA" value={travelData.dia} />
+                                <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />
+                                <InputField label="HORA PARTIDA" value={travelData.horaLlegada} />
                             </div>
+                        </Accordion>
 
-                            <div className="flex items-center space-x-2">
-                                <span className="font-medium">TOTAL:</span>
-                                <input
-                                    type="text"
-                                    value={travelData.total}
-                                    disabled
-                                    className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
-                                />
-                                <AlertCircle className="text-red-500 w-5 h-5" />
-                            </div>
-
-                            <InputField label="HORA SALIDA" value={travelData.horaSalida} />
-                            <InputField label="DIA" value={travelData.dia} />
-                            <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />
-                            <InputField label="HORA PARTIDA" value={travelData.horaLlegada} />
-                        </div>
-                    </Accordion>
-
-                    <Tabs tabs={tabsData} />
+                        <Tabs tabs={tabsData} />
+                    </div>
                 </div>
-            </div>
-        </div >
+            </div >
+            {showPdfModal && (
+                <PDFPopup tickets={ticketsData} />
+            )}
+        </>
     );
 
 

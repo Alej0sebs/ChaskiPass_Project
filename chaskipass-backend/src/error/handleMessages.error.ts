@@ -62,4 +62,5 @@ export enum HandleMessages{
     TICKET_SOLD_SUCESSFULLY='Ticket vendido con éxito',
     PAYMENT_ERROR='Error al realizar el pago',
     TICKET_NOT_FOUND = "No se encontraron tickets",
+    EXISTING_SERIAL_NUMBER_OR_USER_ID = "El número de serie o el ID de usuario ya existe",
 }

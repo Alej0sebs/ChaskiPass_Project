@@ -13,14 +13,16 @@ const TicketSeriesRegistration = () => {
     const { loading, createSerialStation, getSerialStation } = useSerialStation(); // Usar el hook para obtener datos y crear seriales
     const [selectedSeller, setSelectedSeller] = useState<string | null>(null);
 
-    const [selectedStation, setSelectedStation] = useState<number | null>(null);
+    const [selectedStation, setSelectedStation] = useState('');
     const [serial_number, setSerie] = useState<string>('');
     const [serialStations, setSerialStations] = useState<TicketsListT[]>([]); // Estado para las series de boletos
     const [totalPages, setTotalPages] = useState<number>(0); 
     const [currentPage, setCurrentPage] = useState<number>(1); 
 
     // Manejadores para guardar el id de la selección
-    const handleSelectSede = (stationId: string) => setSelectedStation(Number(stationId)); // Convertir a número
+    const handleSelectSede = (stationId: string) => {
+        setSelectedStation(stationId); // Convertir a número
+    }
     const handleSelectSeller = (sellerId: string) => setSelectedSeller(sellerId);
 
     // Manejar el envío del formulario
@@ -51,7 +53,7 @@ const TicketSeriesRegistration = () => {
 
     const handleCancelBtn = () => {
         setSelectedSeller(null);
-        setSelectedStation(null);
+        setSelectedStation('');
         setSerie('');
     };
 
@@ -130,7 +132,7 @@ const TicketSeriesRegistration = () => {
                                             options={dataListBusStations}
                                             placeholder="Seleccione una sede"
                                             onSelect={handleSelectSede}
-                                            value={selectedStation?.toString() || ''}
+                                            value={selectedStation|| ''}
                                             opKey="id"
                                             opValue="name"
                                             optionP="name"

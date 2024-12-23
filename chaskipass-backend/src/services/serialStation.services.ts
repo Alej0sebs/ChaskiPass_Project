@@ -10,11 +10,16 @@ import Cooperatives from "../models/cooperatives.models";
 export const createSellerSerialNumberService = async ({ cooperative_id, station_id, serial_number, user_id, status }: SerialNumberT) => {
     try {
         const serialNumberExist = await SerialStation.count({
-            where: { serial_number }
+            where: {
+                [Op.or]: [
+                    { serial_number },
+                    { user_id }
+                ]
+            }
         });
 
         if (serialNumberExist !== 0) {
-            return { status: 400, json: { error: HandleMessages.EXISTING_SERIAL_NUMBER } };
+            return { status: 400, json: { error: HandleMessages.EXISTING_SERIAL_NUMBER_OR_USER_ID } };
         }
 
         await SerialStation.create({

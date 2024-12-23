@@ -65,7 +65,6 @@ const FrequencyRegistration = () => {
 
     const fetchRoutes = async (page: number = 1) => {
         const response = await getRoutes(page);
-        console.log(response);
         if (response.listRoutes.length > 0) {
             setListRoutes(response.listRoutes);
             setTotalPages(response.totalPages);

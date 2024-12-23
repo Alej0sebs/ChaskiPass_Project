@@ -11,7 +11,7 @@ export const getUsersService = async (cooperative_id: string, dni: string) => {
         const usersList = await Users.findAll({
             where: {
                 cooperative_id,
-                dni: { [Op.ne]: dni },
+                // dni: { [Op.ne]: dni },
                 role_id: { [Op.ne]: 'drive' }
             },
             attributes: { exclude: ['password'] },

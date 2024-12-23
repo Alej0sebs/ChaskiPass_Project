@@ -5,14 +5,9 @@ import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
-import Calendar from './pages/Calendar';
-import Chart from './pages/Chart';
 import ECommerce from './pages/Dashboard/ECommerce';
-import FormElements from './pages/Form/FormElements';
-import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
-import Tables from './pages/Tables';
 import DefaultLayout from './layout/DefaultLayout';
 import BusRegistration from './pages/Registration/bus.registration';
 import RoutesRegistration from './pages/Processes/routes.processes';
@@ -82,53 +77,12 @@ function App() {
               }
             />
             <Route
-              path="/calendar"
-              element={
-                <>
-                  <PageTitle title="Calendar | ChaskiPass" />
-                  <Calendar />
-                </>
-              }
-            />
-            <Route
               path="/profile"
               element={
                 <ProtectedRoute>
                   <>
-                    <PageTitle title="Profile | ChaskiPass" />
+                    <PageTitle title="Cooperativa | ChaskiPass" />
                     <Profile />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/forms/form-elements"
-              element={
-                authUser ?
-                  <>
-                    <PageTitle title="Form Elements | ChaskiPass" />
-                    <FormElements />
-                  </> : <Navigate to='/auth/signin' />
-              }
-            />
-            <Route
-              path="/forms/form-layout"
-              element={
-                authUser ?
-                  <>
-                    <PageTitle title="Form Layout | ChaskiPass" />
-                    <FormLayout />
-                  </> :
-                  <Navigate to='/auth/signin' />
-              }
-            />
-            <Route
-              path="/tables"
-              element={
-                <ProtectedRoute>
-                  <>
-                    <PageTitle title="Tables | ChaskiPass" />
-                    <Tables />
                   </>
                 </ProtectedRoute>
               }
@@ -140,17 +94,6 @@ function App() {
                   <>
                     <PageTitle title="Settings | ChaskiPass" />
                     <Settings />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/chart"
-              element={
-                <ProtectedRoute>
-                  <>
-                    <PageTitle title="Basic Chart | ChaskiPass" />
-                    <Chart />
                   </>
                 </ProtectedRoute>
               }

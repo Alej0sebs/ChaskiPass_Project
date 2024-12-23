@@ -196,7 +196,7 @@ export type BusLayoutConfigurationT = {
 
 
 export type TicketsListT = {
-    station_id: number,
+    station_id: string,
     user_id: string,
     serial_number: string;
     status: string;

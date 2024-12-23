@@ -58,6 +58,14 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         //Datos para el ticket
         const fetchData = async () => {
             const data = await getSerialStationByStationAndDNI();
+            //verificar si existe un numero de serie, caso contrario no puede vender  
+            if (!data.serialNumber || data.serialNumber === "") {
+                toast.error('No tiene un número de serie asignado para vender.');
+                setTimeout(() => {
+                    window.location.href = '/register/tickets'; // Redirigir a otra página
+                }, 4000);
+                return;
+            };
             setTicketSerialData({
                 serialNumber: data.serialNumber,
                 actualTicket: data.actualTicket,
@@ -179,7 +187,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         if (seatToUse) {
             const temporalDestinations = destinations.slice(1);
             const index = temporalDestinations.findIndex((destination) => destination === selectedDestination);
-            
+
             const updatePassengerData: UpdateSeatClientT = {
                 seatId: seatToUse.seatId,
                 client: {
@@ -193,6 +201,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             };
             updateSeatClient(updatePassengerData);
             setCurrentSeat(null);
+            clearInputs();
         }
     };
 
@@ -220,7 +229,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         const purchaseData: TicketClientInformationT = {
             frequency_id: dataFrequency.id,
             serial_id: Number(ticketSerialData.id),
-            serial_number: Number(ticketSerialData.serialNumber),
+            serial_number: Number(ticketSerialData.serialNumber) || 0,
             price: dataFrequency.price,
             departure_station: dataFrequency.departure_station_id,
             arrival_station: dataFrequency.arrival_station_id,
@@ -237,7 +246,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         toast.success('Compra completada');
         closeModal();
         //Obtener los codigos de los tickets
-        const ticketCodes = responseTicket.message.tickets.map((ticket:any)=>{ return {ticketCode:ticket.ticket_code, ticketPrice:ticket.price}});
+        const ticketCodes = responseTicket.message.tickets.map((ticket: any) => { return { ticketCode: ticket.ticket_code, ticketPrice: ticket.price } });
         const preparedTickets = selectedSeats.map((seat, index) => ({
             dia: purchaseData.date.toLocaleDateString(),
             horaSalida: dataFrequency.departure_time,
@@ -258,14 +267,20 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         setTicketsData(preparedTickets);
         sendData(JSON.stringify(preparedTickets));
         setShowPdfModal(true);
-
+        clearInputs();
         //Renderizar de nuevo el bus
         onUpdateBus();
     };
 
+    const clearInputs = () => {
+        setSelectedDestination('');
+        setPassengerData({ name: '', lastName: '' });
+        setDocumentNumber('');
+    };
+
     return (
         <>
-            <h2 className="text-2xl font-bold mb-6 text-center text-black dark:text-white">BOLETO: {`${ticketSerialData.serialNumber}-${ticketSerialData.actualTicket}`} </h2>
+            <h2 className="text-2xl font-bold mb-6 text-center text-black dark:text-white">BOLETO: {`${ticketSerialData.serialNumber || 0}-${ticketSerialData.actualTicket}`} </h2>
             <div className="col-span-3">
                 <label className="mb-3 block text-black dark:text-white text-lg font-semibold">
                     Frecuencia: {dataFrequency.id}

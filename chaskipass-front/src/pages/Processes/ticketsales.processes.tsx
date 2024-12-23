@@ -106,7 +106,6 @@ const TicketsalesRegistration = () => {
         if (seat.statusSeat === "r") {
             try {
                 const ticket = await getTicketBySeat(frequencyData.id, seat.seatId);
-
                 if (ticket) {
                     setTicketsData([JSON.parse(ticket.message)]);
                     setShowPdfModal(true);

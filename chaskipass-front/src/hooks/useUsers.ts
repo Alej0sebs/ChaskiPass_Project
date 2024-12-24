@@ -20,7 +20,7 @@ export default function useUsers() {
       if (!res.ok) {
         throw new Error(data.error);
       }
-      return data; // Return the data directly
+      return data;
     } catch (error) {
       console.error(error);
       toast.error(verifyError(error));

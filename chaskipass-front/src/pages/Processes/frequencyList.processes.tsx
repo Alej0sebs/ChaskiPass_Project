@@ -47,7 +47,7 @@ const FrequencyList = () => {
             const busData = await getBuses();
             if (busData) setBuses(busData);
             const driverData = await getDrivers();
-            if (driverData) setDrivers(driverData);
+            if (driverData) setDrivers(driverData.json);
         };
         fetchBuses();
     }, [reload]);
@@ -61,7 +61,6 @@ const FrequencyList = () => {
         );
 
         const newStatus = !listRoutes.find((freq) => freq.id === id)?.status;
-        console.log(id);
         await editFrequency({ id, status: newStatus });
     };
 

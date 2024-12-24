@@ -233,7 +233,16 @@ export type clientTicketT = {
     client_name: string,
     ticket_code: string,
     seat_id: string,
-}
+};
+
+export type cooperativeT = {
+    id:string,
+    name:string,
+    address:string,
+    phone:string,
+    email:string,
+    logo?:string,
+};
 
 
 

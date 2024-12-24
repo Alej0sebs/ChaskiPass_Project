@@ -16,7 +16,6 @@ export default function useRoutes() {
     const [loading, setLoading] = useState(false);
     
     const createRoute= async(routeData: RouteI)=>{  
-        console.log(routeData);
         setLoading(true);
         try {
             const response:Response = await fetch(`${API_BASE_URL}frequency/route`,{

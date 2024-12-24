@@ -6,7 +6,7 @@ import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
 import ECommerce from './pages/Dashboard/ECommerce';
-import Profile from './pages/Profile';
+import Profile from './pages/cooperative';
 import Settings from './pages/Settings';
 import DefaultLayout from './layout/DefaultLayout';
 import BusRegistration from './pages/Registration/bus.registration';

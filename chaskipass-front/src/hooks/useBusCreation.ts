@@ -48,7 +48,6 @@ export default function useBusCreation() {
             if (data.error) {
                 throw new Error(data.error);
             }
-
             return data.json;
         } catch (error) {
             toast.error(verifyError(error));

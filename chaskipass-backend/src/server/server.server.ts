@@ -16,6 +16,7 @@ import typeSeatsRoutes from '../routes/typeSeats.routes';
 import paypalRoutes from '../routes/paypal.routes';
 import frequenciesRoutes from '../routes/frequencies.routes';
 import ticketsRoutes from '../routes/tickets.routes';
+import cooperativesRoutes from '../routes/cooperatives.routes';
 
 import {
     Roles,
@@ -52,14 +53,14 @@ export default class Server {
         this.listen();
         this.middlewares();
         this.routes();
-    }
+    };
     
     listen() {
         this.app.listen(parseInt(this.port), '0.0.0.0', () => {
             this.dbConnect();
             console.log('Server running on port ' + this.port);
         })
-    }
+    };
 
     routes() {
         const prefixUrl = '/chaski/api'
@@ -77,7 +78,8 @@ export default class Server {
         this.app.use(`${prefixUrl}/paypal`, paypalRoutes);
         this.app.use(`${prefixUrl}/frequency`, frequenciesRoutes);
         this.app.use(`${prefixUrl}/tickets`, ticketsRoutes);
-    }
+        this.app.use(`${prefixUrl}/cooperatives`, cooperativesRoutes);
+    };
 
     middlewares() {
         this.app.use(express.json({limit: "50mb"}));
@@ -91,7 +93,7 @@ export default class Server {
         }));
         this.app.disable('x-powered-by');
         this.app.use(this.securityHeaders);
-    }
+    };
 
     securityHeaders(req: Request, res: Response, next: NextFunction) {
         res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.example.com; frame-src 'none'; object-src 'none'");
@@ -102,7 +104,7 @@ export default class Server {
         res.setHeader("Referrer-Policy", "no-referrer");
         res.setHeader("Permissions-Policy", "geolocation=(self), microphone=()");
         next();
-    }
+    };
 
     /*@dbConnect: Asynchronous function that creates the database based on
     sequelize rules*/
@@ -135,5 +137,5 @@ export default class Server {
         } catch (error) {
             console.log("Unable to connect to the db: " + error);
         }
-    }
+    };
 }

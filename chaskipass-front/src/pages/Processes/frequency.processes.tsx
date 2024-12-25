@@ -43,11 +43,8 @@ const FrequencyRegistration = () => {
     //state of inputs
     const [selectedBus, setSelectedBus] = useState('');
     const [selectedDriver, setSelectedDriver] = useState('');
-    // const [routeID, setRouteID] = useState('');
     const [fillDataTable, setFillDataTable] = useState<timeDatePriceT>(initialStateTimeDate);
-    // const [price, setPrice] = useState('');
     const today = new Date().toISOString().split('T')[0]; //get today's date in the format YYYY-MM-DD
-    // const [selectedDateTime, setSelectedDateTime] = useState<timeDateT>(initialStateTimeDate);
     //hook
     const { getBuses } = useBusCreation();
     const { getDrivers } = useUsers();
@@ -104,7 +101,6 @@ const FrequencyRegistration = () => {
             date: fillDataTable.date,
             arrival_time: fillDataTable.arrival_time,
             driver_id: selectedDriver,
-            // price: parseFloat(price.replace(',', '.')),
             price: parseFloat(fillDataTable.price.replace(',', '.')),
             status: frequencyStatus
         };
@@ -134,7 +130,6 @@ const FrequencyRegistration = () => {
             price: '0',
         });
         setFrequencyStatus(false);
-        // setPrice('');
     };
 
     return (
@@ -157,9 +152,9 @@ const FrequencyRegistration = () => {
                             onRowClick={(row) => setFillDataTable((prev) => ({
                                 ...prev,
                                 routeID: row.id,
-                                departure_time: row.departure_time || '', 
+                                departure_time: row.departure_time || '',
                                 arrival_time: row.arrival_time || '',
-                                price: row.default_price.toString(),    
+                                price: row.default_price.toString(),
                             }))}
                             dataHeaderToExpand={expandTitles}
                         />

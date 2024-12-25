@@ -38,7 +38,7 @@ const BusRegistration: React.FC = () => {
     // Actualiza el estado seleccionado del bus si es el select de buses
     if (name === 'bus_structure_id') {
       setSelectedBusStructure(value);
-    }
+    };
 
     setInputBus({
       ...inputBus,
@@ -56,7 +56,7 @@ const BusRegistration: React.FC = () => {
       setSelectedBusImg(file); // Guarda el archivo en el estado
       setPreviewImg(URL.createObjectURL(file)); // Guarda el archivo en el estado
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,11 +272,11 @@ const BusRegistration: React.FC = () => {
                         id="bus_structure_id"
                         label="Estructura del Bus"
                         placeholder="Seleccione o busque una ciudad"
-                        options={selectBusStructures} 
+                        options={selectBusStructures}
                         value={selectedBusStructure}
                         onSelect={(value) => {
-                          setSelectedBusStructure(value); 
-                          setInputBus({...inputBus, bus_structure_id: Number(value)}); // Actualiza el estado del bus
+                          setSelectedBusStructure(value);
+                          setInputBus({ ...inputBus, bus_structure_id: Number(value) }); // Actualiza el estado del bus
                         }}
                         iconP={FaBus}
                         className=""
@@ -284,9 +284,6 @@ const BusRegistration: React.FC = () => {
                         opValue="name" // Nombre mostrado en el campo
                         optionP="name" // Nombre mostrado en las opciones
                       />
-                 
-
-                     
                     </div>
                   </div>
                   <div className="mb-5.5">

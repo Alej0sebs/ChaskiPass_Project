@@ -12,6 +12,7 @@ export enum HandleMessages{
     USER_CREATED_SUCCESSFULLY= 'Usuario creado con éxito',
     COOPERATIVE_CREATED_SUCCESSFULLY= 'Cooperativa creada con éxito',
     COOPERATIVE_NOT_FOUND= 'Cooperativa no encontrada',
+    COOPERATIVE_UPDATED= 'Cooperativa actualizada con éxito',
     EXISTING_BUS= 'El bus ya existe',
     BUS_CREATED_SUCCESSFULLY= 'Bus creado con éxito',
     BUS_NOT_FOUND= 'Bus no encontrado',

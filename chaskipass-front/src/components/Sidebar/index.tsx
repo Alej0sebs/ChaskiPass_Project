@@ -8,6 +8,7 @@ import { IoSettingsOutline, IoBusinessSharp } from "react-icons/io5";
 import { RxDashboard } from "react-icons/rx";
 import { GiProcessor } from "react-icons/gi";
 import { FaKey } from "react-icons/fa";
+import { IMAGE_URL } from '../../helpers/Constants';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -25,6 +26,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(
     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
   );
+
+  //Recuperar la imagen de la empresa.
+  const localStorageData = localStorage.getItem('chaski-log');
+  const logo = localStorageData && JSON.parse(localStorageData).logo ? `${IMAGE_URL}${JSON.parse(localStorageData).logo}` : ChaskiLogo;
 
   // close on click outside
   useEffect(() => {
@@ -70,7 +75,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between">
         <NavLink to="/">
-          <img src={ChaskiLogo} alt="Logo" className='w-[300px] h-[200px]' />
+          <img src={logo} alt="Logo"  className='w-[300px] h-[200px]'
+          onError={()=> console.log("Error imagen")}/>
         </NavLink>
 
         <button

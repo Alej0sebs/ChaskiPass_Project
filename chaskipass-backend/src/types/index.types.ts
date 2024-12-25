@@ -6,7 +6,6 @@ import Routes from "../models/routes.models";
 import { Admin } from "../models/administrators.models";
 import Cooperatives from "../models/cooperatives.models";
 import Roles from "../models/roles.models";
-import Tickets from "../models/tickets.models";
 import Frequencies from "../models/frequencies.models";
 import BusStructure from "../models/busStructure.models";
 import BusStations from "../models/busStations.models";
@@ -14,9 +13,6 @@ import Seats from "../models/seats.models";
 import { StationCooperative } from "../models/stationCooperative.models";
 import { SerialStation } from "../models/serialStation.model";
 import TypeSeats from "../models/typeSeats.models";
-
-// export type UserT=InferAttributes<Users>
-// export type UserLoginT=Pick<UserT, 'user_name' | 'email' | 'password' | 'dni' | 'cooperative_id'>
 
 export type ValidateRoleAndRouteId = {
     dni: string,
@@ -143,3 +139,13 @@ export type PaymentT = {
     cooperative_id: string,
     ticket_id: number,
 };
+
+export type cooperativeT = {
+    id:string,
+    name:string,
+    address:string,
+    phone:string,
+    email:string,
+    logo?:string,
+};
+

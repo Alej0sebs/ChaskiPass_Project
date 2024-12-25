@@ -8,6 +8,7 @@ import { UserLoginT } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
 import Roles from "../models/roles.models";
 import { RoleEnum } from "../utils/enums.utils";
+import Cooperatives from "../models/cooperatives.models";
 
 // Servicio para iniciar sesión
 export const loginUserService = async (
@@ -30,6 +31,10 @@ export const loginUserService = async (
             };
         }
 
+        const logoRoute = await Cooperatives.findOne({
+            where: { id: user.cooperative_id },
+            attributes: ["logo"]
+        });
         // Generar token y establecer cookie
         generateTokenAndSetCookie(user.dni, res);
 
@@ -39,7 +44,8 @@ export const loginUserService = async (
                 full_name: user.name+" "+user.last_name,
                 dni: user.dni,
                 cooperative: user.cooperative_id,
-                role: user.role_id 
+                role: user.role_id,
+                logo: logoRoute?.logo, 
             }
         };
     } catch (error) {

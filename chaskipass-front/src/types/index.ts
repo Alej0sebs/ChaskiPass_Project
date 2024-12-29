@@ -20,7 +20,8 @@ export type SelectedSeatT={
     statusSeat:string,
     destination?:string,
     client?:ClientT,
-    priceDestination?: number
+    priceDestination?: number,
+    discount?:number
 };
 
 export type LayoutBusT = {
@@ -224,7 +225,8 @@ export type UpdateSeatClientT = {
     seatId: string,
     client: ClientT,
     destination: string,
-    priceDestination: number
+    priceDestination: number,
+    discount:number
 };
 
 

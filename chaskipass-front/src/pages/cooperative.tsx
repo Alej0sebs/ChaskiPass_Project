@@ -1,6 +1,6 @@
 import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import CoverOne from '../images/cover/cover-01.png';
-import ChaskiLogo from '../../images/chaski-logo/chaskilogowhite.svg';
+import ChaskiLogo from '../images/chaski-logo/chaskilogoblack.png';
 import { IoCameraOutline } from "react-icons/io5";
 import { cooperativeT } from '../types';
 import React, { useEffect, useState } from 'react';
@@ -22,16 +22,15 @@ const Profile = () => {
   const { getCooperativeByID } = useCooperatives();
   const [dataFieldChanged, setDataFieldChanged] = useState(false);
   const [btnCancelPressed, setBtnCancelPressed] = useState(false);
-  const {updateCooperative} = useCooperatives();
+  const { updateCooperative } = useCooperatives();
   //subir imagen
-    //blob, imagen en tiempo real
+  //blob, imagen en tiempo real
   const [selectedCooperativeImg, setSelectedCooperativeImg] = useState<File | null>(null);
   const [previewImg, setPreviewImg] = useState<string | null>(null);
 
-    //Recuperar la imagen de la empresa.
-    const localStorageData = localStorage.getItem('chaski-log');
-    const logo = localStorageData && JSON.parse(localStorageData).logo ? `${IMAGE_URL}${JSON.parse(localStorageData).logo}` : ChaskiLogo;
-  
+  //Recuperar la imagen de la empresa.
+  const localStorageData = localStorage.getItem('chaski-log');
+  const logo = localStorageData && JSON.parse(localStorageData).logo ? `${IMAGE_URL}${JSON.parse(localStorageData).logo}` : ChaskiLogo;
 
   useEffect(() => {
     const fetchCooperative = async () => {
@@ -41,12 +40,32 @@ const Profile = () => {
         const data = JSON.parse(storageData);
         cooperativeID = data.cooperative;
       }
-
+  
       const cooperative = await getCooperativeByID(cooperativeID!.toString());
       setCooperativeInputs(cooperative);
     };
     fetchCooperative();
   }, [btnCancelPressed]);
+
+    //new value
+  const changeLogoValueLocalStorage = async (id: string) => {
+    const cooperative = await getCooperativeByID(id);
+    const localStorageData = localStorage.getItem('chaski-log'); // Leer los datos actuales del localStorage
+    
+    if (!localStorageData) {
+      console.error("No se encontró el item 'chaski-log' en el localStorage.");
+      return;
+    }
+
+    // Parsear los datos existentes
+    const parsedData = JSON.parse(localStorageData);
+
+    // Actualizar solo el valor de logo
+    parsedData.logo = cooperative.logo;
+
+    // Guardar los datos actualizados nuevamente en el localStorage
+    localStorage.setItem('chaski-log', JSON.stringify(parsedData));
+  }
 
   const handleCancelBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -61,9 +80,9 @@ const Profile = () => {
     setDataFieldChanged(true);
   };
 
-  const handleFiles= (e:React.ChangeEvent<HTMLInputElement>) => {
+  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if(file){
+    if (file) {
       setSelectedCooperativeImg(file);
       setPreviewImg(URL.createObjectURL(file)); // Guarda el archivo en el estado
       setDataFieldChanged(true);
@@ -72,8 +91,13 @@ const Profile = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if(selectedCooperativeImg) await updateCooperative(cooperativeInputs, selectedCooperativeImg);
+    if (selectedCooperativeImg) await updateCooperative(cooperativeInputs, selectedCooperativeImg);
     else await updateCooperative(cooperativeInputs);
+
+    setTimeout(() => {
+      changeLogoValueLocalStorage(cooperativeInputs.id);
+      window.location.reload();
+    }, 4000);
   };
 
   const cleanData = () => {
@@ -95,12 +119,12 @@ const Profile = () => {
           </div>
           <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
             <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
-                <div className="relative drop-shadow-2">
-                  <img src={previewImg || ChaskiLogo} alt="profile" className="h-[152px] w-[152px] object-contain rounded-full"/>
-                  <label
+              <div className="relative drop-shadow-2">
+                <img src={previewImg || logo} alt="profile" className="h-[152px] w-[152px] object-contain rounded-full" />
+                <label
                   htmlFor="logo"
                   className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
-                  >
+                >
                   <IoCameraOutline />
                   <input
                     type="file"
@@ -110,8 +134,8 @@ const Profile = () => {
                     className="sr-only"
                     onChange={handleFiles}
                   />
-                  </label>
-                </div>
+                </label>
+              </div>
             </div>
             <div className="mt-4">
               <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">

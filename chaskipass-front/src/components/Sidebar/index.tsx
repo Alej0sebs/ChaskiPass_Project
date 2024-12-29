@@ -414,7 +414,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     }`}
                 >
                   <IoSettingsOutline />
-                  Settings
+                  Mi Perfil
                 </NavLink>
               </li>
               {/* <!-- Menu Item Settings --> */}

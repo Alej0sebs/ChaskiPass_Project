@@ -10,6 +10,8 @@ import toast from 'react-hot-toast';
 import ConfirmPopup from '../../modals/confirmPopup.processes';
 import PDFPopup from '../../modals/pdfPopup';
 import { TicketData } from '../../types/ticket';
+import { POPULATION_GROUP } from '../../helpers/Constants';
+import { validateEcuadorianDNI, validateEcuadorianPassport } from '../../utils/userValidator.utils';
 interface SalesFormProps {
     dataFrequency: FrequencyListObjectT;
     onUpdateBus: () => void;
@@ -37,6 +39,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     const [passengerData, setPassengerData] = useState<PassengerData>({ name: '', lastName: '' });
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [selectedDestination, setSelectedDestination] = useState<string>('');
+    const [selectedGroupPeople, setSelectedGroupPeople] = useState<number>(0);
     const [ticketSerialData, setTicketSerialData] = useState<{ serialNumber: string, actualTicket: number, id: number }>({ serialNumber: '', actualTicket: 0, id: 0 });
     const [isModalOpen, setIsModalOpen] = useState(false);
     //total price
@@ -81,7 +84,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         const calculatedPricesPerStop = () => {
             const temporalDestinations = destinations.slice(1);
             const prices = temporalDestinations.map((_, index) => {
-                const pricePerStop = dataFrequency.price / (temporalDestinations.length + index + 0.5);
+                const pricePerStop = (dataFrequency.price) / (temporalDestinations.length + index + 0.5);
                 return pricePerStop;
             });
             return prices;
@@ -103,11 +106,11 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
                 } else {
                     priceToUse = Number(dataFrequency.price);
                 }
-                return acc + (priceToUse + Number(seat.additionalCost));
+                return acc + ((priceToUse - (priceToUse * (seat.discount ? seat.discount : 0))) + Number(seat.additionalCost));
             }, 0);
         } else {
             accumulativePrice = selectedSeats.reduce((acc, seat) => {
-                return acc + (Number(dataFrequency.price) + Number(seat.additionalCost));
+                return acc + (Number(dataFrequency.price - (dataFrequency.price * (seat.discount ? seat.discount : 0))) + Number(seat.additionalCost));
             }, 0);
         }
         setTotalPrice(Number(accumulativePrice.toFixed(2)));
@@ -171,6 +174,11 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
         setSelectedDestination(e.target.value);
     };
 
+    const handleGroupPeopleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log(e.target.value);
+        setSelectedGroupPeople(Number(e.target.value));
+    }
+
     const handleSelectSeat = (seat: SelectedSeatT) => {
         setCurrentSeat(seat);
         setDocumentType(''); // Opcional: limpiar inputs
@@ -182,35 +190,61 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     };
 
     //Agrego los datos del pasajero,  no necesito pasarle datos ya que manejare lo de passengerData
-    const setClientSeat = (temporalSeat?: SelectedSeatT) => {
+    const setClientSeat = (temporalSeat?: SelectedSeatT): boolean => {
         const seatToUse = temporalSeat || currentSeat;
+        let dniIsValid = false;
+    
         if (seatToUse) {
             const temporalDestinations = destinations.slice(1);
             const index = temporalDestinations.findIndex((destination) => destination === selectedDestination);
-
-            const updatePassengerData: UpdateSeatClientT = {
-                seatId: seatToUse.seatId,
-                client: {
-                    dni: documentNumber,
-                    name: passengerData.name,
-                    last_name: passengerData.lastName,
-                    exist: passengerData.exist,
-                },
-                destination: selectedDestination,
-                priceDestination: pricesPerStop[index] ? Number(pricesPerStop[index].toFixed(2)) : dataFrequency.price,
-            };
-            updateSeatClient(updatePassengerData);
-            setCurrentSeat(null);
-            clearInputs();
+    
+            if (documentType === 'Cedula') {
+                if (!validateEcuadorianDNI(documentNumber)) {
+                    toast.error('Cédula inválida');
+                    return false; // Retorna false si la cédula no es válida
+                }
+                dniIsValid = true;
+            } else {
+                if (!validateEcuadorianPassport(documentNumber)) {
+                    toast.error('Pasaporte inválido');
+                    return false; // Retorna false si el pasaporte no es válido
+                }
+                dniIsValid = true;
+            }
+    
+            if (dniIsValid) {
+                const updatePassengerData: UpdateSeatClientT = {
+                    seatId: seatToUse.seatId,
+                    client: {
+                        dni: documentNumber,
+                        name: passengerData.name,
+                        last_name: passengerData.lastName,
+                        exist: passengerData.exist,
+                    },
+                    destination: selectedDestination,
+                    priceDestination: pricesPerStop[index]
+                        ? Number(pricesPerStop[index].toFixed(2))
+                        : dataFrequency.price,
+                    discount: selectedGroupPeople
+                };
+                updateSeatClient(updatePassengerData);
+                setCurrentSeat(null);
+                clearInputs();
+                return true; // Retorna true si todo es válido
+            }
         }
+    
+        return false; // Retorna false si no hay asiento o algún otro error
     };
-
+    
     const ticketPurchaseConfirmationModal = async () => {
         if (selectedSeats.length === 1 && !currentSeat) {
-            setClientSeat(selectedSeats[0]);
-        };
+            const isSeatSet = setClientSeat(selectedSeats[0]);
+            if (!isSeatSet) return; // No abrir el modal si hubo algún error
+        }
         setIsModalOpen(true);
     };
+    
 
     const closeModal = () => {
         setIsModalOpen(false); // Cierra el modal
@@ -223,6 +257,7 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
             toast.error('Por favor complete los datos de los pasajeros');
             return;
         };
+
         const localStorageData = localStorage.getItem('chaski-log');
         const cooperative_id = localStorageData ? JSON.parse(localStorageData).cooperative : null;
 
@@ -352,6 +387,22 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
                         )}
                     </SelectGroupTwo>
                 </div>
+                <div>
+                <SelectGroupTwo label="Descuento" value={selectedGroupPeople} onChange={handleGroupPeopleChange}>
+                        {Object.keys(POPULATION_GROUP).length > 0 ? (
+                            Object.entries(POPULATION_GROUP).map(([key, valueList]) => (
+                                <option key={key} value={valueList}>
+                                    {key}
+                                </option>
+                            ))
+                        ) : (
+                            <option value="" disabled>
+                                Cargando destinos...
+                            </option>
+                        )}
+                    </SelectGroupTwo>
+                </div>
+
                 <div>
                     <label className="mb-3 block text-black dark:text-white">
                         Total a Pagar

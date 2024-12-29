@@ -17,6 +17,7 @@ const TableSeats = ({ headerTable, displayData, onSelectSeat }: TableTicketsProp
                         <th>Destino de viaje final</th>
                         <th>C. Adicional</th>
                         <th>C. Trayecto</th>
+                        <th>Descuento</th>
                         <th>C. Final</th>
                     </tr>
                 </thead>
@@ -32,7 +33,8 @@ const TableSeats = ({ headerTable, displayData, onSelectSeat }: TableTicketsProp
                             <td>{val.destination}</td>
                             <td>${val.additionalCost}</td>
                             <td>${val.priceDestination}</td>
-                            <td>${(val.priceDestination ? Number(val.priceDestination) : 0) + Number(val.additionalCost)}</td>
+                            <td>{(val.discount || 0) * 100}%</td>
+                            <td>${((val.priceDestination ? Number(val.priceDestination) : 0) - (val.priceDestination ? Number(val.priceDestination) : 0) * (val.discount || 0)) + Number(val.additionalCost)}</td>
                         </tr>
                     ))}
                 </tbody>

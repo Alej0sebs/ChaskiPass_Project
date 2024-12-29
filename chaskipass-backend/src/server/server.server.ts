@@ -1,5 +1,5 @@
 // import { UserLoginT } from './../types/index.types';
-import express, {Application, Request, Response, NextFunction} from 'express';
+import express, {Request, Response, NextFunction} from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import usersRoute from "../routes/users.routes";
@@ -17,6 +17,9 @@ import paypalRoutes from '../routes/paypal.routes';
 import frequenciesRoutes from '../routes/frequencies.routes';
 import ticketsRoutes from '../routes/tickets.routes';
 import cooperativesRoutes from '../routes/cooperatives.routes';
+//Documentacion de la API
+import swaggerUi from 'swagger-ui-express';
+
 
 import {
     Roles,
@@ -42,6 +45,7 @@ import {
     SerialStation,
     SeatStatus
 } from '../models/tableAssociations.models';
+import openapiSpecification from '../swaggerDocumentation/swagger.swaggerDocumentation';
 
 export default class Server {
     private app: express.Application;
@@ -79,6 +83,8 @@ export default class Server {
         this.app.use(`${prefixUrl}/frequency`, frequenciesRoutes);
         this.app.use(`${prefixUrl}/tickets`, ticketsRoutes);
         this.app.use(`${prefixUrl}/cooperatives`, cooperativesRoutes);
+        //Ruta para la documentación de la API
+        this.app.use(`${prefixUrl}/docs`, swaggerUi.serve, swaggerUi.setup(openapiSpecification)); 
     };
 
     middlewares() {

@@ -205,6 +205,7 @@ export type TicketsListT = {
 export type LinkCooperativesT = {
     station_id: number,
     cooperative_id: string,
+    city_name: string,
 };
 
 

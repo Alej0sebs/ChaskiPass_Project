@@ -2,7 +2,7 @@ import { Transaction } from 'sequelize';
 import { HandleMessages } from '../error/handleMessages.error';
 import Buses from '../models/buses.models';
 import Seats from '../models/seats.models';
-import { SeatBusT, SeatT } from '../types/index.types';
+import { SeatBusT} from '../types/index.types';
 import { getTypeSeatsService } from './typeSeats.services';
 import { handleSequelizeError } from '../utils/helpers.utils';
 import TypeSeats from '../models/typeSeats.models';

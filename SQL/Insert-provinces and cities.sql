@@ -1,6 +1,6 @@
 -- Insertar provincias
 
-INSERT INTO provinces (id,name)
+INSERT INTO Provinces (id,name)
 VALUES 
     (1, 'Azuay'),
     (2, 'Bolívar'),

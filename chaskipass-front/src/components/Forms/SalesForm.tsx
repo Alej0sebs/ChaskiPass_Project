@@ -53,8 +53,9 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
 
 
     useEffect(() => {
-        const cities = dataFrequency.stop_city_names.split(',').map((city) => city.trim());
-        const destination = dataFrequency.stop_station_names.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`);
+        console.log(dataFrequency);
+        const cities = dataFrequency.stop_city_names ? dataFrequency.stop_city_names.split(',').map((city) => city.trim()) : [];
+        const destination = dataFrequency.stop_station_names ? dataFrequency.stop_station_names.split(',').map((stopOver, index) => `${stopOver.trim()} - ${cities[index]}`) : [];
         destination.unshift('Viaje Completo');
         setDestinations(destination);
 

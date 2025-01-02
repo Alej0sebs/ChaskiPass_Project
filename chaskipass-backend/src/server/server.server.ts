@@ -17,6 +17,7 @@ import paypalRoutes from '../routes/paypal.routes';
 import frequenciesRoutes from '../routes/frequencies.routes';
 import ticketsRoutes from '../routes/tickets.routes';
 import cooperativesRoutes from '../routes/cooperatives.routes';
+import dashboardRoutes from '../routes/dashboard.routes';
 //Documentacion de la API
 import swaggerUi from 'swagger-ui-express';
 
@@ -83,6 +84,7 @@ export default class Server {
         this.app.use(`${prefixUrl}/frequency`, frequenciesRoutes);
         this.app.use(`${prefixUrl}/tickets`, ticketsRoutes);
         this.app.use(`${prefixUrl}/cooperatives`, cooperativesRoutes);
+        this.app.use(`${prefixUrl}/dashboard`, dashboardRoutes);
         //Ruta para la documentación de la API
         this.app.use(`${prefixUrl}/docs`, swaggerUi.serve, swaggerUi.setup(openapiSpecification)); 
     };

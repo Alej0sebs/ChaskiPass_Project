@@ -11,7 +11,6 @@ export default function createUser(){
 
     const login = async(userData:CreateUserT)=>{
         setLoading(true);
-        console.log(userData);
         try {
             const response:Response = await fetch(`${API_BASE_URL}users/signUp`,{
                 method:'POST',

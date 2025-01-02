@@ -225,9 +225,8 @@ const SignUp: React.FC = () => {
                         Selecciona un rol
                       </option>
                       <option value="admin">Administrador</option>
-                      <option value="user">Usuario</option>
-                      <option value="supervisor">Supervisor</option>
-                      <option value="manager">Manager</option>
+                      <option value="clerk">Recepcionista</option>
+                      <option value="drive">Conductor</option>
                     </select>
                     <span className="absolute right-4.5 top-4">
                       <RiTeamFill className="w-[22px] h-[22px]" />

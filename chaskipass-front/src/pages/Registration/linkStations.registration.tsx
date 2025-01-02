@@ -11,6 +11,8 @@ const LinkStations = () => {
   const [selectedStations, setSelectedStations] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [itWasSaved, setItWasSaved] = useState(false);
+
   const { allBusStations, loading: stationsLoading } = useBusStations();
   const {
     linkStation,
@@ -23,7 +25,16 @@ const LinkStations = () => {
     try {
       const result = await getLinkedStations(page);
       setTotalPages(result.totalPages);
-      setLinkedStations(result.list);
+      //Convertir lista para que me de el nombre de la ciudad
+      const auxStationList = result.list.map((station: any) => {
+        return {
+          id: station.id,
+          name: station.name,
+          cityName: station.city_bus_station.name
+        }
+      });
+
+      setLinkedStations(auxStationList);
     } catch (error) {
       toast.error('Error al obtener las estaciones vinculadas.');
     }
@@ -31,7 +42,7 @@ const LinkStations = () => {
 
   useEffect(() => {
     fetchLinkedStations(currentPage);
-  }, [currentPage]);
+  }, [currentPage, itWasSaved]);
 
   const handleStationSelection = (stationId: string) => {
     const selectedStation = allBusStations.find((station) => station.id === stationId);
@@ -63,12 +74,9 @@ const LinkStations = () => {
           // Error por estación
         }
       }
-
+      setItWasSaved(!itWasSaved);
       setSelectedStations([]);
-      const result = await getLinkedStations(currentPage);
-      if (result && result.length) {
-        setTotalPages(Math.ceil(result.length / 5));
-      }
+
     } catch (error) {
       toast.error('Error al guardar las estaciones.');
     }
@@ -165,8 +173,8 @@ const LinkStations = () => {
               {/* Aquí agregamos un contenedor con altura y tamaño de la tabla ajustado */}
               <div className="w-full h-[600px] overflow-x-auto">
                 <PaginationDataTable
-                  titles={['name']}
-                  displayHeader={['Estación']}
+                  titles={['cityName', 'name' ]}
+                  displayHeader={['ciudad','Estación']}
                   data={linkedStations}
                   totalPages={totalPages}
                   currentPage={currentPage}
@@ -175,7 +183,7 @@ const LinkStations = () => {
                     fetchLinkedStations(newPage);
                   }}
                   loading={false}
-                  onRowClick={() => {}}
+                  onRowClick={() => { }}
                   dataHeaderToExpand={[]}
                 />
               </div>

@@ -12,6 +12,7 @@ export class Tickets extends Model<
     declare serial_station_id: number;
     declare ticket_code: string;
     declare price: number;
+    declare data?: string;
     declare departure_station: number;
     declare arrival_station: number;
     declare date: Date;
@@ -58,7 +59,11 @@ Tickets.init({
     price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-    }
+    },
+    data: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+    },
 }, {
     sequelize: connectionDb,
     tableName: 'Tickets',

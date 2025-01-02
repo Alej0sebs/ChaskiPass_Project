@@ -1,30 +1,31 @@
 import { useEffect, useState } from "react";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import { BusLayoutConfigurationT, SeatConfigT } from "../../types";
+import { BusLayoutConfigurationT, clientTicketT, SeatConfigT, SelectedSeatT } from "../../types";
 import toast from "react-hot-toast";
 import Accordion from "../../components/Accordion";
 import Tabs from "../../components/Tabs";
 import SalesForm from "../../components/Forms/SalesForm";
 import { AlertCircle } from "lucide-react";
-import TableOne from "../../components/Tables/TableOne";
 import { useLocation } from "react-router-dom";
 import SvgSeatComponent from "../../components/busElements/svgSeats.components";
 import useSeatStructure from "../../hooks/useSeatStructure";
 import SvgBathroomComponent from "../../components/busElements/svgBathroom.components";
 import SvgStairsComponent from "../../components/busElements/svgStairs.components";
 import BusTemplate from "../../components/Bus";
+import { useSelectedSeatsStore } from "../../Zustand/useSelectedSeats";
+import PaginationDataTable from "../../components/Tables/PaginationDataTable";
+import { useSellTicket } from "../../hooks/useSellTicket";
+import { TicketData } from "../../types/ticket";
+import PDFPopup from "../../modals/pdfPopup";
 
 interface InputFieldProps {
     label: string;
     value: string;
     isWide?: boolean;
 }
-
-
 interface BusData {
     [floor: string]: BusLayoutConfigurationT[];
 }
-
 
 const TicketsalesRegistration = () => {
     //get data from frequency
@@ -40,67 +41,127 @@ const TicketsalesRegistration = () => {
     const [floorElements, setFloorElements] = useState<{ [key: number]: SeatConfigT[] }>({}); // Almacenar los elementos del bus por piso
     const [numFloors, setNumFloors] = useState(1); // Número de pisos
     const [selectedFloor, setSelectedFloor] = useState(1); // Piso seleccionado para visualizar
-    const [selectedSeats, setSelectedSeats] = useState<string[]>([]); // Asientos seleccionados por el usuario para reservar
+    const { selectedSeats, addSeat, removeSeat, clearSeats } = useSelectedSeatsStore();
+
+    //state para paginas
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+
+    //State para renderizar cuando haga la compra de un boleto
+    const [reloadBusConfigAfterSale, setReloadBusConfigAfterSale] = useState(false);
+    //Datos de los clientes que han comprado boletos en la frecuencia
+    const [clientList, setClientList] = useState<clientTicketT[]>([]);
+    const { getTicketsClientFrequency, getTicketBySeat } = useSellTicket();
+
+    const [ticketsData, setTicketsData] = useState<TicketData[]>([]);
+    const [showPdfModal, setShowPdfModal] = useState(false);
 
     //global variables
     let totalSeats: number = 0;
 
-    //Tomo los valores de la frecuencia
-    useEffect(() => {
-        const fetchBusConfiguration = async () => {
-            try {
-                const { id: frequency_id, bus_id, bus_structure_id } = frequencyData;
-                const busData:BusData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
-                if (busData) {
-                    const numFloors = Object.keys(busData).length;
-                    setNumFloors(numFloors);
-                    setFloorElements(busData);
+    //Traer los datos de la estructura de los asientos con sus respectivos ids
+    const fetchBusConfiguration = async () => {
+        try {
+            const { id: frequency_id, bus_id, bus_structure_id } = frequencyData;
+            const busData: BusData = await getSeatStructure({ frequency_id, bus_id, bus_structure_id });
+            if (busData) {
+                const numFloors = Object.keys(busData).length;
+                setNumFloors(numFloors);
+                setFloorElements(busData);
 
-                    // Calcula el número total de asientos
-                    totalSeats = Object.values(busData).reduce((acc, floor) => {
-                        const seatCount = floor.filter((element: any) => element.type === "seat").length;
-                        return acc + seatCount;
-                    }, 0);
-                }
-            } catch (err) {
-                toast.error('Error al obtener la estructura del bus');
+                // Calcula el número total de asientos
+                totalSeats = Object.values(busData).reduce((acc, floor) => {
+                    const seatCount = floor.filter((element: any) => element.type === "seat").length;
+                    return acc + seatCount;
+                }, 0);
             }
-        };
-        fetchBusConfiguration();
-    }, [frequencyData]);
-
-    // Manejar la selección de un asiento
-    const handleSeatClick = (seatId: string) => {
-        setSelectedSeats((prevSelectedSeats) =>
-            prevSelectedSeats.includes(seatId)
-                ? prevSelectedSeats.filter((id) => id !== seatId)
-                : [...prevSelectedSeats, seatId]
-        );
+        } catch (err) {
+            toast.error('Error al obtener la estructura del bus');
+        }
     };
 
-    const isSeatSelected = (seatId: string) => selectedSeats.includes(seatId);
-
-    const handlePurchase = () => {
-        if (selectedSeats.length === 0) {
-            toast.error('Debe seleccionar al menos un asiento para continuar.');
-            return;
+    //Traer los datos de los clientes de la frecuencia
+    const fetchTicketsClientFrequency = async (page = 1) => {
+        try {
+            const { id: frequency_id } = frequencyData;
+            const response = await getTicketsClientFrequency(frequency_id, page);
+            
+            if (response) {
+                setClientList(response.message.clientList);
+                setTotalPages(response.message.totalPages);
+            }
+        } catch (err) {
+            toast.error('Error al obtener los datos de los clientes');
         }
+    };
 
-        // Aquí enviarías los asientos seleccionados al backend para procesar la compra
-        toast.success(`Has reservado los siguientes asientos: ${selectedSeats.join(', ')}`);
+    //Tomo los valores de la frecuencia
+    useEffect(() => {
+        fetchTicketsClientFrequency(currentPage);
+        fetchBusConfiguration();
+    }, [frequencyData, reloadBusConfigAfterSale]);
+    
+    //Funcion para traer los datos de los tickets 
+    const handleSeatClick = async (seat: SelectedSeatT) => {
+        if (seat.statusSeat === "r") {
+            try {
+                const ticket = await getTicketBySeat(frequencyData.id, seat.seatId);
+                if (ticket) {
+                    setTicketsData([JSON.parse(ticket.message)]);
+                    setShowPdfModal(true);
+                } else {
+                    toast.error("No se encontró información para este asiento.");
+                }
+            } catch {
+                toast.error("Error al obtener los datos del ticket.");
+            }
+        } else if (isSeatSelected(seat.seatId)) {
+            removeSeat(seat.seatId);
+        } else {
+            addSeat(seat);
+        }
+    };
+
+
+    const isSeatSelected = (seatId: string) => {
+        return selectedSeats.some((seat) => seat.seatId === seatId);
+    };
+
+
+    //Funcion para renderizar la pagina principal
+
+    const toggleReload = () => {
+        setReloadBusConfigAfterSale((prev) => !prev);
+        clearSeats();
+        fetchTicketsClientFrequency(currentPage);
     };
 
     const tabsData = [
-        { title: 'Ventas', content: <SalesForm seats={selectedSeats} stopOvers={frequencyData.stop_station_names} stop_city_names={frequencyData.stop_city_names} /> },
-        { title: 'Reservados', content: <TableOne /> },
-        { title: 'Pasajeros', content: <TableOne /> }
+        { title: 'Ventas', content: <SalesForm dataFrequency={frequencyData} onUpdateBus={toggleReload} /> },
+        {
+            title: 'Clientes',
+            content:
+                <PaginationDataTable
+                    titles={['client_dni', 'client_name', 'ticket_code', 'seat_id']} // Claves ajustadas a los datos aplanados
+                    displayHeader={['DNI', 'Nombre', 'Codigo', 'Asiento']} // Encabezados de columnas
+                    data={clientList}
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    onPageChange={(newPage) => {
+                        setCurrentPage(newPage);
+                        fetchTicketsClientFrequency(newPage);
+                    }}
+                    loading={false}
+                    dataHeaderToExpand={[]}
+                />
+        }
     ];
 
     //Contabilizar los datos de los asientos segun la estructura
     const statuses = [
         { label: 'Libre', count: 22, statusSeat: 'free', name: 'F' },
         { label: 'Reservados', count: 6, statusSeat: 'reserved', name: 'R' },
-        { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'V' },
+        { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'S' },
     ];
 
     // Estos datos vendrían de una consulta en una aplicación real
@@ -134,110 +195,115 @@ const TicketsalesRegistration = () => {
     );
 
 
+
     return (
-        <div className="mx-auto max-w-7xl p-4">
-            <Breadcrumb pageName="Selección de asientos" />
-            <div className="flex flex-col md:flex-row gap-15 mt-4">
+        <>
+            <div className="mx-auto max-w-7xl p-4">
+                <Breadcrumb pageName="Selección de asientos" />
+                <div className="flex flex-col md:flex-row gap-15 mt-4">
 
-                <div className="max-w-[350px] min-w-[256px] md:w-[300px] flex-shrink-0">
-                    <div className="controls mb-4">
-                        <label className="mr-4">Piso actual:</label>
-                        <select
-                            value={selectedFloor}
-                            onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
-                            className="border border-gray-300 rounded px-2 py-1 bg-transparent transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                    <div className="max-w-[350px] min-w-[256px] md:w-[300px] flex-shrink-0">
+                        <div className="controls mb-4">
+                            <label className="mr-4">Piso actual:</label>
+                            <select
+                                value={selectedFloor}
+                                onChange={(e) => setSelectedFloor(parseInt(e.target.value, 10))}
+                                className="border border-gray-300 rounded px-2 py-1 bg-transparent transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                            >
+                                {Array.from({ length: numFloors }, (_, i) => i + 1).map((floor) => (
+                                    <option key={floor} value={floor}>
+                                        Piso {floor}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div
+                            id={`bus-container-${selectedFloor}`}
+                            className="relative h-[600px] w-full border-4 border-gray-700 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-100 shadow-lg"
                         >
-                            {Array.from({ length: numFloors }, (_, i) => i + 1).map((floor) => (
-                                <option key={floor} value={floor}>
-                                    Piso {floor}
-                                </option>
-                            ))}
-                        </select>
+                            <BusTemplate floorNumber={selectedFloor}>
+                                {floorElements[selectedFloor]?.map((element) => (
+                                    <div
+                                        key={element.id}
+                                        id={element.id}
+                                        className={`absolute cursor-pointer ${element.type === 'seat' && isSeatSelected(element.id)}`}
+                                        style={{
+                                            left: `${element.position.x}%`,
+                                            top: `${element.position.y}%`,
+                                        }}
+                                        onClick={() => element.type === 'seat' && handleSeatClick({ seatId: element.id, additionalCost: element.additionalCost || 0, statusSeat: element.status! })}
+                                    >
+                                        {element.type === 'seat' && (
+                                            <SvgSeatComponent
+                                                name={element.name}
+                                                isSelected={isSeatSelected(element.id)}
+                                                status={element.status ? element.status.toLowerCase() : "f"} // Puedes ajustar el estado según tus datos
+                                            />
+                                        )}
+                                        {element.type === 'bathroom' && <SvgBathroomComponent />}
+                                        {element.type === 'stairs' && <SvgStairsComponent />}
+                                    </div>
+                                ))}
+                            </BusTemplate>
+                        </div>
                     </div>
 
-                    <div
-                        id={`bus-container-${selectedFloor}`}
-                        className="relative h-[600px] w-full border-4 border-gray-700 rounded-2xl bg-gradient-to-b from-gray-300 to-gray-100 shadow-lg"
-                    >
-                        <BusTemplate floorNumber={selectedFloor}>
-                            {floorElements[selectedFloor]?.map((element) => (
-                                <div
-                                    key={element.id}
-                                    id={element.id}
-                                    className={`absolute cursor-pointer ${element.type === 'seat' && isSeatSelected(element.id) ? 'border border-green-500' : ''
-                                        }`}
-                                    style={{
-                                        left: `${element.position.x}%`,
-                                        top: `${element.position.y}%`,
-                                    }}
-                                    onClick={() => element.type === 'seat' && handleSeatClick(element.id)}
-                                >
-                                    {element.type === 'seat' && (
-                                        <SvgSeatComponent
-                                            name={element.name}
-                                            isSelected={isSeatSelected(element.id)}
-                                            status="free" // Puedes ajustar el estado según tus datos
-                                        />
-                                    )}
-                                    {element.type === 'bathroom' && <SvgBathroomComponent />}
-                                    {element.type === 'stairs' && <SvgStairsComponent />}
-                                </div>
-                            ))}
-                        </BusTemplate>
-                    </div>
-                </div>
+                    <div className="flex-grow">
+                        <Accordion title="Descripción" color="#4A90E2">
+                            <div className="flex p-4">
+                                {statuses.map((statusSeat) => (
+                                    <div key={statusSeat.label} className="flex items-center  mx-auto">
+                                        <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.name.toLowerCase()} />
+                                        <div className="flex flex-col">
+                                            <span className="text-lg font-medium text-black dark:text-white">{statusSeat.label}</span>
+                                            <span className="text-base text-black dark:text-white">{statusSeat.label.toLowerCase()}: {statusSeat.count}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </Accordion>
+                        <Accordion title="Detalle de Bus Baños - Quito" color="#f4c05c">
+                            <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                                <InputField label="PLACA DE BUS" value={travelData.placa} />
+                                <InputField label="LIBRES" value={travelData.libres} />
+                                <InputField label="PILOTO" value={travelData.piloto} />
+                                <InputField label="VENDIDOS" value={travelData.vendidos} />
+                                <InputField label="COPILOTO" value={travelData.copiloto} />
+                                <InputField label="RESERVADOS" value={travelData.reservados} />
 
-                <div className="flex-grow">
-                    <Accordion title="Descripción" color="#4A90E2">
-                        <div className="flex p-4">
-                            {statuses.map((statusSeat) => (
-                                <div key={statusSeat.label} className="flex items-center  mx-auto">
-                                    <SvgSeatComponent name={statusSeat.name} isSelected={false} status={statusSeat.statusSeat} />
-                                    <div className="flex flex-col">
-                                        <span className="text-lg font-medium text-black dark:text-white">{statusSeat.label}</span>
-                                        <span className="text-base text-black dark:text-white">{statusSeat.label.toLowerCase()}: {statusSeat.count}</span>
+                                <div className="my-auto">
+                                    <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
+                                        {travelData.terminal}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </Accordion>
-                    <Accordion title="Detalle de Bus Baños - Quito" color="#f4c05c">
-                        <div className="grid grid-cols-3 gap-x-6 gap-y-2">
-                            <InputField label="PLACA DE BUS" value={travelData.placa} />
-                            <InputField label="LIBRES" value={travelData.libres} />
-                            <InputField label="PILOTO" value={travelData.piloto} />
-                            <InputField label="VENDIDOS" value={travelData.vendidos} />
-                            <InputField label="COPILOTO" value={travelData.copiloto} />
-                            <InputField label="RESERVADOS" value={travelData.reservados} />
 
-                            <div className="my-auto">
-                                <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
-                                    {travelData.terminal}
+                                <div className="flex items-center space-x-2">
+                                    <span className="font-medium">TOTAL:</span>
+                                    <input
+                                        type="text"
+                                        value={travelData.total}
+                                        disabled
+                                        className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
+                                    />
+                                    <AlertCircle className="text-red-500 w-5 h-5" />
                                 </div>
+
+                                <InputField label="HORA SALIDA" value={travelData.horaSalida} />
+                                <InputField label="DIA" value={travelData.dia} />
+                                <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />
+                                <InputField label="HORA PARTIDA" value={travelData.horaLlegada} />
                             </div>
+                        </Accordion>
 
-                            <div className="flex items-center space-x-2">
-                                <span className="font-medium">TOTAL:</span>
-                                <input
-                                    type="text"
-                                    value={travelData.total}
-                                    disabled
-                                    className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
-                                />
-                                <AlertCircle className="text-red-500 w-5 h-5" />
-                            </div>
-
-                            <InputField label="HORA SALIDA" value={travelData.horaSalida} />
-                            <InputField label="DIA" value={travelData.dia} />
-                            <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />
-                            <InputField label="HORA PARTIDA" value={travelData.horaLlegada} />
-                        </div>
-                    </Accordion>
-
-                    <Tabs tabs={tabsData} />
+                        <Tabs tabs={tabsData} />
+                    </div>
                 </div>
-            </div>
-        </div >
+            </div >
+            {showPdfModal && (
+                <PDFPopup tickets={ticketsData} />
+            )}
+        </>
     );
 
 

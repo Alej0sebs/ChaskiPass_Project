@@ -3,7 +3,7 @@ import { busRegisterService, getBusesService, editBusByIdService, deleteBusByIdS
 import { HandleMessages } from '../error/handleMessages.error';
 import { BusT } from '../types/index.types';
 import path from 'path';
-import uploadToHostinger from '../utils/uploadImagesFtp';
+import {uploadToHostinger} from '../utils/uploadImagesFtp';
 
 // Registrar un nuevo bus
 export const busRegister = async (req: Request, res: Response) => {
@@ -13,7 +13,6 @@ export const busRegister = async (req: Request, res: Response) => {
         let messageError:string; 
         let remoteFileName:string= '';
 
-        console.log(bus_number, license_plate, chassis_vin, bus_manufacturer, model, year, capacity, bus_structure_id);
         if(!req.file){
             messageError = 'No se ha proporcionado la imagen del bus';
         }else{
@@ -39,7 +38,6 @@ export const busRegister = async (req: Request, res: Response) => {
         res.status(result.status).json(result.json);
         return;
     } catch (error) {
-        console.error(error);
         res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
         return;
     }

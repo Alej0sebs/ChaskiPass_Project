@@ -1,18 +1,25 @@
+import { Op } from "sequelize";
 import { HandleMessages } from "../error/handleMessages.error";
 import BusStations from "../models/busStations.models";
 import { SerialStation } from "../models/serialStation.model";
 import { Users } from "../models/users.models";
 import { DataPaginationT, SerialNumberT } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
+import Cooperatives from "../models/cooperatives.models";
 
 export const createSellerSerialNumberService = async ({ cooperative_id, station_id, serial_number, user_id, status }: SerialNumberT) => {
     try {
         const serialNumberExist = await SerialStation.count({
-            where: { serial_number }
+            where: {
+                [Op.or]: [
+                    { serial_number },
+                    { user_id }
+                ]
+            }
         });
 
         if (serialNumberExist !== 0) {
-            return { status: 400, json: { error: HandleMessages.EXISTING_SERIAL_NUMBER } };
+            return { status: 400, json: { error: HandleMessages.EXISTING_SERIAL_NUMBER_OR_USER_ID } };
         }
 
         await SerialStation.create({
@@ -34,7 +41,8 @@ export const createSellerSerialNumberService = async ({ cooperative_id, station_
 
 export const getSerialNumbersService = async ({ page, limit }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
         const { rows: serialList, count: totalItems } = await SerialStation.findAndCountAll({
             attributes: ['serial_number'],
@@ -69,4 +77,24 @@ export const getSerialNumbersService = async ({ page, limit }: DataPaginationT) 
         return handleSequelizeError(error);
     }
 };
+
+export const getSerialNumberByStationAndDNIService = async (cooperative_id: string, dni: string) => {
+    try {
+        const serialNumber = await SerialStation.findOne({
+            where: {
+                [Op.and]: [{ cooperative_id }, { user_id: dni }],
+            },
+            attributes: ['serial_number', 'id']
+        });
+
+        const actualTicket = await Cooperatives.findOne({
+            where: { id: cooperative_id },
+            attributes: ['ticket_counter']
+        });
+
+        return { status: 200, json: { id: serialNumber?.id, serialNumber: serialNumber?.serial_number, actualTicket: actualTicket?.ticket_counter } };
+    }catch(error){
+        return handleSequelizeError(error);
+    }
+}
 

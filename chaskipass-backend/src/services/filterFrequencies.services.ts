@@ -54,20 +54,21 @@ const buildDynamicWhereClause = (filters: filterConditionsT) => {
 
 export const filterFrequenciesService = async (conditions: FilterFrequenciesT, { page, limit, pattern }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
         // Construir la cláusula WHERE y los reemplazos
         const { whereClause, replacements } = buildDynamicWhereClause(conditions);
 
         // Consulta para contar el total de registros sin limit y offset
         const countQuery = `
                 SELECT COUNT(*) AS total
-                FROM frequencies AS fr
-                INNER JOIN routes AS r ON r.id = fr.route_id
-                INNER JOIN bus_stations AS bs1 ON bs1.id = r.departure_station_id
-                INNER JOIN cities AS cit1 ON cit1.id = bs1.city_id
-                INNER JOIN bus_stations AS bs2 ON bs2.id = r.arrival_station_id
-                INNER JOIN cities AS cit2 ON cit2.id = bs2.city_id
-                LEFT JOIN cooperatives AS c ON c.id = fr.cooperative_id
+                FROM Frequencies AS fr
+                INNER JOIN Routes AS r ON r.id = fr.route_id
+                INNER JOIN Bus_stations AS bs1 ON bs1.id = r.departure_station_id
+                INNER JOIN Cities AS cit1 ON cit1.id = bs1.city_id
+                INNER JOIN Bus_stations AS bs2 ON bs2.id = r.arrival_station_id
+                INNER JOIN Cities AS cit2 ON cit2.id = bs2.city_id
+                LEFT JOIN Cooperatives AS c ON c.id = fr.cooperative_id
                 ${whereClause};
             `;
 
@@ -90,21 +91,25 @@ export const filterFrequenciesService = async (conditions: FilterFrequenciesT, {
                 bs2.name AS arrival_station_name,
                 cit2.id AS arrival_city_id,
                 cit2.name AS arrival_city_name,
-                c.name AS cooperative_name
+                c.name AS cooperative_name,
+                bus.id AS bus_id,
+                bus.bus_structure_id AS structure_id
             FROM 
-                frequencies AS fr
+                Frequencies AS fr
             INNER JOIN 
-                routes AS r ON r.id = fr.route_id
+                Routes AS r ON r.id = fr.route_id
             INNER JOIN 
-                bus_stations AS bs1 ON bs1.id = r.departure_station_id
+                Bus_stations AS bs1 ON bs1.id = r.departure_station_id
             INNER JOIN 
-                cities AS cit1 ON cit1.id = bs1.city_id
+                Cities AS cit1 ON cit1.id = bs1.city_id
             INNER JOIN 
-                bus_stations AS bs2 ON bs2.id = r.arrival_station_id
+                Bus_stations AS bs2 ON bs2.id = r.arrival_station_id
             INNER JOIN 
-                cities AS cit2 ON cit2.id = bs2.city_id
+                Cities AS cit2 ON cit2.id = bs2.city_id
+            INNER JOIN 
+                Buses AS bus ON bus.id = fr.bus_id
             LEFT JOIN 
-                cooperatives AS c ON c.id = fr.cooperative_id
+                Cooperatives AS c ON c.id = fr.cooperative_id
             ${whereClause}
             LIMIT :limit OFFSET :offset;
         `;

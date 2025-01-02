@@ -5,14 +5,9 @@ import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
-import Calendar from './pages/Calendar';
-import Chart from './pages/Chart';
 import ECommerce from './pages/Dashboard/ECommerce';
-import FormElements from './pages/Form/FormElements';
-import FormLayout from './pages/Form/FormLayout';
-import Profile from './pages/Profile';
+import Profile from './pages/cooperative';
 import Settings from './pages/Settings';
-import Tables from './pages/Tables';
 import DefaultLayout from './layout/DefaultLayout';
 import BusRegistration from './pages/Registration/bus.registration';
 import RoutesRegistration from './pages/Processes/routes.processes';
@@ -26,6 +21,8 @@ import TicketSeriesRegistration from './pages/Registration/tickets.registration'
 import BusStationRegistration from './pages/Registration/busStation.registration';
 import FrequencyList from './pages/Processes/frequencyList.processes';
 import ProtectedRoute from './utils/protectedRoute.utils';
+import LinkStationsRegistration from './pages/Registration/linkStations.registration';
+import { authInterceptor } from './hooks/useInterceptor';
 
 
 function App() {
@@ -80,53 +77,12 @@ function App() {
               }
             />
             <Route
-              path="/calendar"
-              element={
-                <>
-                  <PageTitle title="Calendar | ChaskiPass" />
-                  <Calendar />
-                </>
-              }
-            />
-            <Route
               path="/profile"
               element={
                 <ProtectedRoute>
                   <>
-                    <PageTitle title="Profile | ChaskiPass" />
+                    <PageTitle title="Cooperativa | ChaskiPass" />
                     <Profile />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/forms/form-elements"
-              element={
-                authUser ?
-                  <>
-                    <PageTitle title="Form Elements | ChaskiPass" />
-                    <FormElements />
-                  </> : <Navigate to='/auth/signin' />
-              }
-            />
-            <Route
-              path="/forms/form-layout"
-              element={
-                authUser ?
-                  <>
-                    <PageTitle title="Form Layout | ChaskiPass" />
-                    <FormLayout />
-                  </> :
-                  <Navigate to='/auth/signin' />
-              }
-            />
-            <Route
-              path="/tables"
-              element={
-                <ProtectedRoute>
-                  <>
-                    <PageTitle title="Tables | ChaskiPass" />
-                    <Tables />
                   </>
                 </ProtectedRoute>
               }
@@ -138,17 +94,6 @@ function App() {
                   <>
                     <PageTitle title="Settings | ChaskiPass" />
                     <Settings />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/chart"
-              element={
-                <ProtectedRoute>
-                  <>
-                    <PageTitle title="Basic Chart | ChaskiPass" />
-                    <Chart />
                   </>
                 </ProtectedRoute>
               }
@@ -256,6 +201,18 @@ function App() {
 
               }
             />
+            <Route
+              path="/register/linkStations"
+              element={
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
+                  <>
+                    <PageTitle title="Enlazar estaciones | ChaskiPass" />
+                    <LinkStationsRegistration />
+                  </>
+                </ProtectedRoute>
+
+              }
+            />
           </Routes>
           <Toaster />
         </DefaultLayout>
@@ -264,4 +221,4 @@ function App() {
   );
 }
 
-export default App;
+export default authInterceptor(App);

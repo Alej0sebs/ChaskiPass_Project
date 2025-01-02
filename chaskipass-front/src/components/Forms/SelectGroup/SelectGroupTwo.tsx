@@ -4,7 +4,7 @@ interface SelectGroupProps {
   label: string;
   children: React.ReactNode;
   onChange?: React.ChangeEventHandler<HTMLSelectElement>;
-  value?: string;
+  value?: string | number;
 }
 
 const SelectGroupTwo: React.FC<SelectGroupProps> = ({ label, children, onChange, value }) => {

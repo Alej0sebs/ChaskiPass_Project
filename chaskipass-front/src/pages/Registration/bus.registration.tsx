@@ -7,6 +7,7 @@ import createBus from '../../hooks/useBusCreation';
 import { useBusStructure } from '../../hooks/useBusStructure'; // Importar el hook
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import DataList from '../../components/DataList/datalist.components';
 // import { StylesheetMap } from '@angular/flex-layout';
 
 const initialStateBus: CreateBusT = {
@@ -26,6 +27,8 @@ const BusRegistration: React.FC = () => {
   const { loading: loadingBus, bus } = createBus(); // Cambiado aquí
   const [inputBus, setInputBus] = useState<CreateBusT>(initialStateBus);
   const [selectedBusImg, setSelectedBusImg] = useState<File | null>(null);
+  const [previewImg, setPreviewImg] = useState<string | null>(null);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -35,7 +38,7 @@ const BusRegistration: React.FC = () => {
     // Actualiza el estado seleccionado del bus si es el select de buses
     if (name === 'bus_structure_id') {
       setSelectedBusStructure(value);
-    }
+    };
 
     setInputBus({
       ...inputBus,
@@ -51,8 +54,9 @@ const BusRegistration: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedBusImg(file); // Guarda el archivo en el estado
+      setPreviewImg(URL.createObjectURL(file)); // Guarda el archivo en el estado
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +70,8 @@ const BusRegistration: React.FC = () => {
   const handleCancel = () => {
     setInputBus(initialStateBus);
     setSelectedBusStructure('');
+    setSelectedBusImg(null);
+    setPreviewImg(null);
   };
   return (
     <>
@@ -255,52 +261,50 @@ const BusRegistration: React.FC = () => {
                           name="capacity"
                           id="capacity"
                           placeholder="30"
-                          value={inputBus.capacity}
+                          value={inputBus.capacity || ''}
                           onChange={handleChange}
                         />
                       </div>
                     </div>
 
                     <div className="w-full sm:w-1/2">
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="bus_structure_id"
-                      >
-                        Estructura del Bus
-                      </label>
-                      <select
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                        name="bus_structure_id"
+                      <DataList
                         id="bus_structure_id"
+                        label="Estructura del Bus"
+                        placeholder="Seleccione o busque una ciudad"
+                        options={selectBusStructures}
                         value={selectedBusStructure}
-                        onChange={handleChange}
-                      >
-                        <option value="" disabled>
-                          Seleccione la estructura
-                        </option>
-                        {!selectBusStructures && (
-                          <option value="">Tipo de estructura</option>
-                        )}
-                        {selectBusStructures.map((bus) => (
-                          <option key={bus.id} value={bus.id}>
-                            {bus.name}
-                          </option>
-                        ))}
-                        ;
-                      </select>
-                    </div>
-                  </div>
-                  <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-                    <div>
-                      <h2>Subir Imagen</h2>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFiles}
+                        onSelect={(value) => {
+                          setSelectedBusStructure(value);
+                          setInputBus({ ...inputBus, bus_structure_id: Number(value) }); // Actualiza el estado del bus
+                        }}
+                        iconP={FaBus}
+                        className=""
+                        opKey="id" // Identificador único
+                        opValue="name" // Nombre mostrado en el campo
+                        optionP="name" // Nombre mostrado en las opciones
                       />
                     </div>
                   </div>
-
+                  <div className="mb-5.5">
+                    <h2>Subir Imagen</h2>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFiles}
+                    />
+                    <div className="mt-6 flex j">
+                      {previewImg && (
+                        <div className="mt-5">
+                          <img
+                            src={previewImg}
+                            alt="Previsualización"
+                            className="w-full max-w-xs rounded border border-stroke"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <div className="mt-6 flex justify-between">
                     <div className="mb-5">
                       <button

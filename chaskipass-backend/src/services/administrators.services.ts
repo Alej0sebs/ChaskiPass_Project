@@ -11,12 +11,10 @@ import { handleSequelizeError } from '../utils/helpers.utils';
 // Servicio para crear un administrador SaaS
 export const createSaasAdministratorService = async ({ dni, user_name, email, password }: SaasAdmin) => {
     try {
-
-
-        const userExists = await Users.findOne({
+        const userExists = await Admin.findOne({
             where: { user_name },
             attributes: { exclude: ["password"] }
-        }) as Users;
+        }) as Admin;
 
         if (userExists) {
             return { status: 400, json: { error: HandleMessages.EXISTING_USERNAME } };
@@ -102,7 +100,8 @@ export const createCooperativeService = async ({
             address,
             phone,
             email,
-            logo
+            logo,
+            ticket_counter: 0
         });
 
         return { status: 201, json: { msg: HandleMessages.COOPERATIVE_CREATED_SUCCESSFULLY } };

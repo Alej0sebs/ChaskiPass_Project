@@ -68,15 +68,17 @@ const TypebusRegistration = () => {
             setStairsCounter(stairsCounter + 1);
         }
 
-        const currentFloorElements = floorElements[selectedFloor] || [];
+        const idExistsInAnyFloor = Object.values(floorElements).some(elements => 
+            elements.some(el => el.id === newElement.id)
+        );
 
-        if (!currentFloorElements.some(el => el.id === newElement.id)) {
-            setFloorElements({
-                ...floorElements,
-                [selectedFloor]: [...currentFloorElements, newElement]
-            });
+        if (!idExistsInAnyFloor) {
+            setFloorElements(prevState => ({
+            ...prevState,
+            [selectedFloor]: [...(prevState[selectedFloor] || []), newElement],
+            }));
         } else {
-            alert(`El ID "${newElement.id}" ya existe. Por favor, elige un nombre diferente para el asiento.`);
+            toast.error(`El ID "${newElement.id}" ya existe en otro piso. Por favor, elige un nombre diferente para el asiento.`);
         }
     };
 
@@ -324,7 +326,7 @@ const TypebusRegistration = () => {
                                     <div
                                         key={element.id}
                                         id={element.id}
-                                        className={`absolute cursor-grab ${selectedElement === element.id ? 'border border-blue-500' : ''}`}
+                                        className={`absolute cursor-grab ${selectedElement === element.id}`}
                                         style={{
                                             left: `${absoluteLeft}px`,
                                             top: `${absoluteTop}px`,

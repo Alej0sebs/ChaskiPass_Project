@@ -1,6 +1,6 @@
 import { HandleMessages } from './../error/handleMessages.error';
 import { Request, Response } from 'express';
-import { createUserService, getDriversService, getUserByIdService, getUsersService, searchUserByFilterService, updateUserService } from '../services/users.services';
+import { createUserService, getDriversService, getPaginatedUsersService, getUserByIdService, getUsersService, searchUserByFilterService, updateUserService } from '../services/users.services';
 import { sendEmail } from '../services/mail.services';
 import { getPaginationData } from '../utils/helpers.utils';
 
@@ -8,9 +8,21 @@ import { getPaginationData } from '../utils/helpers.utils';
 export const getUsers = async (req: Request, res: Response) => {
     try {
         const { cooperative_id, dni } = req.userReq ?? {};
-        const paginationData = getPaginationData(req.query);
-        const result = await getUsersService(cooperative_id!, dni!, paginationData);
+        const result = await getUsersService(cooperative_id!, dni!);
 
+        res.status(201).json(result);
+        return;
+    } catch (error) {
+        res.status(500).json({ msg: HandleMessages.INTERNAL_SERVER_ERROR });
+        return;
+    }
+};
+
+export const getUsersPaginated = async (req: Request, res: Response) => {
+    try {
+        const { cooperative_id, dni } = req.userReq ?? {};
+        const paginationData = getPaginationData(req.query);
+        const result = await getPaginatedUsersService(cooperative_id!, dni!, paginationData);
         res.status(201).json(result);
         return;
     } catch (error) {

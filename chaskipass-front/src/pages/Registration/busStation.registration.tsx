@@ -2,8 +2,10 @@ import { FaCity, FaPhoneAlt } from 'react-icons/fa';
 import { MdLocationOn, MdAccessTime } from 'react-icons/md';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import { createBusStationT } from '../../types';
-import createBusStation from '../../hooks/busStationRegistration';
+import createBusStation from '../../hooks/usebusStationRegistration';
 import { useState } from 'react';
+import { useCity } from '../../hooks/useCity';
+import DataList from '../../components/DataList/datalist.components';
 
 const initialStateBusStation: createBusStationT = {
   city_id: '',
@@ -15,14 +17,23 @@ const initialStateBusStation: createBusStationT = {
 };
 
 const BusStationRegistration: React.FC = () => {
-  //   const { selectCity } = useBusStructure();
-  // const [selectedCity, setSelectedBusStructure] = useState<string>("");
   const { loading: loadingBusStation, station } = createBusStation();
   const [inputBusStation, setInputBusStation] = useState<createBusStationT>(initialStateBusStation);
+  const { selectCity } = useCity(); // Hook para obtener las ciudades
+  const [selectedCity, setSelectCity] = useState<string>('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
-    setInputBusStation((prevState) => ({ ...prevState, [name]: value }));
+
+    setInputBusStation({
+      ...inputBusStation,
+      [name]:
+        name === 'year' || name === 'capacity' || name === 'city_id'
+          ? Number(value)
+          : value,
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +43,7 @@ const BusStationRegistration: React.FC = () => {
 
   const handleCancel = () => {
     setInputBusStation(initialStateBusStation);
+    setSelectCity('');
   };
 
   return (
@@ -48,74 +60,24 @@ const BusStationRegistration: React.FC = () => {
               <div className="p-7">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
-
-
-                  {/* <div className="w-full sm:w-1/2">
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="bus_structure_id"
-                      >
-                        Estructura del Bus
-                      </label>
-                      <select
-                        className="w-full rounded border border-stroke bg-gray py-3 pl-4 pr-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                        name="bus_structure_id"
-                        id="bus_structure_id"
-                        value={selectedCity}
-                        onChange={handleChange}
-                      >
-                        <option value="" disabled>
-                          Seleccione la estructura
-                        </option>
-                        {!selectCity && (
-                          <option value="">Tipo de estructura</option>
-                        )}
-                        {selectCity.map((station) => (
-                          <option key={station.id} value={station.id}>
-                            {station.name}
-                          </option>
-                        ))}
-                        ;
-                      </select>
-                    </div> */}
-
-
-
-
-
-
-
-
-
-
-
-
-
                     <div className="w-full sm:w-1/2">
-                      <label
-                        className="mb-3 block text-sm font-medium text-black dark:text-white"
-                        htmlFor="city_id"
-                      >
-                        Ciudad
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-4.5 top-4">
-                          <FaCity />
-                        </span>
-                        <input
-                          className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                          type="text"
-                          name="city_id"
-                          id="city_id"
-                          placeholder="Ciudad"
-                          value={inputBusStation.city_id}
-                          onChange={handleChange}
-                        />
-                      </div>
+                      <DataList
+                        id="city_id"
+                        label="Ciudad"
+                        placeholder="Seleccione o busque una ciudad"
+                        options={selectCity} // Lista de ciudades
+                        value={selectedCity}
+                        onSelect={(value) => {
+                          setSelectCity(value); // Actualiza la ciudad seleccionada
+                          setInputBusStation({ ...inputBusStation, city_id: value }); // Sincroniza con el estado del formulario
+                        }}
+                        iconP={FaCity}
+                        className=""
+                        opKey="id" // Identificador único
+                        opValue="name" // Nombre mostrado en el campo
+                        optionP="name" // Nombre mostrado en las opciones
+                      />
                     </div>
-
-
-
 
                     <div className="w-full sm:w-1/2">
                       <label

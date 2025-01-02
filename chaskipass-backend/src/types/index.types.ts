@@ -6,7 +6,6 @@ import Routes from "../models/routes.models";
 import { Admin } from "../models/administrators.models";
 import Cooperatives from "../models/cooperatives.models";
 import Roles from "../models/roles.models";
-import Tickets from "../models/tickets.models";
 import Frequencies from "../models/frequencies.models";
 import BusStructure from "../models/busStructure.models";
 import BusStations from "../models/busStations.models";
@@ -14,9 +13,6 @@ import Seats from "../models/seats.models";
 import { StationCooperative } from "../models/stationCooperative.models";
 import { SerialStation } from "../models/serialStation.model";
 import TypeSeats from "../models/typeSeats.models";
-
-// export type UserT=InferAttributes<Users>
-// export type UserLoginT=Pick<UserT, 'user_name' | 'email' | 'password' | 'dni' | 'cooperative_id'>
 
 export type ValidateRoleAndRouteId = {
     dni: string,
@@ -56,9 +52,6 @@ export type DataPaginationT = {
     pattern?: string
 };
 
-export type TicketInformationT = InferAttributes<Tickets> & {
-};
-
 export type BusStructureT = InferAttributes<BusStructure>;
 
 export type BusStationT = InferAttributes<BusStations>;
@@ -88,4 +81,71 @@ export type SeatsStructureT = {
     frequency_id: string,
     bus_id: number,
     bus_structure_id: number
-}
+};
+
+type ClientSeatT = {
+    dni:string,
+    name:string,
+    last_name:string,
+    exist:boolean
+};
+
+type PurchasedSeatT={
+    seatId:string,
+    additionalCost:number,
+    client:ClientSeatT,
+    priceDestination:number
+};
+
+export type TicketClientInformationT = {
+    id: number;
+    serial_number: number;
+    frequency_id: string;
+    price: number;
+    departure_station: number;
+    arrival_station: number;
+    date: Date;
+    selectedSeats: PurchasedSeatT[];
+    cooperative_id: string;
+    payment_method: string;
+    serial_id: number;
+};
+
+export type TicketData = {
+    dia: string;
+    horaSalida: string;
+    horaLlegada: string;
+    placa: string;
+    terminal: string;
+    destino: string;
+    nombres: string;
+    apellidos: string;
+    tipoDocumento: string;
+    numeroDocumento: string;
+    price: number;
+    seats: string[];
+    frecuencia: string;
+    ticketCode:string;
+};
+
+export type ClientCooperativeT={
+    dni:string,
+    cooperative_id:string
+};
+
+export type PaymentT = {
+    payment_method: string,
+    amount: number,
+    cooperative_id: string,
+    ticket_id: number,
+};
+
+export type cooperativeT = {
+    id:string,
+    name:string,
+    address:string,
+    phone:string,
+    email:string,
+    logo?:string,
+};
+

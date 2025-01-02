@@ -10,7 +10,7 @@ import connectionDb from '../db/connection.db';
 
 
 // Servicio para crear una nueva ruta
-export const createRouteService = async ({ dni, arrival_station_id, departure_station_id, cooperative_id, stopOverList }: RoutesT) => {
+export const createRouteService = async ({ dni, arrival_station_id, departure_station_id, cooperative_id, stopOverList, arrival_time, departure_time, default_price }: RoutesT) => {
     try {
         let routeExists;
         if (stopOverList && stopOverList.length > 0) {
@@ -62,7 +62,10 @@ export const createRouteService = async ({ dni, arrival_station_id, departure_st
             id: id as string,
             cooperative_id: cooperative_id || '',
             departure_station_id,
-            arrival_station_id
+            arrival_station_id,
+            departure_time,
+            arrival_time,
+            default_price
         });
 
         // Si hay paradas intermedias, crear las paradas
@@ -112,7 +115,8 @@ export const verifyRoute = async ({ dni, cooperative_id, departure_station_id, a
 
 export const getRoutesService = async (cooperative_id: string, { page, limit, pattern }: DataPaginationT) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
         // Asegúrate de esperar el resultado de la consulta de conteo
         const totalItems = await Routes.count({ where: { cooperative_id } });
@@ -124,24 +128,28 @@ export const getRoutesService = async (cooperative_id: string, { page, limit, pa
                 departureCity.name AS departure_city_name,
                 arrivalStation.name AS arrival_station_name,
                 arrivalCity.name AS arrival_city_name,
+                r.departure_time AS departure_time,
+                r.arrival_time AS arrival_time,
+                r.default_price AS default_price,
+                CONCAT(r.departure_time, '-', r.arrival_time) AS time,
                 GROUP_CONCAT(stopStation.name ORDER BY stops.order SEPARATOR ', ') AS stop_station_names,
                 GROUP_CONCAT(stopCity.name ORDER BY stops.order SEPARATOR ', ') AS stop_city_names
             FROM 
-                routes AS r
+                Routes AS r
             INNER JOIN 
-                bus_stations AS departureStation ON r.departure_station_id = departureStation.id
+                Bus_stations AS departureStation ON r.departure_station_id = departureStation.id
             INNER JOIN 
-                cities AS departureCity ON departureStation.city_id = departureCity.id
+                Cities AS departureCity ON departureStation.city_id = departureCity.id
             INNER JOIN 
-                bus_stations AS arrivalStation ON r.arrival_station_id = arrivalStation.id
+                Bus_stations AS arrivalStation ON r.arrival_station_id = arrivalStation.id
             INNER JOIN 
-                cities AS arrivalCity ON arrivalStation.city_id = arrivalCity.id
+                Cities AS arrivalCity ON arrivalStation.city_id = arrivalCity.id
             LEFT JOIN 
-                StopOvers AS stops ON r.id = stops.route_id
+                Stopovers AS stops ON r.id = stops.route_id
             LEFT JOIN 
-                bus_stations AS stopStation ON stops.station_id = stopStation.id
+                Bus_stations AS stopStation ON stops.station_id = stopStation.id
             LEFT JOIN 
-                cities AS stopCity ON stopStation.city_id = stopCity.id
+                Cities AS stopCity ON stopStation.city_id = stopCity.id
             WHERE 
                 r.cooperative_id = :cooperative_id
             GROUP BY 

@@ -9,6 +9,9 @@ export class Routes extends Model<
     declare departure_station_id: number;
     declare arrival_station_id: number;
     declare cooperative_id: string;
+    declare departure_time: string;
+    declare arrival_time: string;
+    declare default_price: number;
 }
 
 Routes.init({
@@ -27,7 +30,19 @@ Routes.init({
     cooperative_id: {
         type: DataTypes.STRING(10),
         allowNull: false,
-    }
+    },
+    departure_time: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+    },
+    arrival_time: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+    },
+    default_price: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+    },
 }, {
     sequelize: connectionDb,
     tableName: 'Routes',

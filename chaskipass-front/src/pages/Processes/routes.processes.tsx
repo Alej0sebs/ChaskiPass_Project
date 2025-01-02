@@ -1,13 +1,28 @@
 import { TbBusStop } from "react-icons/tb";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TableRoutes from "../../components/Tables/TableRoutes";
 import DataListBusStation from "../../components/DataList/datalistBusStation.component";
 import useBusStations from "../../hooks/useBusStations";
-import { BusStationT } from "../../types";
+import { BusStationT, timeAndPriceT } from "../../types";
 import toast from "react-hot-toast";
 import useRoutes from "../../hooks/useRoutes";
 import Switcher from "../../components/Switchers/switcher.components";
+import PaginationDataTable from "../../components/Tables/PaginationDataTable";
+
+const initialStateTimeDate: timeAndPriceT = {
+    departure_time: '',
+    arrival_time: '',
+    price: 0
+}
+
+// DATOS DE PRUEBA RENDERIZADO
+const titles = ['id', 'departure_station_name',
+    'departure_city_name', 'arrival_station_name',
+    'arrival_city_name', 'time'];
+const expandTitles = ['stop_station_names', 'stop_city_names'];
+const displayHeader = ['Identificador', 'Estación de salida', 'Ciudad de salida',
+    'Estación de llegada', 'Ciudad de llegada', 'Horario'];
 
 const RoutesRegistration = () => {
 
@@ -17,29 +32,66 @@ const RoutesRegistration = () => {
     const [selectedDepartureStation, setSelectedDepartureStation] = useState(""); //estado para guardar la parada de salida
     const [selectedArrivalStation, setSelectedArrivalStation] = useState(""); //estado para guardar la parada de llegada
     const [selectedStopOver, setSelectedStopOver] = useState("");
-    //Hook
-    const {createRoute} = useRoutes();
+    const [selectedDataTimeAndPrice, setSelectedDataTimeAndPrice] = useState<timeAndPriceT>(initialStateTimeDate);
+    //PaginationDataTable data
+    const { loading, getRoutes } = useRoutes();
+    //Listado de las rutas
+    const [listRoutes, setListRoutes] = useState<any[]>([]);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
-    const handleChange = (checked:boolean) => {
+    //Hook
+    const { createRoute } = useRoutes();
+
+    const fetchRoutes = async (page: number = 1) => {
+        const response = await getRoutes(page);
+        if (response.listRoutes.length > 0) {
+            setListRoutes(response.listRoutes);
+            setTotalPages(response.totalPages);
+        } else {
+            setListRoutes([]);
+        }
+    }
+
+    useEffect(() => {
+        fetchRoutes(currentPage);
+    }, [currentPage]);
+
+    const handleChange = (checked: boolean) => {
         setIsStopsEnabled(checked); //actualizo el estado con el valor del checkbox
     };
 
-    const handleSubmit =async (e: React.ChangeEvent<HTMLFormElement>) => {
+    //Manejar el cambio de la hora y fecha de los inputs
+    const handleTimeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedDataTimeAndPrice({
+            ...selectedDataTimeAndPrice,
+            [e.target.id]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(!selectedDepartureStation || !selectedArrivalStation) return toast.error("Debe seleccionar una estación de salida y una estación de llegada");
-        const departure_station_id:number= parseInt(selectedDepartureStation);
-        const arrival_station_id:number= parseInt(selectedArrivalStation);
-        const stopOverList:number[] = stopOvers.map((station) => Number(station.id));
-        const wasCreated = await createRoute({departure_station_id, arrival_station_id, stopOverList});
-        if(wasCreated) cleanData();
+        if (!selectedDepartureStation || !selectedArrivalStation) return toast.error("Debe seleccionar una estación de salida y una estación de llegada");
+        if (!selectedDataTimeAndPrice.departure_time || !selectedDataTimeAndPrice.arrival_time) return toast.error("Debe seleccionar una hora de salida y una hora de llegada");
+        const departure_station_id: number = parseInt(selectedDepartureStation);
+        const arrival_station_id: number = parseInt(selectedArrivalStation);
+        const stopOverList: number[] = stopOvers.map((station) => Number(station.id));
+        //Crear la ruta
+        const wasCreated = await createRoute({
+            departure_station_id, arrival_station_id, stopOverList,
+            departure_time: selectedDataTimeAndPrice.departure_time,
+            arrival_time: selectedDataTimeAndPrice.arrival_time,
+            default_price: Number(selectedDataTimeAndPrice.price)
+        });
+        if (wasCreated) cleanData();
     }
 
-    const handleCancelBtn= (e:React.MouseEvent<HTMLButtonElement>)=>{
+    const handleCancelBtn = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         cleanData();
     };
 
-    const cleanData= () => {
+    const cleanData = () => {
         setSelectedDepartureStation("");
         setSelectedArrivalStation("");
         setSelectedStopOver("");
@@ -79,7 +131,52 @@ const RoutesRegistration = () => {
                             </div>
                             <div className="p-7">
                                 <form onSubmit={handleSubmit}>
-                                    <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+
+                                    <div className="mt-4 mb-5.5 flex flex-col gap-5.5 sm:flex-row">
+                                        <div className="w-full sm:w-[32.33%]">
+                                            <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                Hora de salida:
+                                                <input
+                                                    type="time"
+                                                    name="departure_time"
+                                                    id="departure_time"
+                                                    value={selectedDataTimeAndPrice.departure_time}
+                                                    onChange={handleTimeDateChange}
+                                                    className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
+                                                />
+                                            </label>
+                                        </div>
+                                        <div className="w-full sm:w-[32.33%]">
+                                            <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                Hora de llegada:
+                                                <input
+                                                    type="time"
+                                                    name="arrival_time"
+                                                    id="arrival_time"
+                                                    value={selectedDataTimeAndPrice.arrival_time}
+                                                    onChange={handleTimeDateChange}
+                                                    className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
+                                                />
+                                            </label>
+                                        </div>
+                                        <div className="w-full sm:w-[32.33%]">
+                                            <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                Precio:
+                                                <input
+                                                    className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                                    type="text"
+                                                    name="price"
+                                                    id="price"
+                                                    placeholder="7"
+                                                    value={selectedDataTimeAndPrice.price}
+                                                    step={0.01}
+                                                    onChange={handleTimeDateChange}
+                                                />
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                                         <div className="w-full sm:w-[33.33%]">
                                             <DataListBusStation
                                                 id="departure_station"
@@ -152,7 +249,7 @@ const RoutesRegistration = () => {
                                                     headerTable={['id', 'name', 'city_bus_station.name']}
                                                     displayHeader={['id', 'Estacion de bus', 'Ciudad', 'Acciones']}
                                                     onClick={(id) => { setStopOvers(stopOvers.filter((station) => station.id !== id)) }}
-                                                > 
+                                                >
                                                     {stopOvers}
                                                 </TableRoutes>
                                             </div>
@@ -181,6 +278,24 @@ const RoutesRegistration = () => {
                         </div>
                     </div>
                 </div>
+
+                {/* Tabla de rutas */}
+                <div className="mt-4 col-span-8 xl:col-span-5 ">
+                    <PaginationDataTable
+                        displayHeader={displayHeader}
+                        titles={titles}
+                        data={listRoutes}
+                        totalPages={totalPages}
+                        currentPage={currentPage}
+                        onPageChange={(newPage) => {
+                            setCurrentPage(newPage);
+                            fetchRoutes(newPage);
+                        }}
+                        loading={loading}
+                        dataHeaderToExpand={expandTitles}
+                    />
+                </div>
+
             </div>
         </>
     );

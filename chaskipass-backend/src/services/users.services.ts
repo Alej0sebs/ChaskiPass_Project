@@ -6,10 +6,34 @@ import { DataPaginationT, UpdateUserT, UserT } from '../types/index.types';
 import { handleSequelizeError } from '../utils/helpers.utils';
 
 
-// Servicio para obtener usuarios con paginación
-export const getUsersService = async (cooperative_id: string, dni: string, { page, limit }: DataPaginationT) => {
+export const getUsersService = async (cooperative_id: string, dni: string) => {
     try {
-        const offset = (parseInt(page.toString()) - 1) * parseInt(limit.toString());
+        const usersList = await Users.findAll({
+            where: {
+                cooperative_id,
+                // dni: { [Op.ne]: dni },
+                role_id: { [Op.ne]: 'drive' }
+            },
+            attributes: { exclude: ['password'] },
+        });
+
+        return {
+            status: 200,
+            json: {
+                list: usersList
+            }
+        };
+    } catch (error) {
+        return handleSequelizeError(error);
+    }
+};
+
+
+// Servicio para obtener usuarios con paginación
+export const getPaginatedUsersService = async (cooperative_id: string, dni: string, { page, limit }: DataPaginationT) => {
+    try {
+        const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
+        const offset = (pageIndex - 1) * parseInt(limit.toString());
 
         const { rows: usersList, count: totalItems } = await Users.findAndCountAll({
             where: {

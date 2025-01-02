@@ -119,36 +119,39 @@ export const getFrequenciesService = async (cooperative_id: string) => {
         bus.bus_structure_id,
         fr.price,
         fr.status,
+        bs1.id AS departure_station_id,
         bs1.name AS departure_station_name,
         cit1.name AS departure_city_name,
+        bs2.id AS arrival_station_id,
         bs2.name AS arrival_station_name,
         cit2.name AS arrival_city_name,
+        GROUP_CONCAT(stopStation.id ORDER BY stops.order SEPARATOR ', ') AS stop_station_ids,
         GROUP_CONCAT(stopStation.name ORDER BY stops.order SEPARATOR ', ') AS stop_station_names,
         GROUP_CONCAT(stopCity.name ORDER BY stops.order SEPARATOR ', ') AS stop_city_names
     FROM 
-        frequencies AS fr
+        Frequencies AS fr
     INNER JOIN 
-        routes AS r ON r.id = fr.route_id
+        Routes AS r ON r.id = fr.route_id
     INNER JOIN 
-        bus_stations AS bs1 ON bs1.id = r.departure_station_id
+        Bus_stations AS bs1 ON bs1.id = r.departure_station_id
     INNER JOIN 
-        cities AS cit1 ON cit1.id = bs1.city_id
+        Cities AS cit1 ON cit1.id = bs1.city_id
     INNER JOIN 
-        bus_stations AS bs2 ON bs2.id = r.arrival_station_id
+        Bus_stations AS bs2 ON bs2.id = r.arrival_station_id
     INNER JOIN 
-        cities AS cit2 ON cit2.id = bs2.city_id
+        Cities AS cit2 ON cit2.id = bs2.city_id
     INNER JOIN
-        buses AS bus ON bus.id = fr.bus_id
+        Buses AS bus ON bus.id = fr.bus_id
     LEFT JOIN 
-        cooperatives AS c ON c.id = fr.cooperative_id
+        Cooperatives AS c ON c.id = fr.cooperative_id
     LEFT JOIN 
-        users AS u ON u.dni = fr.driver_id
+        Users AS u ON u.dni = fr.driver_id
     LEFT JOIN 
-        StopOvers AS stops ON r.id = stops.route_id
+        Stopovers AS stops ON r.id = stops.route_id
     LEFT JOIN 
-        bus_stations AS stopStation ON stops.station_id = stopStation.id
+        Bus_stations AS stopStation ON stops.station_id = stopStation.id
     LEFT JOIN 
-        cities AS stopCity ON stopStation.city_id = stopCity.id
+        Cities AS stopCity ON stopStation.city_id = stopCity.id
     WHERE 
         fr.cooperative_id = :cooperative_id AND fr.date >= CURRENT_DATE
     GROUP BY

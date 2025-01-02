@@ -10,6 +10,7 @@ import EditPopup from "../../modals/editPopup.processes";
 import useBusCreation from "../../hooks/useBusCreation";
 import useUsers from "../../hooks/useUsers";
 import DataList from "../../components/DataList/datalist.components";
+import toast from "react-hot-toast";
 
 const initialPopupData: editFrequencyT = {
     id: "",
@@ -47,7 +48,7 @@ const FrequencyList = () => {
             const busData = await getBuses();
             if (busData) setBuses(busData);
             const driverData = await getDrivers();
-            if (driverData) setDrivers(driverData);
+            if (driverData) setDrivers(driverData.json);
         };
         fetchBuses();
     }, [reload]);
@@ -61,7 +62,6 @@ const FrequencyList = () => {
         );
 
         const newStatus = !listRoutes.find((freq) => freq.id === id)?.status;
-        console.log(id);
         await editFrequency({ id, status: newStatus });
     };
 
@@ -108,8 +108,8 @@ const FrequencyList = () => {
         setReload((prev) => !prev);
     };
 
-    const handleTicketView = (rowData:FrequencyListObjectT) => {
-        navigate('/processes/ticketsales', {state: {frequencyData:rowData}});
+    const handleTicketView = (rowData: FrequencyListObjectT) => {
+        navigate('/processes/ticketsales', { state: { frequencyData: rowData } });
     };
 
     return (
@@ -190,7 +190,13 @@ const FrequencyList = () => {
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         <div className="flex items-center space-x-3.5">
-                                            <button className="hover:text-primary" onClick={()=> handleTicketView(freq)}><IoTicketSharp /></button>
+                                            <button className="hover:text-primary" onClick={() => {
+                                                if (freq.status) {
+                                                    handleTicketView(freq);
+                                                } else {
+                                                    toast.error("La frecuencia está inactiva.");
+                                                }
+                                            }}><IoTicketSharp /></button>
                                             <button className="hover:text-primary" onClick={() => openEditModal(freq)}><CiEdit /></button>
                                             {/* popup */}
                                             <EditPopup

@@ -23,6 +23,7 @@ import FrequencyList from './pages/Processes/frequencyList.processes';
 import ProtectedRoute from './utils/protectedRoute.utils';
 import LinkStationsRegistration from './pages/Registration/linkStations.registration';
 import { authInterceptor } from './hooks/useInterceptor';
+import TypeSeats from './pages/Registration/typeSeats.registration';
 
 
 function App() {
@@ -211,6 +212,17 @@ function App() {
                   </>
                 </ProtectedRoute>
 
+              }
+            />
+            <Route
+              path="/register/typeSeats"
+              element={
+                <ProtectedRoute requiredRole={['admin', 'clerk']}>
+                  <>
+                    <PageTitle title="Tipos De Asientos | ChaskiPass" />
+                    <TypeSeats />
+                  </>
+                </ProtectedRoute>
               }
             />
           </Routes>

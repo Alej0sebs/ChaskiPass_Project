@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import ChaskiLogoB from '../images/chaski-logo/chaskilogoblack.png';
 import { TicketData } from '../types/ticket';
+import { IMAGE_URL } from '../helpers/Constants';
 
 Modal.setAppElement('#root');
 
@@ -14,6 +15,19 @@ interface PdfModalProps {
 const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
     const [showPDF, setShowPDF] = useState(false);
     const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+    const [logo, setLogo] = useState<string>(ChaskiLogoB); // Inicializa con el logo predeterminado.
+
+
+    useEffect(() => {
+        // Recuperar y establecer el logo solo una vez.
+        const localStorageData = localStorage.getItem('chaski-log');
+        if (localStorageData) {
+            const parsedData = JSON.parse(localStorageData);
+            if (parsedData.logo) {
+                setLogo(`${IMAGE_URL}${parsedData.logo}`);
+            }
+        }
+    }, []); // Ejecutar solo una vez al montar el componente.
 
     useEffect(() => {
         if (tickets.length > 0) {
@@ -47,7 +61,7 @@ const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
         };
 
         const lineHeight = 4;
-        doc.addImage(ChaskiLogoB, 'PNG', 15, 0, 50, 40);
+        doc.addImage(logo, 'PNG', 15, 0, 50, 40);
         let currentY = 25;
         currentY += lineHeight * 3;
         addCenteredText('Av. Cevallos y Quito', currentY, 8);

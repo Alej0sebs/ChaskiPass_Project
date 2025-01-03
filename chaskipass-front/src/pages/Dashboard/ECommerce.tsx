@@ -24,24 +24,30 @@ const ECommerce: React.FC = () => {
 
 
   useEffect(() => {
+    // Si authUser es null o undefined, salimos y NO llamamos a fetchData.
+    console.log(authUser);
+    if (!authUser) return;
+    
     const fetchData = async () => {
-      const data = await cardsDataDashboard();
-      if (data) {
-        const { dataActiveFreq, dataQuantityPayments, dataSales, dataQuantityClients } = data;
-        setActiveFreq(dataActiveFreq);
-        setQuantityPayments(dataQuantityPayments);
-        setSales(dataSales);
-        setQuantityClients(dataQuantityClients);
+      try {
+        const data = await cardsDataDashboard();
+        if (data) {
+          const { dataActiveFreq, dataQuantityPayments, dataSales, dataQuantityClients } = data;
+          setActiveFreq(dataActiveFreq);
+          setQuantityPayments(dataQuantityPayments);
+          setSales(dataSales);
+          setQuantityClients(dataQuantityClients);
+        }
+      } catch (error) {
+        console.error('Error al obtener los datos del dashboard:', error);
       }
     };
-
-    if(authUser){
+  
+    setTimeout(() => {
       fetchData();
-    }else{
-      console.log('No hay usuario logueado');
-    }
-
-  },[authUser]);
+    }, 10000);
+  }, [authUser]);
+  
 
   return (
     <>

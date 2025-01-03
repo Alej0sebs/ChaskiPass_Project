@@ -15,19 +15,19 @@ import { useAuthContext } from '../../context/AuthContext';
 
 const ECommerce: React.FC = () => {
 
-  const {loading, cardsDataDashboard} = useDashboard();
-  const [activeFreq,setActiveFreq] = useState<number>(0);
-  const [quantityPayments,setQuantityPayments] = useState<number>(0);
-  const [sales,setSales] = useState<number>(0);
-  const [quantityClients,setQuantityClients] = useState<number>(0);
-  const {authUser} = useAuthContext();
+  const { loading, cardsDataDashboard } = useDashboard();
+  const [activeFreq, setActiveFreq] = useState<number>(0);
+  const [quantityPayments, setQuantityPayments] = useState<number>(0);
+  const [sales, setSales] = useState<number>(0);
+  const [quantityClients, setQuantityClients] = useState<number>(0);
+  const { authUser } = useAuthContext();
 
 
   useEffect(() => {
     // Si authUser es null o undefined, salimos y NO llamamos a fetchData.
     console.log(authUser);
     if (!authUser) return;
-    
+
     const fetchData = async () => {
       try {
         const data = await cardsDataDashboard();
@@ -42,12 +42,10 @@ const ECommerce: React.FC = () => {
         console.error('Error al obtener los datos del dashboard:', error);
       }
     };
-  
-    setTimeout(() => {
-      fetchData();
-    }, 10000);
+
+    fetchData();
   }, [authUser]);
-  
+
 
   return (
     <>
@@ -58,10 +56,10 @@ const ECommerce: React.FC = () => {
         <CardDataStats title="Tickets Vendidos" total={quantityPayments.toString()} rate="4.35%" levelUp>
           <MdOutlinePayments className='w-[22px] h-[22px]' />
         </CardDataStats>
-        <CardDataStats title="Total Ventas" total={`$${sales.toString()}`}  rate="2.59%" levelUp>
-          <FcSalesPerformance  className='w-[22px] h-[22px]'/>
+        <CardDataStats title="Total Ventas" total={`$${sales.toString()}`} rate="2.59%" levelUp>
+          <FcSalesPerformance className='w-[22px] h-[22px]' />
         </CardDataStats>
-        <CardDataStats title="Total Clientes" total={quantityClients.toString()}  rate="0.95%" levelDown>
+        <CardDataStats title="Total Clientes" total={quantityClients.toString()} rate="0.95%" levelDown>
           <FaPeopleGroup className='w-[22px] h-[22px]' />
         </CardDataStats>
       </div>

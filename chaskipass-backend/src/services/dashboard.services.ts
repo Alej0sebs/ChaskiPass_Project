@@ -75,7 +75,6 @@ export const getTotalSalesService = async (cooperative_id: string) => {
         });
 
         const totalSalesValue = totalSales[0]?.total_sales || 0;
-        console.log(totalSalesValue);
         return{
             status: 200,
             json: {

@@ -82,6 +82,17 @@ export const getFrequencies = async (req: Request, res: Response) => {
     }
 };
 
+export const getFrequenciesPhone = async (req: Request, res: Response) => {
+    try{
+        const { cooperative_id } = req.params;
+        const result = await getFrequenciesService(cooperative_id as string);
+        res.status(200).json(result);
+    }catch(error){
+        res.status(500).json({msg: HandleMessages.INTERNAL_SERVER_ERROR});
+        return
+    }
+};
+
 export const editFrequency = async (req:Request, res:Response) => {
     try{
         const {id,bus_id, driver_id, date, departure_time, arrival_time, price, status} = req.body;

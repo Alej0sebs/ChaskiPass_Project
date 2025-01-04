@@ -197,7 +197,7 @@ router.post('/sellData', sellTicketData);
  *         description: Error interno del servidor.
  */
 router.get('/clients/:frequency_id', protectRoute, getFrecuencyClients);
-router.get('/Allclients/:frequency_id', protectRoute, getAllFrecuencyClients);
+router.get('/Allclients/:frequency_id', getAllFrecuencyClients);
 /**
  * @swagger
  * /chaski/api/tickets/data:

@@ -9,6 +9,8 @@ import Tickets from "../models/tickets.models";
 import { DataPaginationT, TicketClientInformationT, TicketData } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
 import { paymentService } from "./payment.services";
+import { QueryTypes } from 'sequelize';
+
 
 export const sellTicketService = async (ticket: TicketClientInformationT) => {
 
@@ -238,7 +240,8 @@ export const getAllFrecuencyClientsService = async (frequency_id: string) => {
     `;
 
         const clientList = await connectionDb.query(query, {
-            replacements: { frequency_id }
+            replacements: { frequency_id },
+            type: QueryTypes.SELECT
         });
 
         return {

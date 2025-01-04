@@ -1,13 +1,41 @@
 import useTypeSeats from '../../hooks/useTypeSeats';
-import TableRoutes from '../../components/Tables/TableRoutes';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import TableAux from '../../components/Tables/TableAux';
+import { SeatType } from '../../types';
+import { useState } from 'react';
+
+const initialStateTypeSeats:SeatType = {
+    id: '',
+    name: '',
+    description: '',
+    special_caracter: '',
+    additional_cost: 0
+}
 
 const TypeSeats = () => {
 
-    const { selectSeatTypes, createSeatType } = useTypeSeats();
+    const { selectSeatTypes, createSeatType, reloadSeatTypes} = useTypeSeats();
+    const [formTypeSeats , setFormTypeSeats] = useState<SeatType>(initialStateTypeSeats);
+    
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setFormTypeSeats({
+            ...formTypeSeats,
+            [e.target.name]: e.target.value
+        });
+    };
 
-    return (
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await createSeatType(formTypeSeats);
+        setFormTypeSeats(initialStateTypeSeats);
+        reloadSeatTypes();
+    };
+
+    const handleCancelBtn = () => {
+        setFormTypeSeats(initialStateTypeSeats);
+    };
+    
+        return (
         <>
             <div className="mx-auto ">
                 <Breadcrumb pageName="Registro de Asientos" />
@@ -21,7 +49,7 @@ const TypeSeats = () => {
                                 </h3>
                             </div>
                             <div className="p-7">
-                                <form >
+                                <form onSubmit={handleSubmit}>
 
                                     <div className="mt-4 mb-5.5 flex flex-col gap-5.5 sm:flex-row">
                                         <div className="w-full sm:w-[20%]">
@@ -29,10 +57,11 @@ const TypeSeats = () => {
                                                 Nombre del Asiento
                                                 <input
                                                     type="text"
-                                                    name="seat_name"
-                                                    id="seat_name"
-                                                    // value={selectedDataTimeAndPrice.departure_time}
-                                                    // onChange={handleTimeDateChange}
+                                                    name="name"
+                                                    id="name"
+                                                    placeholder='VIP'
+                                                    value={formTypeSeats.name}
+                                                    onChange={handleChange}
                                                     className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
                                                 />
                                             </label>
@@ -42,10 +71,11 @@ const TypeSeats = () => {
                                                 Descripción
                                                 <input
                                                     type="text"
-                                                    name="seat_description"
-                                                    id="seat_description"
-                                                    // value={selectedDataTimeAndPrice.departure_time}
-                                                    // onChange={handleTimeDateChange}
+                                                    name="description"
+                                                    id="description"
+                                                    placeholder='Asiento VIP'
+                                                    value={formTypeSeats.description}
+                                                    onChange={handleChange}
                                                     className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
                                                 />
                                             </label>
@@ -55,10 +85,11 @@ const TypeSeats = () => {
                                                 Caracter Especial
                                                 <input
                                                     type="text"
-                                                    name="seat_character"
-                                                    id="seat_character"
-                                                    // value={selectedDataTimeAndPrice.departure_time}
-                                                    // onChange={handleTimeDateChange}
+                                                    name="special_caracter"
+                                                    id="special_caracter"
+                                                    placeholder='V'
+                                                    value={formTypeSeats.special_caracter}
+                                                    onChange={handleChange}
                                                     className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
                                                 />
                                             </label>
@@ -67,11 +98,13 @@ const TypeSeats = () => {
                                             <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                                                 Costo Adicional
                                                 <input
-                                                    type="text"
-                                                    name="seat_cost"
-                                                    id="seat_cost"
-                                                    // value={selectedDataTimeAndPrice.departure_time}
-                                                    // onChange={handleTimeDateChange}
+                                                    type="number"
+                                                    name="additional_cost"
+                                                    id="additional_cost"
+                                                    placeholder='5.50'
+                                                    value={formTypeSeats.additional_cost}
+                                                    onChange={handleChange}
+                                                    step="0.01"
                                                     className="input input-bordered w-full mt-1 bg-white text-black border-gray-300 placeholder-gray-500 dark:bg-boxdark dark:text-white dark:border-strokedark dark:placeholder-gray-400"
                                                 />
                                             </label>
@@ -82,7 +115,7 @@ const TypeSeats = () => {
                                         <button
                                             className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
                                             type="button"
-                                        // onClick={handleCancelBtn}
+                                        onClick={handleCancelBtn}
                                         >
                                             Cancelar
                                         </button>

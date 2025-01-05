@@ -198,13 +198,14 @@ const TypebusRegistration = () => {
 
     return (
         <div className="mx-auto max-w-270">
-            <Breadcrumb pageName="Registro de buses" />
+            <Breadcrumb pageName="Registro Estructura De Bus" />
             <div className="flex flex-col md:flex-row items-start gap-4">
                 <div className="controls mt-4 flex flex-col gap-4 w-[50%] max-w-lg mx-auto md:mx-0">
                     {/* Input para el nombre del bus */}
                     <input
                         type="text"
                         placeholder="Nombre del bus"
+                        maxLength={50}
                         value={busConfigurationName}
                         onChange={(e) => setBusConfigurationName(e.target.value)}
                         className="w-full rounded-lg border-[1.5px] border-stroke bg-white py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

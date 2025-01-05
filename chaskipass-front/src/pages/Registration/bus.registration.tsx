@@ -106,6 +106,7 @@ const BusRegistration: React.FC = () => {
                           type="text"
                           name="bus_number"
                           id="bus_number"
+                          maxLength={10}
                           placeholder="001"
                           value={inputBus.bus_number}
                           onChange={handleChange}
@@ -129,6 +130,7 @@ const BusRegistration: React.FC = () => {
                           type="text"
                           name="license_plate"
                           id="license_plate"
+                          maxLength={8}
                           placeholder="ABC-123"
                           value={inputBus.license_plate}
                           onChange={handleChange}
@@ -154,6 +156,7 @@ const BusRegistration: React.FC = () => {
                           type="text"
                           name="chassis_vin"
                           id="chassis_vin"
+                          maxLength={17}
                           placeholder="1787459825..."
                           value={inputBus.chassis_vin}
                           onChange={handleChange}
@@ -178,6 +181,7 @@ const BusRegistration: React.FC = () => {
                           name="bus_manufacturer"
                           id="bus_manufacturer"
                           placeholder="Mercedes"
+                          maxLength={50}
                           value={inputBus.bus_manufacturer}
                           onChange={handleChange}
                         />
@@ -204,6 +208,7 @@ const BusRegistration: React.FC = () => {
                           id="model"
                           placeholder="eCitaro"
                           value={inputBus.model}
+                          maxLength={20}
                           onChange={handleChange}
                         />
                       </div>

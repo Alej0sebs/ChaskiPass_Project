@@ -7,9 +7,8 @@ import { verifyError } from "../helpers/VerifyErrors";
 
 export default function createUser(){
     const [loading, setLoading] = useState(false);
-    const {setAuthUser} = useAuthContext();
 
-    const login = async(userData:CreateUserT)=>{
+    const signUp = async(userData:CreateUserT)=>{
         setLoading(true);
         try {
             const response:Response = await fetch(`${API_BASE_URL}users/signUp`,{
@@ -25,8 +24,6 @@ export default function createUser(){
                 throw new Error(data.error);
             }
             toast.success(data.msg);
-            localStorage.setItem('chaski-log', JSON.stringify(data));
-            setAuthUser(data);
             return;
         } catch (error) {
             toast.error(verifyError(error));
@@ -34,5 +31,6 @@ export default function createUser(){
             setLoading(false);
         }
     }
-    return {loading, login};
+
+    return {loading, signUp};
 }

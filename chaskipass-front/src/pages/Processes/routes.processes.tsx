@@ -119,7 +119,7 @@ const RoutesRegistration = () => {
     return (
         <>
             <div className="mx-auto ">
-                <Breadcrumb pageName="Registro de Rutas" />
+                <Breadcrumb pageName="Registro de Frecuencias" />
 
                 <div className="grid grid-cols-5 gap-8">
                     <div className="col-span-5 xl:col-span-5">

@@ -38,7 +38,6 @@ export default function useUsers() {
       });
   
       const result = await res.json(); // Extraer la respuesta completa
-      console.log("API response:", result); // Depuración de la respuesta
   
       if (!res.ok) {
         if (res.status === 404) {
@@ -66,9 +65,7 @@ export default function useUsers() {
         dni,
         ...updatedData, // Incluye los datos proporcionados
       };
-  
-      console.log("Sending data to update user:", body); // Para depuración
-  
+    
       const res: Response = await fetch(`${API_BASE_URL}users/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

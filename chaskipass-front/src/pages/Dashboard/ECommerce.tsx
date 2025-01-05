@@ -1,11 +1,7 @@
-import React, { useDeferredValue, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CardDataStats from '../../components/CardDataStats';
-import ChartOne from '../../components/Charts/ChartOne';
-import ChartThree from '../../components/Charts/ChartThree';
-import ChartTwo from '../../components/Charts/ChartTwo';
-import ChatCard from '../../components/Chat/ChatCard';
-import MapOne from '../../components/Maps/MapOne';
-import TableOne from '../../components/Tables/TableOne';
+import ChaskiLogoB from '../../images/chaski-logo/chaskilogoblack.svg';
+import ChaskiLogoW from '../../images/chaski-logo/chaskilogowhite.svg';
 import { FaBusAlt } from "react-icons/fa";
 import { MdOutlinePayments } from "react-icons/md";
 import { FcSalesPerformance } from "react-icons/fc";
@@ -15,7 +11,7 @@ import { useAuthContext } from '../../context/AuthContext';
 
 const ECommerce: React.FC = () => {
 
-  const { loading, cardsDataDashboard } = useDashboard();
+  const { cardsDataDashboard } = useDashboard();
   const [activeFreq, setActiveFreq] = useState<number>(0);
   const [quantityPayments, setQuantityPayments] = useState<number>(0);
   const [sales, setSales] = useState<number>(0);
@@ -24,8 +20,7 @@ const ECommerce: React.FC = () => {
 
 
   useEffect(() => {
-    // Si authUser es null o undefined, salimos y NO llamamos a fetchData.
-    console.log(authUser);
+
     if (!authUser) return;
 
     const fetchData = async () => {
@@ -65,14 +60,10 @@ const ECommerce: React.FC = () => {
       </div>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <ChartOne />
-        <ChartTwo />
-        <ChartThree />
-        <MapOne />
-        <div className="col-span-12 xl:col-span-8">
-          <TableOne />
+        <div className="col-span-12 flex justify-center">
+          <img className='dark:hidden' alt="Chaski Logo" src={ChaskiLogoB}/>
+          <img className='hidden dark:block' alt="Chaski Logo" src={ChaskiLogoW}/>
         </div>
-        <ChatCard />
       </div>
     </>
   );

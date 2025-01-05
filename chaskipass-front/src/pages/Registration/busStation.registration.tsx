@@ -119,6 +119,7 @@ const BusStationRegistration: React.FC = () => {
                         type="text"
                         name="address"
                         id="address"
+                        maxLength={80}
                         placeholder="Dirección"
                         value={inputBusStation.address}
                         onChange={handleChange}
@@ -142,6 +143,7 @@ const BusStationRegistration: React.FC = () => {
                         type="text"
                         name="phone"
                         id="phone"
+                        maxLength={14}
                         placeholder="+593 x xxx xxxx"
                         value={inputBusStation.phone}
                         onChange={handleChange}

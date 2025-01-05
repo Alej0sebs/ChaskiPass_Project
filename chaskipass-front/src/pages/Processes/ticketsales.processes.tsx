@@ -55,9 +55,9 @@ const TicketsalesRegistration = () => {
 
     const [ticketsData, setTicketsData] = useState<TicketData[]>([]);
     const [showPdfModal, setShowPdfModal] = useState(false);
-
+    const [totalSeats, setTotalSeats] = useState(0);
+    const [reservedSeats, setReservedSeats] = useState(0);
     //global variables
-    let totalSeats: number = 0;
 
     //Traer los datos de la estructura de los asientos con sus respectivos ids
     const fetchBusConfiguration = async () => {
@@ -70,10 +70,17 @@ const TicketsalesRegistration = () => {
                 setFloorElements(busData);
 
                 // Calcula el número total de asientos
-                totalSeats = Object.values(busData).reduce((acc, floor) => {
+                const countTotalSeats = Object.values(busData).reduce((acc, floor) => {
                     const seatCount = floor.filter((element: any) => element.type === "seat").length;
                     return acc + seatCount;
                 }, 0);
+                setTotalSeats(countTotalSeats);
+
+                const reservedSeats = Object.values(busData).reduce((acc, floor) => {
+                    const seatCount = floor.filter((element: any) => element.status === "r").length;
+                    return acc + seatCount;
+                },0);
+                setReservedSeats(reservedSeats);
             }
         } catch (err) {
             toast.error('Error al obtener la estructura del bus');
@@ -85,7 +92,7 @@ const TicketsalesRegistration = () => {
         try {
             const { id: frequency_id } = frequencyData;
             const response = await getTicketsClientFrequency(frequency_id, page);
-            
+
             if (response) {
                 setClientList(response.message.clientList);
                 setTotalPages(response.message.totalPages);
@@ -100,7 +107,7 @@ const TicketsalesRegistration = () => {
         fetchTicketsClientFrequency(currentPage);
         fetchBusConfiguration();
     }, [frequencyData, reloadBusConfigAfterSale]);
-    
+
     //Funcion para traer los datos de los tickets 
     const handleSeatClick = async (seat: SelectedSeatT) => {
         if (seat.statusSeat === "r") {
@@ -122,6 +129,19 @@ const TicketsalesRegistration = () => {
         }
     };
 
+    const handleClientSeatClick = async (seatID: string) => {
+        try {
+            const ticket = await getTicketBySeat(frequencyData.id, seatID);
+            if (ticket) {
+                setTicketsData([JSON.parse(ticket.message)]);
+                setShowPdfModal(true);
+            } else {
+                toast.error("No se encontró información para este asiento.");
+            }
+        } catch {
+            toast.error("Error al obtener los datos del ticket.");
+        }
+    };
 
     const isSeatSelected = (seatId: string) => {
         return selectedSeats.some((seat) => seat.seatId === seatId);
@@ -151,6 +171,7 @@ const TicketsalesRegistration = () => {
                         setCurrentPage(newPage);
                         fetchTicketsClientFrequency(newPage);
                     }}
+                    onRowClick={(row) => handleClientSeatClick(row.seat_id)}
                     loading={false}
                     dataHeaderToExpand={[]}
                 />
@@ -159,19 +180,17 @@ const TicketsalesRegistration = () => {
 
     //Contabilizar los datos de los asientos segun la estructura
     const statuses = [
-        { label: 'Libre', count: 22, statusSeat: 'free', name: 'F' },
-        { label: 'Reservados', count: 6, statusSeat: 'reserved', name: 'R' },
-        { label: 'Vendidos', count: 11, statusSeat: 'sold', name: 'S' },
+        { label: 'Libre', count: (totalSeats - reservedSeats).toString(), statusSeat: 'free', name: 'F' },
+        { label: 'Reservados', count: reservedSeats.toString(), statusSeat: 'reserved', name: 'R' },
     ];
 
     // Estos datos vendrían de una consulta en una aplicación real
     const travelData = {
         placa: frequencyData.license_plate,
         piloto: frequencyData.driver_name,
-        copiloto: 'Un x',
-        libres: '32',
-        vendidos: '15',
-        reservados: '0',
+        copiloto: 'No asignado',
+        libres: (totalSeats - reservedSeats).toString(), //Asientos libres
+        reservados: reservedSeats.toString(), //Asientos
         total: totalSeats.toString(), //Total de asientos del bus como se renderiza ya que toma el valor inicial de 0
         horaSalida: frequencyData.departure_time,
         dia: frequencyData.date,
@@ -266,29 +285,10 @@ const TicketsalesRegistration = () => {
                         <Accordion title="Detalle de Bus Baños - Quito" color="#f4c05c">
                             <div className="grid grid-cols-3 gap-x-6 gap-y-2">
                                 <InputField label="PLACA DE BUS" value={travelData.placa} />
+                                <InputField label="ASIENTOS" value={travelData.total} />
                                 <InputField label="LIBRES" value={travelData.libres} />
                                 <InputField label="PILOTO" value={travelData.piloto} />
-                                <InputField label="VENDIDOS" value={travelData.vendidos} />
-                                <InputField label="COPILOTO" value={travelData.copiloto} />
                                 <InputField label="RESERVADOS" value={travelData.reservados} />
-
-                                <div className="my-auto">
-                                    <div className="bg-teal-600 text-white py-2 px-4 rounded-md inline-block">
-                                        {travelData.terminal}
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center space-x-2">
-                                    <span className="font-medium">TOTAL:</span>
-                                    <input
-                                        type="text"
-                                        value={travelData.total}
-                                        disabled
-                                        className="w-16 rounded-lg border-[1.5px] border-gray-300 bg-gray-100 py-1 px-2 text-gray-700 outline-none"
-                                    />
-                                    <AlertCircle className="text-red-500 w-5 h-5" />
-                                </div>
-
                                 <InputField label="HORA SALIDA" value={travelData.horaSalida} />
                                 <InputField label="DIA" value={travelData.dia} />
                                 <InputField label="FECHA DE VIAJE" value={travelData.fechaViaje} />

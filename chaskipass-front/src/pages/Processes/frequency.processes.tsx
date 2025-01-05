@@ -135,7 +135,7 @@ const FrequencyRegistration = () => {
     return (
         <>
             <div className="mx-auto">
-                <Breadcrumb pageName="Registro de Frecuencias" />
+                <Breadcrumb pageName="Registro de Rutas" />
                 <div className="grid grid-cols-8 gap-8">
                     <div className="col-span-8 xl:col-span-5 ">
                         <PaginationDataTable

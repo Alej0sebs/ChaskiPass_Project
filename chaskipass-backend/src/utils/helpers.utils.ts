@@ -18,7 +18,6 @@ export const getPaginationData = (query: any, pattern?: string) => {
 
 //Manejo de errores específicos de Sequelize
 export const handleSequelizeError = (error: any) => {
-    console.error('Error:', error);
 
     if (error instanceof UniqueConstraintError) {
         return { status: 400, json: { error: HandleMessages.DEFAULT_INSTANCE_EXIST } };

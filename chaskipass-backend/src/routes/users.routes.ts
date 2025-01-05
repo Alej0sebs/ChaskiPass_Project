@@ -142,6 +142,7 @@ router.get('/drivers', protectRoute ,getDrivers);
  *         description: Error interno del servidor.
  */
 router.post('/signUp', protectRoute,registerAndSendEmail);
+router.post('/signUp/admin' ,registerAndSendEmail);
 /**
  * @swagger
  * /chaski/api/users/logout:

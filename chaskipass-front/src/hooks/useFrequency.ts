@@ -56,7 +56,6 @@ export default function useFrequency() {
     const editFrequency = async (frequencyData: editFrequencyT) => {
         setLoading(true);
         try{
-            console.log(frequencyData);
             const response: Response = await fetch(`${API_BASE_URL}frequency/edit`, {
                 method: 'PUT',
                 headers: {
@@ -93,7 +92,6 @@ export default function useFrequency() {
             toast.success(data.json.msg);
             return;
         }catch(error){
-            console.log(error);
             toast.error(verifyError(error));    
         }
     };

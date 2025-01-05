@@ -247,7 +247,13 @@ export type cooperativeT = {
     logo?:string,
 };
 
-
+export type SeatType ={
+    id: string;
+    name: string;
+    special_caracter:string;
+    description?:string;
+    additional_cost?:number;
+}
 
 
 

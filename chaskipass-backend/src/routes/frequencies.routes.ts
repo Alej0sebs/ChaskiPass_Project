@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { filterFrequencies } from "../controllers/filterFrequencies.controllers";
 import protectRoute from "../middleware/protectRoute.middleware";
-import { createFrequency, createRoute, deleteFrequencyByID, editFrequency, getFrequencies, getRoutes } from "../controllers/routes.controllers";
+import { createFrequency, createRoute, deleteFrequencyByID, editFrequency, getFrequencies, getFrequenciesPhone, getRoutes } from "../controllers/routes.controllers";
 
 const router = Router();
 
@@ -184,6 +184,7 @@ router.get('/routes', protectRoute, getRoutes);
  *         description: Error interno del servidor.
  */
 router.get('/frequencies', protectRoute, getFrequencies);
+router.get('/frequenciesPhone/:cooperative_id', getFrequenciesPhone);
 /**
  * @swagger
  * /chaski/api/frequency/edit:

@@ -22,7 +22,6 @@ export default function useUsers() {
       }
       return data;
     } catch (error) {
-      console.error(error);
       toast.error(verifyError(error));
     } finally {
       setLoading(false);
@@ -39,10 +38,8 @@ export default function useUsers() {
       });
   
       const result = await res.json(); // Extraer la respuesta completa
-      console.log("API response:", result); // Depuración de la respuesta
   
       if (!res.ok) {
-        console.error("Error fetching user by DNI:", result.json.error);
         if (res.status === 404) {
           return null; // Usuario no encontrado
         }
@@ -51,7 +48,6 @@ export default function useUsers() {
   
       return result.json; // Devolver los datos reales del usuario
     } catch (error) {
-      console.error("Error in getUsersByDni:", error);
       toast.error("Failed to fetch user data.");
       throw error;
     } finally {
@@ -69,9 +65,7 @@ export default function useUsers() {
         dni,
         ...updatedData, // Incluye los datos proporcionados
       };
-  
-      console.log("Sending data to update user:", body); // Para depuración
-  
+    
       const res: Response = await fetch(`${API_BASE_URL}users/update`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { TicketClientInformationT, TicketData } from "../types/index.types";
-import { getFrecuencyClientsService, sellTicketService, sellTicketDataService, getTicketDataService } from "../services/tickets.services";
+import { getFrecuencyClientsService, sellTicketService, sellTicketDataService, getTicketDataService, getAllFrecuencyClientsService } from "../services/tickets.services";
 import { HandleMessages } from "../error/handleMessages.error";
 import { getPaginationData } from "../utils/helpers.utils";
 
@@ -76,9 +76,24 @@ export const sellTicketData = async (req: Request, res: Response) => {
 export const getFrecuencyClients = async (req: Request, res: Response) => {
     try {
         const frequency_id = req.params.frequency_id;
-        console.log(frequency_id);
         const paginationData = getPaginationData(req.query, req.query.pattern as string);
         const result = await getFrecuencyClientsService(frequency_id, paginationData);
+        if (result.status !== 200) {
+            res.status(result.status).json(result.json);
+            return;
+        }
+
+        res.status(result.status).json(result.json);
+        return;
+    } catch (error) {
+
+    }
+};
+
+export const getAllFrecuencyClients = async (req: Request, res: Response) => {
+    try {
+        const frequency_id = req.params.frequency_id;
+        const result = await getAllFrecuencyClientsService(frequency_id);
         if (result.status !== 200) {
             res.status(result.status).json(result.json);
             return;

@@ -155,10 +155,17 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
 
     // Manejar cambio en "Número de Documento"
     const handledocumentNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ''); // Remover caracteres no numéricos
-        const maxLength = documentType === 'Cedula' ? 10 : 9;
-        if (value.length > maxLength) {
-            value = value.slice(0, maxLength);
+        let value = e.target.value;
+        if (documentType === 'Cedula') {
+            value = value.replace(/\D/g, ''); // Remover caracteres no numéricos
+            if (value.length > 10) {
+                value = value.slice(0, 10);
+            }
+        } else {
+            value = value.replace(/[^a-zA-Z0-9]/g, ''); // Remover caracteres no alfanuméricos
+            if (value.length > 9) {
+                value = value.slice(0, 9);
+            }
         }
         setDocumentNumber(value);
     };
@@ -176,7 +183,6 @@ const SalesForm: React.FC<SalesFormProps> = ({ dataFrequency, onUpdateBus }: Sal
     };
 
     const handleGroupPeopleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(e.target.value);
         setSelectedGroupPeople(Number(e.target.value));
     }
 

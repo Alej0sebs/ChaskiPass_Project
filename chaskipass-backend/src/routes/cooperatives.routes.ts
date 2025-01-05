@@ -56,6 +56,7 @@ const router = Router();
  *         description: Error interno del servidor.
  */
 router.get('/', protectRoute, getCooperatives);
+router.get('/admin', getCooperatives);
 /**
  * @swagger
  * /chaski/api/cooperatives/{id}:

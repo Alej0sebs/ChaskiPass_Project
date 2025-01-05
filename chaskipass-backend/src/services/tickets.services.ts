@@ -9,6 +9,8 @@ import Tickets from "../models/tickets.models";
 import { DataPaginationT, TicketClientInformationT, TicketData } from "../types/index.types";
 import { handleSequelizeError } from "../utils/helpers.utils";
 import { paymentService } from "./payment.services";
+import { QueryTypes } from 'sequelize';
+
 
 export const sellTicketService = async (ticket: TicketClientInformationT) => {
 
@@ -219,11 +221,45 @@ export const getFrecuencyClientsService = async (frequency_id: string, { page, l
     }
 };
 
+export const getAllFrecuencyClientsService = async (frequency_id: string) => {
+
+    try {
+        // Asegúrate de esperar el resultado de la consulta de conteo
+        const totalItems = await Tickets.count({ where: { frequency_id } });
+
+        const query: string =
+            `SELECT 
+    t.client_dni,
+    CONCAT(c.name, ' ', c.last_name) AS client_name,
+    t.ticket_code,
+    t.seat_id
+    From Tickets AS t
+    INNER JOIN 
+    Clients AS c ON t.client_dni = c.dni
+    WHERE t.frequency_id= :frequency_id;
+    `;
+
+        const clientList = await connectionDb.query(query, {
+            replacements: { frequency_id },
+            type: QueryTypes.SELECT
+        });
+
+        return {
+            status: 200,
+            json: {
+                clientList
+            }
+        }
+    } catch (error) {
+        return handleSequelizeError(error);
+    }
+};
+
 export const getTicketDataService = async (seat: string, frequency: string) => {
     try {
         const ticket = await Tickets.findOne({
             where: { seat_id: seat, frequency_id: frequency }
-        });        
+        });
         return {
             status: 200,
             json: ticket?.data

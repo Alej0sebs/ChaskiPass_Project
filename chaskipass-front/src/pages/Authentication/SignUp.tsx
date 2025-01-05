@@ -8,6 +8,8 @@ import { CreateUserT } from '../../types';
 import createUser from '../../hooks/userCreation';
 import { useState } from 'react';
 import { MdEmail } from 'react-icons/md';
+import { validateEcuadorianDNI } from '../../utils/userValidator.utils';
+import toast from 'react-hot-toast';
 
 const initialStateSignUp: CreateUserT = {
   full_name:'',
@@ -25,7 +27,7 @@ const initialStateSignUp: CreateUserT = {
 const SignUp: React.FC = () => {
   const [inputSignUp, setInputSignUp] =
     useState<CreateUserT>(initialStateSignUp);
-  const { loading, login } = createUser();
+  const { loading, signUp } = createUser();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -38,7 +40,12 @@ const SignUp: React.FC = () => {
 
   const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login(inputSignUp);
+    if(validateEcuadorianDNI(inputSignUp.dni)){
+      signUp(inputSignUp);
+    }else{
+      toast.error('La cédula de identidad no es válida');
+      return;
+    }
   };
 
   return (
@@ -73,6 +80,7 @@ const SignUp: React.FC = () => {
                     <div className="relative">
                       <input
                         type="text"
+                        maxLength={10}
                         placeholder="Ingrese su CI"
                         id="dni"
                         value={inputSignUp.dni}
@@ -92,6 +100,7 @@ const SignUp: React.FC = () => {
                     <div className="relative">
                       <input
                         type="text"
+                        maxLength={20}
                         placeholder="Ingrese su nombre"
                         id="name"
                         value={inputSignUp.name}
@@ -116,6 +125,7 @@ const SignUp: React.FC = () => {
                     <div className="relative">
                       <input
                         type="text"
+                        maxLength={20}
                         placeholder="Ingrese su apellido"
                         id="last_name"
                         value={inputSignUp.last_name}
@@ -137,6 +147,7 @@ const SignUp: React.FC = () => {
                       <input
                         type="text"
                         placeholder="Usuario"
+                        maxLength={20}
                         id="user_name"
                         value={inputSignUp.user_name}
                         onChange={handleChange}
@@ -159,6 +170,7 @@ const SignUp: React.FC = () => {
                         type="email"
                         placeholder="Ingresa tu email"
                         id="email"
+                        maxLength={50}
                         value={inputSignUp.email}
                         onChange={handleChange}
                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -179,6 +191,7 @@ const SignUp: React.FC = () => {
                         type="tel"
                         placeholder="Ingresa tu numero de telefono"
                         id="phone"
+                        maxLength={15}
                         value={inputSignUp.phone}
                         onChange={handleChange}
                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
@@ -199,6 +212,7 @@ const SignUp: React.FC = () => {
                         type="text"
                         placeholder="Ingresa tu dirección"
                         id="address"
+                        maxLength={80}
                         value={inputSignUp.address}
                         onChange={handleChange}
                         className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

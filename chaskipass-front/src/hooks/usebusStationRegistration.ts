@@ -11,7 +11,6 @@ export default function createBusStation(){
     
     const station = async(creterminal:TypeBusStationT)=>{
         setLoading(true);
-        console.log(creterminal);
         try {
             const response:Response = await fetch(`${API_BASE_URL}admins/busStation`,{
                 method:'POST',

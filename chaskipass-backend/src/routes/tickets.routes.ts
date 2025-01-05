@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import protectRoute from '../middleware/protectRoute.middleware'; 
 import { getSeatsStructure } from '../controllers/seatStructure.controllers';
-import { getFrecuencyClients, getTicketData, sellTicket, sellTicketData } from '../controllers/tickets.controllers';
+import { getAllFrecuencyClients, getFrecuencyClients, getTicketData, sellTicket, sellTicketData } from '../controllers/tickets.controllers';
 
 const router = Router();
 /**
@@ -197,6 +197,7 @@ router.post('/sellData', sellTicketData);
  *         description: Error interno del servidor.
  */
 router.get('/clients/:frequency_id', protectRoute, getFrecuencyClients);
+router.get('/Allclients/:frequency_id', getAllFrecuencyClients);
 /**
  * @swagger
  * /chaski/api/tickets/data:

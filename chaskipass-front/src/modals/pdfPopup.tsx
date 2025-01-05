@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
 import ChaskiLogoB from '../images/chaski-logo/chaskilogoblack.png';
 import { TicketData } from '../types/ticket';
+import { IMAGE_URL } from '../helpers/Constants';
 
 Modal.setAppElement('#root');
 
@@ -14,6 +15,7 @@ interface PdfModalProps {
 const PDFPopup: React.FC<PdfModalProps> = ({ tickets }) => {
     const [showPDF, setShowPDF] = useState(false);
     const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+
 
     useEffect(() => {
         if (tickets.length > 0) {

@@ -149,3 +149,4 @@ export type cooperativeT = {
     logo?:string,
 };
 
+export type SaasAdminLoginT=Pick<Admin,  'user_name' | 'email' | 'password' >;

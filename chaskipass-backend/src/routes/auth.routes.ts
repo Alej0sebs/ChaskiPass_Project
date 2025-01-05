@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {loginUser, logoutUser} from "../controllers/auth.controllers";
+import {loginAdmin, loginUser, logoutUser} from "../controllers/auth.controllers";
 
 const router = Router();
 
@@ -71,6 +71,7 @@ const router = Router();
  */
 
 router.post('/login', loginUser);
+router.post('/loginadmin', loginAdmin);
 /**
  * @swagger
  * /chaski/api/auth/logout:

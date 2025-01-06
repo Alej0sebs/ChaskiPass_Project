@@ -40,18 +40,17 @@ const Profile = () => {
         const data = JSON.parse(storageData);
         cooperativeID = data.cooperative;
       }
-  
+
       const cooperative = await getCooperativeByID(cooperativeID!.toString());
       setCooperativeInputs(cooperative);
     };
     fetchCooperative();
   }, [btnCancelPressed]);
 
-    //new value
+  //new value
   const changeLogoValueLocalStorage = async (id: string) => {
     const cooperative = await getCooperativeByID(id);
     const localStorageData = localStorage.getItem('chaski-log'); // Leer los datos actuales del localStorage
-    
     if (!localStorageData) {
       console.error("No se encontró el item 'chaski-log' en el localStorage.");
       return;
@@ -91,13 +90,16 @@ const Profile = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (selectedCooperativeImg) await updateCooperative(cooperativeInputs, selectedCooperativeImg);
-    else await updateCooperative(cooperativeInputs);
+    if (selectedCooperativeImg) {
+      await updateCooperative(cooperativeInputs, selectedCooperativeImg);
+      changeLogoValueLocalStorage(cooperativeInputs.id);
+    } else {
+      await updateCooperative(cooperativeInputs);
+    }
 
     setTimeout(() => {
-      changeLogoValueLocalStorage(cooperativeInputs.id);
       window.location.reload();
-    }, 4000);
+    }, 5000);
   };
 
   const cleanData = () => {

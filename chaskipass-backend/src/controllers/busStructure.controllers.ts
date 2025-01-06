@@ -16,8 +16,8 @@ export const createBusStructure=async(req:Request, res:Response)=>{
 
 export const getBusStructure= async (req:Request, res:Response) => {
     try{
-        const {cooperative_id} = req.params;
-        const result = await getBusStructureService(cooperative_id);
+        const {cooperative_id} = req.userReq ?? {};
+        const result = await getBusStructureService(cooperative_id!);
         res.status(result.status).json(result.json);
         return;
     }catch(error){

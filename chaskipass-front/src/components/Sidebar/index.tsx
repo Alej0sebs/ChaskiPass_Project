@@ -75,8 +75,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between">
         <NavLink to="/">
-          <img src={logo} alt="Logo"  className='w-[300px] h-[200px]'
-          onError={()=> console.log("Error imagen")}/>
+          <img src={logo} alt="Logo" className='w-[300px] h-[200px]'
+            onError={() => console.log("Error imagen")} />
         </NavLink>
 
         <button
@@ -198,24 +198,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
                             <NavLink
-                              to="/register/bus"
+                              to="/register/linkStations"
                               className={({ isActive }) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
                             >
-                              Buses
-                            </NavLink>
-                          </li>
-                          <li>
-                            <NavLink
-                              to="/register/busStations"
-                              className={({ isActive }) =>
-                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
-                                (isActive && '!text-white')
-                              }
-                            >
-                              Terminales
+                              Enlazar Estaciones
                             </NavLink>
                           </li>
                           <li>
@@ -242,27 +231,37 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           </li>
                           <li>
                             <NavLink
+                              to="/register/bus"
+                              className={({ isActive }) =>
+                                'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                (isActive && '!text-white')
+                              }
+                            >
+                              Buses
+                            </NavLink>
+                          </li>
+                          <li>
+                            <NavLink
                               to="/register/tickets"
                               className={({ isActive }) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
                             >
-                              Tickets
+                              Numero de Serie
                             </NavLink>
                           </li>
                           <li>
                             <NavLink
-                              to="/register/linkStations"
+                              to="/register/busStations"
                               className={({ isActive }) =>
                                 'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
                                 (isActive && '!text-white')
                               }
                             >
-                              Enlazar Estaciones
+                              Terminales
                             </NavLink>
                           </li>
-
                         </ul>
                       </div>
                       {/* <!-- Dropdown Menu End --> */}
@@ -310,7 +309,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Creación de rutas
+                              Creación de Frecuencias
                             </NavLink>
                           </li>
                           <li>
@@ -321,7 +320,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Creación de Frecuencias
+                              Creación de rutas
                             </NavLink>
                           </li>
                           <li>

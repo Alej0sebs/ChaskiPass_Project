@@ -6,7 +6,7 @@ import { handleSequelizeError } from "../utils/helpers.utils";
 
 export const getBusStructureService = async (cooperative_id: string) => {
     try {
-        const busStructures = await BusStructure.findAll();
+        const busStructures = await BusStructure.findAll({where: {cooperative_id}, raw: true});
         return { status: 200, json: busStructures };
     } catch (error) {
         // Usar la función genérica para manejar errores de Sequelize

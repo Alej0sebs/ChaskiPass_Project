@@ -39,7 +39,7 @@ export const createSellerSerialNumberService = async ({ cooperative_id, station_
 
 
 
-export const getSerialNumbersService = async ({ page, limit }: DataPaginationT) => {
+export const getSerialNumbersService = async (cooperative_id:string, { page, limit }: DataPaginationT) => {
     try {
         const pageIndex = Math.max(1, parseInt(page.toString())); // Asegura que page sea al menos 1
         const offset = (pageIndex - 1) * parseInt(limit.toString());
@@ -58,6 +58,7 @@ export const getSerialNumbersService = async ({ page, limit }: DataPaginationT) 
                     required: true
                 }
             ],
+            where: { cooperative_id },
             limit: parseInt(limit.toString()),
             offset: offset
         });

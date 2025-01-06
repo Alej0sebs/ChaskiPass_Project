@@ -38,7 +38,6 @@ const TypebusRegistration = () => {
     const addElement = (type: string) => {
         const busContainer = document.getElementById(`bus-container-${selectedFloor}`);
         const busRect = busContainer!.getBoundingClientRect();
-
         if (type === 'seat' && seatName === '') return;
 
         // Verificar si el nombre del asiento ya existe
@@ -213,7 +212,7 @@ const TypebusRegistration = () => {
                     {/* Selector para el número de pisos */}
                     <div className='relative z-5'>
                         <label>Número de pisos:</label>
-                        <select value={numFloors} onChange={handleFloorChange}
+                        <select value={numFloors} onChange={handleFloorChange} disabled={floorElements[1].length > 0}
                             className={`relative z-5 w-full appearance-none rounded-lg border border-stroke bg-white py-3 pl-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input ${numFloors ? 'text-black dark:text-white' : 'text-gray-400'
                                 }`}>
                             <option value={1}>1 Piso</option>

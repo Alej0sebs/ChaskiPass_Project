@@ -196,7 +196,7 @@ Este proyecto está licenciado bajo la licencia MIT. Consulta el archivo LICENSE
 
 📬 Contacto
 
-Si tienes preguntas o sugerencias, por favor contacta a nuestro equipo en tu-email@dominio.com.
+Si tienes preguntas o sugerencias, por favor contacta a nuestro equipo en chaskipass@gmail.com
 
 © 2025 ChaskiPass. Todos los derechos reservados.
 

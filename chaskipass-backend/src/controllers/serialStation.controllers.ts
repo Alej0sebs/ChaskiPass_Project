@@ -31,8 +31,9 @@ export const creatSellerSerialNumber= async(req:Request, res:Response)=>{
 
 export const getSerialNumbers = async(req:Request, res:Response)=>{
     try{
+        const {cooperative_id} = req.userReq ?? {};
         const paginationData = await getPaginationData(req.query);
-        const result = await getSerialNumbersService(paginationData);
+        const result = await getSerialNumbersService(cooperative_id!,paginationData);
         res.status(201).json(result);
         return;
     }catch(error){

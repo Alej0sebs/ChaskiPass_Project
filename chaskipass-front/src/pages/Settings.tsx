@@ -31,10 +31,7 @@ const Settings: React.FC = () => {
   const loadUserData = async (dni: string) => {
     setIsLoadingData(true);
     try {
-      console.log('Fetching user data for DNI:', dni);
       const userData = await getUsersByDni(dni);
-      console.log('Fetched user data:', userData);
-
       if (userData) {
         setFormData({
           user_name: userData.user_name || '',
@@ -48,7 +45,7 @@ const Settings: React.FC = () => {
         setIsUserFound(false);
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      throw new Error('Error al cargar los datos del usuario'); 
     } finally {
       setIsLoadingData(false);
     }
@@ -72,7 +69,7 @@ const Settings: React.FC = () => {
       const updatedData = { ...formData };
       await updateUsers(dni, updatedData); // Enviar el DNI oculto al backend
     } catch (error) {
-      console.error('Error al actualizar perfil:', error);
+      throw new Error('Error al actualizar los datos del usuario');
     }
   };
 

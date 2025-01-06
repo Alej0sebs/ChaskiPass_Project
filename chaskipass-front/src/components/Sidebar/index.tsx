@@ -331,7 +331,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
-                              Seleccion de Frecuencias
+                              Seleccion de Rutas
                             </NavLink>
                           </li>
                           <li>

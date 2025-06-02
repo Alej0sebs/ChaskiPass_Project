@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/admins/:
+ * /ruta593/api/admins/:
  *   post:
  *     summary: Crear administrador SaaS
  *     description: Permite crear un nuevo administrador SaaS.
@@ -50,7 +50,7 @@ const router = Router();
 router.post('/', createSaasAdministrator);
 /**
  * @swagger
- * /chaski/api/admins/coop:
+ * /ruta593/api/admins/coop:
  *   post:
  *     summary: Crear una cooperativa
  *     description: Permite registrar una nueva cooperativa en el sistema.
@@ -94,7 +94,7 @@ router.post('/', createSaasAdministrator);
 router.post('/coop', createCooperative);
 /**
  * @swagger
- * /chaski/api/admins/tenant:
+ * /ruta593/api/admins/tenant:
  *   post:
  *     summary: Registrar un inquilino (tenant) y enviar correo
  *     description: Registra un nuevo usuario (inquilino) asociado a una cooperativa y envía un correo con su contraseña temporal.
@@ -176,7 +176,7 @@ router.post('/coop', createCooperative);
 router.post('/tenant', registerAndSendEmail);
 /**
  * @swagger
- * /chaski/api/admins/role:
+ * /ruta593/api/admins/role:
  *   post:
  *     summary: Crear un rol
  *     description: Permite crear un nuevo rol en el sistema.
@@ -209,7 +209,7 @@ router.post('/tenant', registerAndSendEmail);
 router.post('/role', createRoles);
 /**
  * @swagger
- * /chaski/api/admins/busStation:
+ * /ruta593/api/admins/busStation:
  *   post:
  *     summary: Crear una nueva estación
  *     description: Permite registrar una nueva estación de autobús.

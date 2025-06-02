@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/clients/:
+ * /ruta593/api/clients/:
  *   get:
  *     summary: Obtener lista de clientes
  *     description: Retorna una lista de clientes asociados a la cooperativa. Admite paginación.
@@ -64,7 +64,7 @@ const router = Router();
 router.get('/', protectRoute, getClients);
 /**
  * @swagger
- * /chaski/api/clients/dni/{dni}:
+ * /ruta593/api/clients/dni/{dni}:
  *   get:
  *     summary: Obtener cliente por DNI
  *     description: Retorna la información de un cliente específico utilizando su DNI.
@@ -104,7 +104,7 @@ router.get('/', protectRoute, getClients);
 router.get('/dni/:dni', protectRoute, getClientByDNI);
 /**
  * @swagger
- * /chaski/api/clients/newclients:
+ * /ruta593/api/clients/newclients:
  *   post:
  *     summary: Crear un nuevo cliente
  *     description: Registra un nuevo cliente en el sistema.
@@ -147,7 +147,7 @@ router.get('/dni/:dni', protectRoute, getClientByDNI);
 router.post('/newclients', protectRoute, createClient);  
 /**
  * @swagger
- * /chaski/api/clients/updateclients/{dni}:
+ * /ruta593/api/clients/updateclients/{dni}:
  *   put:
  *     summary: Actualizar cliente
  *     description: Permite modificar los datos de un cliente existente.
@@ -189,7 +189,7 @@ router.post('/newclients', protectRoute, createClient);
 router.put('/updateclients/:dni', protectRoute, updateClient);  
 /**
  * @swagger
- * /chaski/api/clients/deleteclients/{dni}:
+ * /ruta593/api/clients/deleteclients/{dni}:
  *   delete:
  *     summary: Eliminar cliente
  *     description: Elimina un cliente del sistema utilizando su DNI.

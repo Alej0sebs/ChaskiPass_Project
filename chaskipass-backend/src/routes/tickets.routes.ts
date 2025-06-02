@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/tickets/seats:
+ * /ruta593/api/tickets/seats:
  *   post:
  *     summary: Obtener estructura de asientos
  *     description: Retorna la estructura de asientos de un autobús para una frecuencia específica.
@@ -45,7 +45,7 @@ const router = Router();
 router.post('/seats', protectRoute, getSeatsStructure);
 /**
  * @swagger
- * /chaski/api/tickets/sell:
+ * /ruta593/api/tickets/sell:
  *   post:
  *     summary: Vender un boleto
  *     description: Permite registrar la venta de un boleto para una frecuencia específica.
@@ -101,7 +101,7 @@ router.post('/seats', protectRoute, getSeatsStructure);
 router.post('/sell', sellTicket);
 /**
  * @swagger
- * /chaski/api/tickets/sellData:
+ * /ruta593/api/tickets/sellData:
  *   post:
  *     summary: Registrar múltiples boletos
  *     description: Permite registrar información de múltiples boletos en una sola solicitud.
@@ -166,7 +166,7 @@ router.post('/sell', sellTicket);
 router.post('/sellData', sellTicketData);
 /**
  * @swagger
- * /chaski/api/tickets/clients/{frequency_id}:
+ * /ruta593/api/tickets/clients/{frequency_id}:
  *   get:
  *     summary: Obtener clientes por frecuencia
  *     description: Retorna la lista de clientes que han comprado boletos para una frecuencia específica.
@@ -200,7 +200,7 @@ router.get('/clients/:frequency_id', protectRoute, getFrecuencyClients);
 router.get('/Allclients/:frequency_id', getAllFrecuencyClients);
 /**
  * @swagger
- * /chaski/api/tickets/data:
+ * /ruta593/api/tickets/data:
  *   get:
  *     summary: Obtener datos de boletos
  *     description: Retorna los datos de un boleto basado en la frecuencia y el asiento seleccionados.

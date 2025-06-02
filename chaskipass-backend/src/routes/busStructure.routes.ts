@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/busStructure/:
+ * /ruta593/api/busStructure/:
  *   get:
  *     summary: Obtener estructuras de autobuses
  *     description: Retorna las estructuras de autobuses asociadas a una cooperativa específica.
@@ -56,7 +56,7 @@ router.get('/', protectRoute, getBusStructure);
 
 /**
  * @swagger
- * /chaski/api/busStructure/layout:
+ * /ruta593/api/busStructure/layout:
  *   post:
  *     summary: Crear nueva estructura de autobús
  *     description: Permite registrar una nueva estructura de autobús asociada a una cooperativa.

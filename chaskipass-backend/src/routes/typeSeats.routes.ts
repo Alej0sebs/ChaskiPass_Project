@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/typeSeats/:
+ * /ruta593/api/typeSeats/:
  *   get:
  *     summary: Obtener tipos de asientos
  *     description: Retorna una lista de tipos de asientos asociados a la cooperativa del usuario autenticado.
@@ -53,7 +53,7 @@ const router = Router();
 router.get('/', protectRoute, getTypeSeats);
 /**
  * @swagger
- * /chaski/api/typeSeats/createType:
+ * /ruta593/api/typeSeats/createType:
  *   post:
  *     summary: Crear un tipo de asiento
  *     description: Permite crear un nuevo tipo de asiento para la cooperativa del usuario autenticado.

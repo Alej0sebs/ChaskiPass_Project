@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/frequency/:
+ * /ruta593/api/frequency/:
  *   post:
  *     summary: Filtrar frecuencias
  *     description: Filtra las frecuencias disponibles según los criterios proporcionados.
@@ -47,7 +47,7 @@ const router = Router();
 router.post('/', filterFrequencies);
 /**
  * @swagger
- * /chaski/api/frequency/route:
+ * /ruta593/api/frequency/route:
  *   post:
  *     summary: Crear una nueva ruta
  *     description: Permite registrar una nueva ruta asociada a una cooperativa.
@@ -92,7 +92,7 @@ router.post('/', filterFrequencies);
 router.post('/route', protectRoute, createRoute);
 /**
  * @swagger
- * /chaski/api/frequency/frequency:
+ * /ruta593/api/frequency/frequency:
  *   post:
  *     summary: Crear una nueva frecuencia
  *     description: Permite registrar una frecuencia asociada a una ruta y un autobús.
@@ -142,7 +142,7 @@ router.post('/route', protectRoute, createRoute);
 router.post('/frequency', protectRoute, createFrequency);
 /**
  * @swagger
- * /chaski/api/frequency/routes:
+ * /ruta593/api/frequency/routes:
  *   get:
  *     summary: Obtener rutas
  *     description: Retorna todas las rutas asociadas a la cooperativa.
@@ -170,7 +170,7 @@ router.post('/frequency', protectRoute, createFrequency);
 router.get('/routes', protectRoute, getRoutes);
 /**
  * @swagger
- * /chaski/api/frequency/frequencies:
+ * /ruta593/api/frequency/frequencies:
  *   get:
  *     summary: Obtener frecuencias
  *     description: Retorna todas las frecuencias asociadas a la cooperativa.
@@ -187,7 +187,7 @@ router.get('/frequencies', protectRoute, getFrequencies);
 router.get('/frequenciesPhone/:cooperative_id', getFrequenciesPhone);
 /**
  * @swagger
- * /chaski/api/frequency/edit:
+ * /ruta593/api/frequency/edit:
  *   put:
  *     summary: Editar frecuencia
  *     description: Permite editar los datos de una frecuencia existente.
@@ -230,7 +230,7 @@ router.get('/frequenciesPhone/:cooperative_id', getFrequenciesPhone);
 router.put('/edit', protectRoute, editFrequency);
 /**
  * @swagger
- * /chaski/api/frequency/delete/{id}:
+ * /ruta593/api/frequency/delete/{id}:
  *   delete:
  *     summary: Eliminar frecuencia
  *     description: Elimina una frecuencia por su ID.

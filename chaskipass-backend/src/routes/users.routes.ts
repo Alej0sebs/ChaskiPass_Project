@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/users/:
+ * /ruta593/api/users/:
  *   get:
  *     summary: Obtener lista de usuarios
  *     description: Retorna una lista de usuarios asociados a la cooperativa del usuario autenticado.
@@ -56,7 +56,7 @@ router.get('/', protectRoute ,getUsers);
 
 /**
  * @swagger
- * /chaski/api/users/drivers:
+ * /ruta593/api/users/drivers:
  *   get:
  *     summary: Obtener lista de conductores
  *     description: Retorna una lista de conductores asociados a la cooperativa del usuario autenticado.
@@ -94,7 +94,7 @@ router.get('/', protectRoute ,getUsers);
 router.get('/drivers', protectRoute ,getDrivers);
 /**
  * @swagger
- * /chaski/api/users/signUp:
+ * /ruta593/api/users/signUp:
  *   post:
  *     summary: Registrar un usuario y enviar correo
  *     description: Registra un nuevo usuario y envía un correo electrónico con la contraseña temporal.
@@ -145,7 +145,7 @@ router.post('/signUp', protectRoute,registerAndSendEmail);
 router.post('/signUp/admin' ,registerAndSendEmail);
 /**
  * @swagger
- * /chaski/api/users/logout:
+ * /ruta593/api/users/logout:
  *   get:
  *     summary: Cerrar sesión
  *     description: Cierra la sesión del usuario autenticado.
@@ -162,7 +162,7 @@ router.get('/logout', protectRoute,logoutUser);
 
 /**
  * @swagger
- * /chaski/api/users/{dni}:
+ * /ruta593/api/users/{dni}:
  *   get:
  *     summary: Obtener usuario por DNI
  *     description: Retorna la información de un usuario específico por su DNI.
@@ -201,7 +201,7 @@ router.get('/logout', protectRoute,logoutUser);
 router.get('/:dni', protectRoute, getUserById);
 /**
  * @swagger
- * /chaski/api/users/update:
+ * /ruta593/api/users/update:
  *   put:
  *     summary: Actualizar usuario
  *     description: Permite actualizar la información de un usuario existente.

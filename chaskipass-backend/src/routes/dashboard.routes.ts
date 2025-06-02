@@ -6,7 +6,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/activeFreq:
+ * /ruta593/api/activeFreq:
  *   get:
  *     summary: Obtener la cantidad de frecuencias activas
  *     description: Retorna la cantidad de frecuencias activas asociadas a una cooperativa.
@@ -33,7 +33,7 @@ const router = Router();
 router.get('/activeFreq', protectRoute, getActiveFrequenciesAmount);
 /**
  * @swagger
- * /chaski/api/soldTickets:
+ * /ruta593/api/soldTickets:
  *   get:
  *     summary: Obtener la cantidad de boletos vendidos
  *     description: Retorna la cantidad de boletos vendidos asociados a una cooperativa.
@@ -60,7 +60,7 @@ router.get('/activeFreq', protectRoute, getActiveFrequenciesAmount);
 router.get('/soldTickets', protectRoute, getSoldTicketsAmount);
 /**
  * @swagger
- * /chaski/api/numberClients:
+ * /ruta593/api/numberClients:
  *   get:
  *     summary: Obtener el número de clientes
  *     description: Retorna el número total de clientes asociados a una cooperativa.
@@ -87,7 +87,7 @@ router.get('/soldTickets', protectRoute, getSoldTicketsAmount);
 router.get('/numberClients', protectRoute, getClientsAmount);
 /**
  * @swagger
- * /chaski/api/totalSales:
+ * /ruta593/api/totalSales:
  *   get:
  *     summary: Obtener el monto total de ventas
  *     description: Retorna el monto total de las ventas realizadas por una cooperativa.

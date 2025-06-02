@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/auth/login:
+ * /ruta593/api/auth/login:
  *   post:
  *     summary: Iniciar sesión en el sistema
  *     description: Permite a los usuarios iniciar sesión proporcionando credenciales válidas.
@@ -74,7 +74,7 @@ router.post('/login', loginUser);
 router.post('/loginadmin', loginAdmin);
 /**
  * @swagger
- * /chaski/api/auth/logout:
+ * /ruta593/api/auth/logout:
  *   get:
  *     summary: Cerrar sesión
  *     description: Elimina la cookie con el token JWT y cierra la sesión del usuario.

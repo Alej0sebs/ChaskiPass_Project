@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/paypal/create-payment:
+ * /ruta593/api/paypal/create-payment:
  *   post:
  *     summary: Crear un pago en PayPal
  *     description: Crea una orden de pago en PayPal y devuelve el enlace de aprobación para redirigir al usuario.
@@ -48,7 +48,7 @@ const router = Router();
 router.post('/create-payment', protectRoute, createPayment);
 /**
  * @swagger
- * /chaski/api/paypal/execute-payment:
+ * /ruta593/api/paypal/execute-payment:
  *   get:
  *     summary: Capturar un pago en PayPal
  *     description: Captura el dinero asociado a una orden de PayPal, completando la transacción.

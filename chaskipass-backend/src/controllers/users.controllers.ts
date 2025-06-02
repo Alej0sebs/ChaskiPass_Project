@@ -127,12 +127,12 @@ const generateRandomPassword = (): string => {
 
 const generateMailMessage = (password: string, user_name: string) => {
     const html: string = `
-            <h1>Bienvenido a ChaskiPass</h1>
+            <h1>Bienvenido a Ruta593</h1>
             <p>Hola <strong>${user_name}</strong>,</p>
             <p>Gracias por registrarte en nuestra plataforma. Aquí tienes tu contraseña temporal:</p>
             <p style="font-size: 18px; font-weight: bold;">${password}</p>
             <p>Por favor, cámbiala después de iniciar sesión.</p>
-            <p>Saludos,<br/>El equipo de ChaskiPass</p>
+            <p>Saludos,<br/>El equipo de Ruta593</p>
         `
     return html;
 }

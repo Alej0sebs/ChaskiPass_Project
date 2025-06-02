@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/ubi/:
+ * /ruta593/api/ubi/:
  *   get:
  *     summary: Obtener lista de ciudades
  *     description: Retorna una lista paginada de las ciudades registradas en el sistema.
@@ -55,7 +55,7 @@ router.get('/', getCities);
 
 /**
  * @swagger
- * /chaski/api/ubi/busStations:
+ * /ruta593/api/ubi/busStations:
  *   get:
  *     summary: Obtener estaciones de autobús
  *     description: Retorna una lista de todas las estaciones de autobús registradas en el sistema.

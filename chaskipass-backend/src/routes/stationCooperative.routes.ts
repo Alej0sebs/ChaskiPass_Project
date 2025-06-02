@@ -13,7 +13,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/linkedStations/allLinkedCooperatives:
+ * /ruta593/api/linkedStations/allLinkedCooperatives:
  *   get:
  *     summary: Obtener todas las cooperativas vinculadas
  *     description: Retorna una lista de todas las estaciones vinculadas a la cooperativa del usuario autenticado.
@@ -45,7 +45,7 @@ const router = Router();
 router.get('/allLinkedCooperatives', protectRoute, getAllStationCooperative);
 /**
  * @swagger
- * /chaski/api/linkedStations/linkCooperative/{id}:
+ * /ruta593/api/linkedStations/linkCooperative/{id}:
  *   get:
  *     summary: Vincular una cooperativa a una estación
  *     description: Permite vincular una cooperativa a una estación específica mediante su ID.
@@ -84,7 +84,7 @@ router.get('/allLinkedCooperatives', protectRoute, getAllStationCooperative);
 router.get('/linkCooperative/:id', protectRoute, linkCooperativeStation);
 /**
  * @swagger
- * /chaski/api/linkedStations/:
+ * /ruta593/api/linkedStations/:
  *   get:
  *     summary: Obtener estaciones vinculadas a una cooperativa
  *     description: Retorna una lista paginada de las estaciones vinculadas a la cooperativa del usuario autenticado.

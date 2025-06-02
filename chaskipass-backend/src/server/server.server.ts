@@ -68,7 +68,7 @@ export default class Server {
     };
 
     routes() {
-        const prefixUrl = '/chaski/api'
+        const prefixUrl = '/ruta593/api'
         this.app.use(`${prefixUrl}/admins`, administratorsRoutes);
         this.app.use(`${prefixUrl}/auth`, authRoutes);
         this.app.use(`${prefixUrl}/buses`, busesRoutes);

@@ -14,7 +14,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/cooperatives/:
+ * /ruta593/api/cooperatives/:
  *   get:
  *     summary: Obtener todas las cooperativas
  *     description: Retorna una lista de todas las cooperativas disponibles.
@@ -59,7 +59,7 @@ router.get('/', protectRoute, getCooperatives);
 router.get('/admin', getCooperatives);
 /**
  * @swagger
- * /chaski/api/cooperatives/{id}:
+ * /ruta593/api/cooperatives/{id}:
  *   get:
  *     summary: Obtener información de una cooperativa por ID
  *     description: Retorna la información de una cooperativa específica usando su ID.
@@ -103,7 +103,7 @@ router.get('/admin', getCooperatives);
 router.get('/:id', protectRoute, getCooperativeByID);
 /**
  * @swagger
- * /chaski/api/cooperatives/updateCooperative:
+ * /ruta593/api/cooperatives/updateCooperative:
  *   put:
  *     summary: Actualizar datos de una cooperativa
  *     description: Permite modificar los datos de una cooperativa específica, incluyendo su logo.

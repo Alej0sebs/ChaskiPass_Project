@@ -15,7 +15,7 @@ const router = Router();
 
 /**
  * @swagger
- * /chaski/api/buses/:
+ * /ruta593/api/buses/:
  *   get:
  *     summary: Obtener lista de autobuses
  *     description: Retorna una lista de autobuses pertenecientes a la cooperativa del usuario autenticado.
@@ -56,7 +56,7 @@ router.get('/', protectRoute, getBuses);
 
 /**
  * @swagger
- * /chaski/api/buses/newBus:
+ * /ruta593/api/buses/newBus:
  *   post:
  *     summary: Registrar un nuevo autobús
  *     description: Permite registrar un nuevo autobús en la cooperativa asociada al usuario autenticado.
@@ -117,7 +117,7 @@ router.post('/newBus', protectRoute, upload.single('busImage') ,busRegister);
 
 /**
  * @swagger
- * /chaski/api/buses/updateBus{id}:
+ * /ruta593/api/buses/updateBus{id}:
  *   put:
  *     summary: Actualizar un autobús
  *     description: Permite editar la información de un autobús existente.

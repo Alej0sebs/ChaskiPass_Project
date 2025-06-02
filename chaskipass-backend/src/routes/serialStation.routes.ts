@@ -13,7 +13,7 @@ const router= Router();
 
 /**
  * @swagger
- * /chaski/api/serialNumbers/:
+ * /ruta593/api/serialNumbers/:
  *   get:
  *     summary: Obtener todos los números de serie
  *     description: Retorna una lista paginada de los números de serie registrados en el sistema.
@@ -65,7 +65,7 @@ const router= Router();
 router.get('/', protectRoute, getSerialNumbers);
 /**
  * @swagger
- * /chaski/api/serialNumbers/serial:
+ * /ruta593/api/serialNumbers/serial:
  *   post:
  *     summary: Crear un número de serie para un vendedor
  *     description: Asigna un número de serie a un vendedor asociado a una estación.
@@ -103,7 +103,7 @@ router.post('/serial', protectRoute, creatSellerSerialNumber);
 
 /**
  * @swagger
- * /chaski/api/serialNumbers/serialSeller:
+ * /ruta593/api/serialNumbers/serialSeller:
  *   get:
  *     summary: Obtener número de serie por estación y DNI
  *     description: Retorna el número de serie asignado a un vendedor en una estación específica.
